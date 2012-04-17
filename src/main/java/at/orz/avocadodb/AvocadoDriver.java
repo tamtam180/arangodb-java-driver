@@ -1,0 +1,746 @@
+/*
+ * Copyright (C) 2012 tamtam180
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package at.orz.avocadodb;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import org.apache.http.HttpStatus;
+
+import com.google.gson.reflect.TypeToken;
+
+import at.orz.avocadodb.entity.BaseEntity;
+import at.orz.avocadodb.entity.CollectionEntity;
+import at.orz.avocadodb.entity.CollectionsEntity;
+import at.orz.avocadodb.entity.CursorEntity;
+import at.orz.avocadodb.entity.DefaultEntity;
+import at.orz.avocadodb.entity.DocumentEntity;
+import at.orz.avocadodb.entity.DocumentsEntity;
+import at.orz.avocadodb.entity.EntityFactory;
+import at.orz.avocadodb.entity.KeyValueEntity;
+import at.orz.avocadodb.entity.Policy;
+import at.orz.avocadodb.entity.Version;
+import at.orz.avocadodb.http.HttpManager;
+import at.orz.avocadodb.http.HttpResponseEntity;
+import at.orz.avocadodb.util.CollectionUtils;
+import at.orz.avocadodb.util.DateUtils;
+import at.orz.avocadodb.util.MapBuilder;
+import at.orz.avocadodb.util.StringUtils;
+
+/**
+ * @author tamtam180 - kirscheless at gmail.com
+ *
+ */
+public class AvocadoDriver {
+	
+	// TODO UTF-8 URLEncode
+	// TODO Cas Operation as eTAG
+	// TODO Should fixed a Double check args.
+	// TODO Null check httpResponse.
+	
+	private AvocadoConfigure configure;
+	private HttpManager httpManager;
+	private String baseUrl;
+	
+	public AvocadoDriver(AvocadoConfigure configure) {
+		this.configure = configure;
+		this.baseUrl = "http://" + configure.host + ":" + configure.clinetPort;
+		
+		this.httpManager = new HttpManager();
+		// TODO Configure そのものを渡す方がよい
+		this.httpManager.setDefaultMaxPerRoute(configure.maxPerConnection);
+		this.httpManager.setMaxTotal(configure.maxTotalConnection);
+		this.httpManager.setProxyHost(configure.proxyHost);
+		this.httpManager.setProxyPort(configure.proxyPort);
+		
+		this.httpManager.init();
+	}
+	
+	public void shutdown() {
+		if (httpManager != null) {
+			httpManager.destroy();
+			httpManager = null;
+		}
+	}
+	
+	public Version getVersion() throws AvocadoException {
+		HttpResponseEntity res = httpManager.doGet(baseUrl + "/version");
+		if (res == null) {
+			// TODO
+		}
+		return createEntityImpl(res, Version.class);
+	}
+
+	// ---------------------------------------- start of collection ----------------------------------------
+	
+	public CollectionEntity createCollection(String name) throws AvocadoException {
+		return createCollection(name, null, null);
+	}
+	
+	public CollectionEntity createCollection(String name, Boolean waitForSync, Mode mode) throws AvocadoException {
+		try {
+			return createCollectionImpl(name, waitForSync);
+		} catch (AvocadoException e) {
+			if (HttpManager.is400Error(e) && e.getErrorNumber() == 1207) { // Duplicate
+				if (mode == null || mode == Mode.RETURN_NULL) {
+					return null;
+				}
+				if (mode == Mode.DUP_GET) {
+					// TODO get Document. 別スレッドから消されているかもしれないので取得できるとは限らない。
+					return getCollection(name, Mode.RETURN_NULL);
+				}
+			}
+			throw e;
+		}
+	}
+	
+	private CollectionEntity createCollectionImpl(String name, Boolean waitForSync) throws AvocadoException {
+		
+		HttpResponseEntity res = httpManager.doPost(
+				baseUrl + "/_api/collection", 
+				null,
+				EntityFactory.toJsonString(new MapBuilder()
+					.put("name", name)
+					.put("waitForSync", waitForSync)
+					.get())
+					);
+		
+		return createEntity(res, CollectionEntity.class);
+		
+	}
+	
+	public CollectionEntity getCollection(long id, Mode mode) throws AvocadoException {
+		return getCollection(String.valueOf(id), mode);
+	}
+	public CollectionEntity getCollection(String name, Mode mode) throws AvocadoException {
+		validateCollectionName(name);
+		HttpResponseEntity res = httpManager.doGet(
+				baseUrl + "/_api/collection/" + name,
+				null);
+		try {
+			return createEntity(res, CollectionEntity.class);
+		} catch (AvocadoException e) {
+			if (HttpManager.is404Error(e)) {
+				if (mode == null || mode == Mode.RETURN_NULL) {
+					return null;
+				}
+			}
+			throw e;
+		}
+	}
+	
+	public CollectionEntity getCollectionParameter(long id, Mode mode) throws AvocadoException {
+		return getCollectionParameter(String.valueOf(id), mode);
+	}
+	public CollectionEntity getCollectionParameter(String name, Mode mode) throws AvocadoException {
+		validateCollectionName(name);
+		HttpResponseEntity res = httpManager.doGet(
+				baseUrl + "/_api/collection/" + name + "/parameter",
+				null);
+		try {
+			return createEntity(res, CollectionEntity.class);
+		} catch (AvocadoException e) {
+			if (HttpManager.is404Error(e)) {
+				if (mode == null || mode == Mode.RETURN_NULL) {
+					return null;
+				}
+			}
+			throw e;
+		}
+	}
+	
+	public CollectionEntity getCollectionCount(long id, Mode mode) throws AvocadoException {
+		return getCollectionCount(String.valueOf(id), mode);
+	}
+	public CollectionEntity getCollectionCount(String name, Mode mode) throws AvocadoException {
+		validateCollectionName(name);
+		HttpResponseEntity res = httpManager.doGet(
+				baseUrl + "/_api/collection/" + name + "/count",
+				null);
+		try {
+			return createEntity(res, CollectionEntity.class);
+		} catch (AvocadoException e) {
+			if (HttpManager.is404Error(e)) {
+				if (mode == null || mode == Mode.RETURN_NULL) {
+					return null;
+				}
+			}
+			throw e;
+		}
+
+	}
+	
+	public CollectionEntity getCollectionFigures(long id, Mode mode) throws AvocadoException {
+		return getCollectionFigures(String.valueOf(id), mode);
+	}
+	public CollectionEntity getCollectionFigures(String name, Mode mode) throws AvocadoException {
+		
+		validateCollectionName(name);
+		HttpResponseEntity res = httpManager.doGet(
+				baseUrl + "/_api/collection/" + name + "/figures",
+				null);
+
+		try {
+			return createEntity(res, CollectionEntity.class);
+		} catch (AvocadoException e) {
+			if (HttpManager.is404Error(e)) {
+				if (mode == null || mode == Mode.RETURN_NULL) {
+					return null;
+				}
+			}
+			throw e;
+		}
+
+	}
+	
+	public CollectionsEntity getCollections() throws AvocadoException {
+
+		HttpResponseEntity res = httpManager.doGet(
+				baseUrl + "/_api/collection",
+				null);
+		
+		return createEntity(res, CollectionsEntity.class);
+		
+	}
+	
+	public CollectionEntity loadCollection(long id, Mode mode) throws AvocadoException {
+		return loadCollection(String.valueOf(id), mode);
+	}
+	public CollectionEntity loadCollection(String name, Mode mode) throws AvocadoException {
+		
+		validateCollectionName(name);
+		HttpResponseEntity res = httpManager.doPut(
+				baseUrl + "/_api/collection/" + name + "/load", 
+				null, 
+				null);
+		
+		try {
+			return createEntity(res, CollectionEntity.class);
+		} catch (AvocadoException e) {
+			if (HttpManager.is404Error(e)) {
+				if (mode == null || mode == Mode.RETURN_NULL) {
+					return null;
+				}
+			}
+			throw e;
+		}
+		
+	}
+
+	public CollectionEntity unloadCollection(long id, Mode mode) throws AvocadoException {
+		return unloadCollection(String.valueOf(id), mode);
+	}
+	public CollectionEntity unloadCollection(String name, Mode mode) throws AvocadoException {
+		
+		validateCollectionName(name);
+		HttpResponseEntity res = httpManager.doPut(
+				baseUrl + "/_api/collection/" + name + "/unload",
+				null, 
+				null);
+		
+		try {
+			return createEntity(res, CollectionEntity.class);
+		} catch (AvocadoException e) {
+			if (HttpManager.is404Error(e)) {
+				if (mode == null || mode == Mode.RETURN_NULL) {
+					return null;
+				}
+			}
+			throw e;
+		}
+		
+	}
+	
+	public CollectionEntity truncateCollection(long id, Mode mode) throws AvocadoException {
+		return truncateCollection(String.valueOf(id), mode);
+	}
+	public CollectionEntity truncateCollection(String name, Mode mode) throws AvocadoException {
+		
+		validateCollectionName(name);
+		HttpResponseEntity res = httpManager.doPut(
+				baseUrl + "/_api/collection/" + name + "/truncate", 
+				null, null);
+		
+		try {
+			return createEntity(res, CollectionEntity.class);
+		} catch (AvocadoException e) {
+			if (HttpManager.is404Error(e)) {
+				if (mode == null || mode == Mode.RETURN_NULL) {
+					return null;
+				}
+			}
+			throw e;
+		}
+		
+	}
+	
+	public CollectionEntity setCollectionParameter(long id, boolean newWaitForSync, Mode mode) throws AvocadoException {
+		return setCollectionParameter(String.valueOf(id), newWaitForSync, mode);
+	}
+	public CollectionEntity setCollectionParameter(String name, boolean newWaitForSync, Mode mode) throws AvocadoException {
+		
+		validateCollectionName(name);
+		HttpResponseEntity res = httpManager.doPut(
+				baseUrl + "/_api/collection/" + name + "/parameter",
+				null,
+				EntityFactory.toJsonString(
+						new MapBuilder("waitForSync", newWaitForSync).get()
+				)
+		);
+		
+		try {
+			return createEntity(res, CollectionEntity.class);
+		} catch (AvocadoException e) {
+			if (HttpManager.is404Error(e)) {
+				if (mode == null || mode == Mode.RETURN_NULL) {
+					return null;
+				}
+			}
+			throw e;
+		}
+		
+	}
+	
+	public CollectionEntity renameCollection(long id, String newName, Mode mode) throws AvocadoException {
+		return renameCollection(String.valueOf(id), newName, mode);
+	}
+	public CollectionEntity renameCollection(String name, String newName, Mode mode) throws AvocadoException {
+		
+		validateCollectionName(newName);
+		HttpResponseEntity res = httpManager.doPut(
+				baseUrl + "/_api/collection/" + name + "/rename", 
+				null,
+				EntityFactory.toJsonString(
+						new MapBuilder("name", newName).get()
+				)
+		);
+		
+		try {
+			return createEntity(res, CollectionEntity.class);
+		} catch (AvocadoException e) {
+			if (HttpManager.is404Error(e)) {
+				if (mode == null || mode == Mode.RETURN_NULL) {
+					return null;
+				}
+			} else if (HttpManager.is400Error(e) && e.entity.getErrorNumber() == 1207) { // DuplicateError
+				if (mode == null || mode == Mode.RETURN_NULL) {
+					return null;
+				}
+			}
+			throw e;
+		}
+		
+	}
+	
+	public CollectionEntity deleteCollection(long id, Mode mode) throws AvocadoException {
+		return deleteCollection(String.valueOf(id), mode);
+	}
+	public CollectionEntity deleteCollection(String name, Mode mode) throws AvocadoException {
+		
+		validateCollectionName(name);
+		HttpResponseEntity res = httpManager.doDelete(
+				baseUrl + "/_api/collection/" + name,
+				null);
+		
+		try {
+			return createEntity(res, CollectionEntity.class);
+		} catch (AvocadoException e) {
+			if (e.getCode() == HttpStatus.SC_NOT_FOUND) {
+				if (mode == null || mode == Mode.RETURN_NULL) {
+					return null;
+				}
+			}
+			throw e;
+		}
+		
+	}
+	// ---------------------------------------- end of collection ----------------------------------------
+
+	
+	// ---------------------------------------- start of document ----------------------------------------
+	
+	public DocumentEntity<?> createDocument(long collectionId, Object value, Boolean createCollection, Boolean waitForSync, Mode mode) throws AvocadoException {
+		return createDocument(String.valueOf(collectionId), value, createCollection, waitForSync, mode);
+	}
+	public <T> DocumentEntity<T> createDocument(String collectionName, Object value, Boolean createCollection, Boolean waitForSync, Mode mode) throws AvocadoException {
+		
+		validateCollectionName(collectionName);
+		HttpResponseEntity res = httpManager.doPost(
+				baseUrl + "/document", 
+				new MapBuilder()
+					.put("collection", collectionName)
+					.put("createCollection", (createCollection == null) ? null : createCollection.booleanValue())
+					.put("waitForSync", waitForSync == null ? null : waitForSync.booleanValue())
+					.get(),
+				EntityFactory.toJsonString(value));
+		
+		try {
+			DocumentEntity<T> entity = createEntity(res, DocumentEntity.class);
+			return entity;
+		} catch (AvocadoException e) {
+			if (HttpManager.is404Error(e)) {
+				if (mode == null || mode == Mode.RETURN_NULL) {
+					return null;
+				}
+			}
+			throw e;
+		}
+		
+	}
+	
+	public DocumentEntity<?> updateDocument(long collectionId, long documentId, Object value, long rev, Policy policy, Boolean waitForSync, Mode mode) throws AvocadoException {
+		return updateDocument(createDocumentHandle(collectionId, documentId), value, rev, policy, waitForSync, mode);
+	}
+	public DocumentEntity<?> updateDocument(String collectionName, long documentId, Object value, long rev, Policy policy, Boolean waitForSync, Mode mode) throws AvocadoException {
+		return updateDocument(createDocumentHandle(collectionName, documentId), value, rev, policy, waitForSync, mode);
+	}
+	public <T> DocumentEntity<T> updateDocument(String documentHandle, Object value, long rev, Policy policy, Boolean waitForSync, Mode mode) throws AvocadoException {
+		
+		validateDocumentHandle(documentHandle);
+		HttpResponseEntity res = httpManager.doPut(
+				baseUrl + "/document/" + documentHandle, 
+				new MapBuilder()
+					.put("rev", rev == -1 ? null : rev)
+					.put("waitForSync", waitForSync == null ? null : waitForSync.booleanValue())
+					.get(),
+				EntityFactory.toJsonString(value));
+		
+		try {
+			DocumentEntity<T> entity = createEntity(res, DocumentEntity.class);
+			return entity;
+		} catch (AvocadoException e) {
+			if (HttpManager.is404Error(e)) {
+				if (mode == null || mode == Mode.RETURN_NULL) {
+					return null;
+				}
+			}
+			throw e;
+		}
+		
+	}
+	
+	
+	public List<String> getDocuments(long collectionId) throws AvocadoException {
+		return getDocuments(String.valueOf(collectionId));
+	}
+	public List<String> getDocuments(String collectionName) throws AvocadoException {
+		
+		HttpResponseEntity res = httpManager.doGet(
+				baseUrl + "/document", 
+				new MapBuilder("collection", collectionName).get()
+				);
+		
+		DocumentsEntity entity = createEntity(res, DocumentsEntity.class);
+		return CollectionUtils.safety(entity.getDocuments());
+		
+	}
+	
+	
+	public long checkDocument(long collectionId, long documentId) throws AvocadoException {
+		return checkDocument(createDocumentHandle(collectionId, documentId));
+	}
+	public long checkDocument(String collectionName, long documentId) throws AvocadoException {
+		return checkDocument(createDocumentHandle(collectionName, documentId));
+	}
+	public long checkDocument(String documentHandle) throws AvocadoException {
+		
+		validateDocumentHandle(documentHandle);
+		HttpResponseEntity res = httpManager.doHead(
+				baseUrl + "/document/" + documentHandle,
+				null
+				);
+		
+		DefaultEntity entity = createEntity(res, DefaultEntity.class);
+		return entity.getEtag();
+		
+	}
+
+	public <T> DocumentEntity<T> getDocument(long collectionId, long documentId, Type type, Mode mode) throws AvocadoException {
+		return getDocument(createDocumentHandle(collectionId, documentId), type, mode);
+	}
+	public <T> DocumentEntity<T> getDocument(String collectionName, long documentId, Type type, Mode mode) throws AvocadoException {
+		return getDocument(createDocumentHandle(collectionName, documentId), type, mode);
+	}
+	public <T> DocumentEntity<T> getDocument(String documentHandle, Type type, Mode mode) throws AvocadoException {
+		
+		// TODO If-None-Match http-header
+		// TODO CAS
+		
+		validateDocumentHandle(documentHandle);
+		HttpResponseEntity res = httpManager.doGet(
+				baseUrl + "/document/" + documentHandle,
+				null);
+		
+		// TODO Case of StatusCode=304
+		
+		try {
+			T obj = createEntityImpl(res, type);
+			DocumentEntity<T> entity = createEntity(res, DocumentEntity.class);
+			if (entity == null) {
+				entity = new DocumentEntity<T>();
+			}
+			entity.setEntity(obj);
+			return entity;
+		} catch (AvocadoException e) {
+			// TODO 404
+			if (HttpManager.is404Error(e)) {
+				if (mode == null || mode == Mode.RETURN_NULL) {
+					return null;
+				}
+			}
+			throw e;
+		}
+	}
+
+	public DocumentEntity<?> deleteDocument(long collectionId, long documentId, long rev, Policy policy, Mode mode) throws AvocadoException {
+		return deleteDocument(createDocumentHandle(collectionId, documentId), rev, policy, mode);
+	}
+	public DocumentEntity<?> deleteDocument(String collectionName, long documentId, long rev, Policy policy, Mode mode) throws AvocadoException {
+		return deleteDocument(createDocumentHandle(collectionName, documentId), rev, policy, mode);
+	}
+	public DocumentEntity<?> deleteDocument(String documentHandle, long rev, Policy policy, Mode mode) throws AvocadoException {
+		
+		validateDocumentHandle(documentHandle);
+		HttpResponseEntity res = httpManager.doDelete(
+				baseUrl + "/document/" + documentHandle, 
+				new MapBuilder()
+				.put("rev", rev == -1 ? null : rev)
+				.put("policy", policy == null ? null : policy.name().toLowerCase(Locale.US))
+				.get());
+		
+		try {
+			DocumentEntity<?> entity = createEntity(res, DocumentEntity.class);
+			return entity;
+		} catch (AvocadoException e) {
+			if (HttpManager.is404Error(e)) {
+				if (mode == null || mode == Mode.RETURN_NULL) {
+					return null;
+				}
+			} else if (HttpManager.is412Error(e)) {
+				// TODO mode
+				return (DocumentEntity<?>) e.entity;
+			}
+			throw e;
+		}
+		
+	}
+	
+	// ---------------------------------------- end of document ----------------------------------------
+	
+
+	// ---------------------------------------- start of cursor ----------------------------------------
+
+	public CursorEntity<?> validateQuery(String query) throws AvocadoException {
+		
+		HttpResponseEntity res = httpManager.doPost(
+				baseUrl + "/_api/query", 
+				null,
+				EntityFactory.toJsonString(new MapBuilder("query", query).get())
+				);
+		try {
+			CursorEntity<?> entity = createEntity(res, CursorEntity.class);
+			return entity;
+		} catch (AvocadoException e) {
+			return (CursorEntity<?>) e.entity;
+		}
+		
+	}
+	
+	// ※Iteratorで綺麗に何回もRoundtripもしてくれる処理はClientのレイヤーで行う。
+	// ※ここでは単純にコールするだけ
+	
+	// TODO Mode
+	public <T> CursorEntity<T> executeQuery(
+			String query, Map<String, Object> bindVars,
+			Class<T> clazz,
+			Boolean calcCount, Integer batchSize) throws AvocadoException {
+		
+		HttpResponseEntity res = httpManager.doPost(
+				baseUrl + "/_api/cursor", 
+				null,
+				EntityFactory.toJsonString(
+						new MapBuilder()
+						.put("query", query)
+						.put("bindVars", bindVars == null ? Collections.emptyMap() : bindVars)
+						.put("count", calcCount)
+						.put("batchSize", batchSize)
+						.get())
+				);
+		try {
+			CursorEntity<T> entity = createEntity(res, CursorEntity.class);
+			// resultを処理する
+			EntityFactory.createResult(entity, clazz);
+			return entity;
+		} catch (AvocadoException e) {
+			// TODO
+			throw e;
+		}
+		
+	}
+	
+	// TODO Mode
+	public <T> CursorEntity<T> continueQuery(long cursorId, Class<T> clazz) throws AvocadoException {
+		
+		HttpResponseEntity res = httpManager.doPut(
+				baseUrl + "/_api/cursor/" + cursorId, 
+				null,
+				null
+				);
+		
+		try {
+			CursorEntity<T> entity = createEntity(res, CursorEntity.class);
+			// resultを処理する
+			EntityFactory.createResult(entity, clazz);
+			return entity;
+		} catch (AvocadoException e) {
+			// TODO
+			throw e;
+		}
+		
+	}
+	
+	// TODO Mode
+	public DefaultEntity finishQuery(long cursorId) throws AvocadoException {
+		HttpResponseEntity res = httpManager.doDelete(
+				baseUrl + "/_api/cursor/" + cursorId, 
+				null
+				);
+		
+		try {
+			DefaultEntity entity = createEntity(res, DefaultEntity.class);
+			return entity;
+		} catch (AvocadoException e) {
+			// TODO Mode
+			if (e.getErrorNumber() == 500) {
+				// 既に削除されている
+				return (DefaultEntity) e.entity;
+			}
+			throw e;
+		}
+	}
+	
+	// ---------------------------------------- end of cursor ----------------------------------------
+
+	// ---------------------------------------- kvs of index ----------------------------------------
+	
+	public KeyValueEntity createKeyValue(
+			String collectionName, String key, Object value, 
+			Map<String, Object> attributes, Date expiredDate,
+			Mode mode) throws AvocadoException {
+		
+		// TODO Sanitize Key
+		
+		validateCollectionName(collectionName);
+		HttpResponseEntity res = httpManager.doPost(
+				baseUrl + "/_api/key/" + collectionName + "/" + key, 
+				new MapBuilder()
+					.put("x-voc-expires", expiredDate == null ? null : DateUtils.format(expiredDate, "yyyy-MM-dd'T'HH:mm:ss'Z'"))
+					.put("x-voc-extended", attributes == null ? null : EntityFactory.toJsonString(attributes))
+					.get(),
+				null, 
+				EntityFactory.toJsonString(value));
+		
+		try {
+			KeyValueEntity entity = createEntity(res, KeyValueEntity.class);
+			return entity;
+		} catch (AvocadoException e) {
+			if (HttpManager.is404Error(e)) { // コレクションが存在しないか、キーが既に存在する。
+				if (mode == null || mode == Mode.RETURN_NULL) {
+					return null;
+				}
+			}
+			throw e;
+		}
+		
+	}
+	
+	// ---------------------------------------- kvs of index ----------------------------------------
+
+	
+	// ---------------------------------------- start of index ----------------------------------------
+
+	// ---------------------------------------- end of index ----------------------------------------
+
+	
+	
+	private String createDocumentHandle(long collectionId, long documentId) {
+		// validateCollectionNameは不要
+		return collectionId + "/" + documentId;
+	}
+
+	private String createDocumentHandle(String collectionName, long documentId) throws AvocadoException {
+		validateCollectionName(collectionName);
+		return collectionName + "/" + documentId;
+	}
+	
+	private void validateCollectionName(String name) throws AvocadoException {
+		if (name.indexOf('/') != -1) {
+			throw new AvocadoException("does not allow '/' in name.");
+		}
+	}
+	
+	private void validateDocumentHandle(String documentHandle) throws AvocadoException {
+		int pos = documentHandle.indexOf('/');
+		if (pos > 0) {
+			try {
+				String collectionName = documentHandle.substring(0, pos);
+				validateCollectionName(collectionName);
+				long collectionId = Long.parseLong(documentHandle.substring(pos + 1));
+				return;
+			} catch (Exception e) {
+			}
+		}
+		throw new AvocadoException("invalid format documentHandle:" + documentHandle);
+	}
+	
+	/**
+	 * HTTPレスポンスから指定した型へ変換する。
+	 * レスポンスがエラーであるかを確認して、エラーの場合は例外を投げる。
+	 * @param res
+	 * @param type
+	 * @return
+	 * @throws AvocadoException
+	 */
+	private <T extends BaseEntity> T createEntity(HttpResponseEntity res, Type type) throws AvocadoException {
+		T entity = createEntityImpl(res, type);
+		if (entity != null) {
+			entity.setStatusCode(res.getStatusCode());
+			if (entity.isError()) {
+				throw new AvocadoException(entity);
+			}
+		}
+		return entity;
+	}
+	private <T> T createEntityImpl(HttpResponseEntity res, Type type) throws AvocadoException {
+		T entity = EntityFactory.createEntity(res.getText(), type);
+		return entity;
+	}
+
+	public static enum Mode {
+		RETURN_NULL,
+		RETURN_ERROR_ENTITY,
+		RAISE_ERROR,
+		DUP_GET,
+		CREATE
+	}
+	
+}

@@ -155,12 +155,12 @@ public class AvocadoDriverCollectionTest extends BaseTest {
 	}
 	
 	@Test
-	public void test_getCollectionParameter_01() throws AvocadoException {
+	public void test_getCollectionProperties_01() throws AvocadoException {
 
 		CollectionEntity res1 = client.createCollection(collectionName, null, null);
 		assertThat(res1.getCode(), is(200));
 		
-		CollectionEntity collection = client.getCollectionParameter(collectionName, null);
+		CollectionEntity collection = client.getCollectionProperties(collectionName, null);
 		assertThat(collection.getCode(), is(200));
 		assertThat(collection.getId(), is(res1.getId()));
 		assertThat(collection.getName(), is(collectionName));
@@ -175,13 +175,13 @@ public class AvocadoDriverCollectionTest extends BaseTest {
 	 * @throws AvocadoException
 	 */
 	@Test
-	public void test_getCollectionParameter_404() throws AvocadoException {
+	public void test_getCollectionProperties_404() throws AvocadoException {
 
-		CollectionEntity collection = client.getCollectionParameter(collectionName404, null);
+		CollectionEntity collection = client.getCollectionProperties(collectionName404, null);
 		assertThat(collection, is(nullValue()));
 		
 		try {
-			client.getCollectionParameter(collectionName404, Mode.RAISE_ERROR);
+			client.getCollectionProperties(collectionName404, Mode.RAISE_ERROR);
 			fail("ここに来てはダメー！");
 		} catch (AvocadoException e) {
 			assertThat(e.getCode(), is(404));
@@ -408,7 +408,7 @@ public class AvocadoDriverCollectionTest extends BaseTest {
 	}
 	
 	@Test
-	public void test_setCollectionParameter() throws AvocadoException {
+	public void test_setCollectionProperties() throws AvocadoException {
 	
 		CollectionEntity collection = client.createCollection(collectionName, null, null);
 		assertThat(collection, is(notNullValue()));
@@ -416,20 +416,20 @@ public class AvocadoDriverCollectionTest extends BaseTest {
 		assertThat(collection.getWaitForSync(), is(Boolean.FALSE));
 		
 		// waitForSyncをFalseからTrueに設定
-		CollectionEntity col = client.setCollectionParameter(collectionName, true, null);
+		CollectionEntity col = client.setCollectionProperties(collectionName, true, null);
 		assertThat(col.getCode(), is(200));
 		assertThat(col.getWaitForSync(), is(Boolean.TRUE));
 	
 	}
 	
 	@Test
-	public void test_setCollectionParameter_404() throws AvocadoException {
+	public void test_setCollectionProperties_404() throws AvocadoException {
 		
-		CollectionEntity collection = client.setCollectionParameter(collectionName404, true, null);
+		CollectionEntity collection = client.setCollectionProperties(collectionName404, true, null);
 		assertThat(collection, is(nullValue()));
 		
 		try {
-			client.setCollectionParameter(collectionName404, true, Mode.RAISE_ERROR);
+			client.setCollectionProperties(collectionName404, true, Mode.RAISE_ERROR);
 			fail("ここに来てはダメー！");
 		} catch (AvocadoException e) {
 			assertThat(e.getCode(), is(404));

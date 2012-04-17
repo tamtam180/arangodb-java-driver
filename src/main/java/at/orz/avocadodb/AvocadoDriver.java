@@ -148,13 +148,13 @@ public class AvocadoDriver {
 		}
 	}
 	
-	public CollectionEntity getCollectionParameter(long id, Mode mode) throws AvocadoException {
-		return getCollectionParameter(String.valueOf(id), mode);
+	public CollectionEntity getCollectionProperties(long id, Mode mode) throws AvocadoException {
+		return getCollectionProperties(String.valueOf(id), mode);
 	}
-	public CollectionEntity getCollectionParameter(String name, Mode mode) throws AvocadoException {
+	public CollectionEntity getCollectionProperties(String name, Mode mode) throws AvocadoException {
 		validateCollectionName(name);
 		HttpResponseEntity res = httpManager.doGet(
-				baseUrl + "/_api/collection/" + name + "/parameter",
+				baseUrl + "/_api/collection/" + name + "/properties",
 				null);
 		try {
 			return createEntity(res, CollectionEntity.class);
@@ -293,14 +293,14 @@ public class AvocadoDriver {
 		
 	}
 	
-	public CollectionEntity setCollectionParameter(long id, boolean newWaitForSync, Mode mode) throws AvocadoException {
-		return setCollectionParameter(String.valueOf(id), newWaitForSync, mode);
+	public CollectionEntity setCollectionProperties(long id, boolean newWaitForSync, Mode mode) throws AvocadoException {
+		return setCollectionProperties(String.valueOf(id), newWaitForSync, mode);
 	}
-	public CollectionEntity setCollectionParameter(String name, boolean newWaitForSync, Mode mode) throws AvocadoException {
+	public CollectionEntity setCollectionProperties(String name, boolean newWaitForSync, Mode mode) throws AvocadoException {
 		
 		validateCollectionName(name);
 		HttpResponseEntity res = httpManager.doPut(
-				baseUrl + "/_api/collection/" + name + "/parameter",
+				baseUrl + "/_api/collection/" + name + "/properties",
 				null,
 				EntityFactory.toJsonString(
 						new MapBuilder("waitForSync", newWaitForSync).get()

@@ -1,4 +1,4 @@
-# first
+# at first
 !! This is a prototype version !!
 ※このプログラムはプロトタイプです。
 エラー処理とか全然書いていません。

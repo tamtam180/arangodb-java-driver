@@ -46,7 +46,111 @@ public class AvocadoConfigure {
 	public AvocadoConfigure() {
 		this.clinetPort = DEFAULT_CLIENT_PORT;
 		this.adminPort = DEFAULT_ADMIN_PORT;
+		this.maxPerConnection = DEFAULT_MAX_PER_CONNECTION;
+		this.maxTotalConnection = DEFAULT_MAX_CONNECTION;
 		this.host = DEFAULT_HOST;
 	}
+
+	public static String getDefaultHost() {
+		return DEFAULT_HOST;
+	}
+
+	public static int getDefaultClientPort() {
+		return DEFAULT_CLIENT_PORT;
+	}
+
+	public static int getDefaultAdminPort() {
+		return DEFAULT_ADMIN_PORT;
+	}
+
+	public static int getDefaultMaxPerConnection() {
+		return DEFAULT_MAX_PER_CONNECTION;
+	}
+
+	public static int getDefaultMaxConnection() {
+		return DEFAULT_MAX_CONNECTION;
+	}
+
+	public int getClinetPort() {
+		return clinetPort;
+	}
+
+	public int getAdminPort() {
+		return adminPort;
+	}
+
+	public String getHost() {
+		return host;
+	}
+
+	public int getConnectionTimeout() {
+		return connectionTimeout;
+	}
+
+	public int getTimeout() {
+		return timeout;
+	}
+
+	public boolean isAutoUnknownCollections() {
+		return autoUnknownCollections;
+	}
+
+	public int getMaxTotalConnection() {
+		return maxTotalConnection;
+	}
+
+	public int getMaxPerConnection() {
+		return maxPerConnection;
+	}
+
+	public String getProxyHost() {
+		return proxyHost;
+	}
+
+	public int getProxyPort() {
+		return proxyPort;
+	}
+
+	public void setClinetPort(int clinetPort) {
+		this.clinetPort = clinetPort;
+	}
+
+	public void setAdminPort(int adminPort) {
+		this.adminPort = adminPort;
+	}
+
+	public void setHost(String host) {
+		this.host = host;
+	}
+
+	public void setConnectionTimeout(int connectionTimeout) {
+		this.connectionTimeout = connectionTimeout;
+	}
+
+	public void setTimeout(int timeout) {
+		this.timeout = timeout;
+	}
+
+	public void setAutoUnknownCollections(boolean autoUnknownCollections) {
+		this.autoUnknownCollections = autoUnknownCollections;
+	}
+
+	public void setMaxTotalConnection(int maxTotalConnection) {
+		this.maxTotalConnection = maxTotalConnection;
+	}
+
+	public void setMaxPerConnection(int maxPerConnection) {
+		this.maxPerConnection = maxPerConnection;
+	}
+
+	public void setProxyHost(String proxyHost) {
+		this.proxyHost = proxyHost;
+	}
+
+	public void setProxyPort(int proxyPort) {
+		this.proxyPort = proxyPort;
+	}
+	
+	
 	
 }

@@ -1,7 +1,10 @@
 # at first
+
+ひとまず私がAvocadoDBをテストするために書いているものです。
+
 !! This is a prototype version !!
 ※このプログラムはプロトタイプです。
-エラー処理とか全然書いていません。
+エラー処理とかはまだまだ全然書いていません。
 
 # Avocado-Java-Driver
 

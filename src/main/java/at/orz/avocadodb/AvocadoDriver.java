@@ -638,10 +638,22 @@ public class AvocadoDriver {
 		}
 	}
 	
+	public <T> CursorResultSet<T> executeQueryWithResultSet(
+			String query, Map<String, Object> bindVars,
+			Class<T> clazz,
+			Boolean calcCount, Integer batchSize) throws AvocadoException {
+		
+		CursorEntity<T> entity = executeQuery(query, bindVars, clazz, calcCount, batchSize);
+		CursorResultSet<T> rs = new CursorResultSet<T>(this, clazz, entity);
+		return rs;
+		
+	}
+	
 	// ---------------------------------------- end of cursor ----------------------------------------
 
 	// ---------------------------------------- kvs of index ----------------------------------------
 	
+	@Deprecated
 	public KeyValueEntity createKeyValue(
 			String collectionName, String key, Object value, 
 			Map<String, Object> attributes, Date expiredDate,

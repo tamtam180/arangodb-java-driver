@@ -31,12 +31,18 @@ public class CursorResultSet<T> implements Iterable<T> {
 	private transient Class<T> clazz;
 	private transient CursorEntity<T> entity;
 	private transient int pos;
+	private int totalCount;
 	
 	CursorResultSet(AvocadoDriver driver, Class<T> clazz, CursorEntity<T> entity) {
 		this.driver = driver;
 		this.clazz = clazz;
 		this.entity = entity;
+		this.totalCount = entity == null ? 0 : entity.getCount();
 		this.pos = 0;
+	}
+	
+	public int getTotalCount() {
+		return totalCount;
 	}
 	
 	private void updateEntity() throws AvocadoException {

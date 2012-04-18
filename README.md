@@ -27,6 +27,9 @@ JDBC Driver
 
 ## 簡単な使い方
 
+クエリを発行して複数のDocumentをとるサンプルは
+Example1.javaを参照してください。
+
 ``` Java
   AvocadoConfigure configure = new AvocadoConfigure();
   AvocadoDriver client = new AvocadoDriver(configure);
@@ -55,18 +58,18 @@ JDBC Driver
 ## AvocadoJDBCDriver
 
 ## ライブラリの実装状況
-* AvocadoDriver (WORKING)
-** Base/Configure (WORKING)
-** Base/HTTP (DONE)
-** Base/ErrorCode (未着手)
-** REST/Collection (DONE)
-** REST/Document (DONE)
-** REST/Index
-** REST/Key
-** REST/Cursor
-** REST/Edge
-** UnitTest (WORKING)
-** JavaDoc (WORKING)
+    * AvocadoDriver (WORKING)
+    * Base/Configure (WORKING)
+    * Base/HTTP (DONE)
+    * Base/ErrorCode (未着手)
+    * REST/Collection (DONE)
+    * REST/Document (DONE)
+    * REST/Index
+    * REST/Key
+    * REST/Cursor
+    * REST/Edge
+    * UnitTest (WORKING)
+    * JavaDoc (WORKING)
 * AvocadoClient (未着手)
 * AvocadoJDBCDriver (未着手)
 * Document (未着手)

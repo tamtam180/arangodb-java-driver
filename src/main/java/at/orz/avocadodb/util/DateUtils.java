@@ -122,7 +122,7 @@ public class DateUtils {
 	
 	public static Date parse(String text, String format) throws ParseException { 
 		
-		SimpleDateFormat dateFormat = dateFormats.get().getDateFormat(format, Locale.US, TimeZone.getTimeZone("JST"));
+		SimpleDateFormat dateFormat = dateFormats.get().getDateFormat(format, Locale.US, TimeZone.getDefault());
 		Date date = dateFormat.parse(text);
 		return date;
 		
@@ -130,7 +130,7 @@ public class DateUtils {
 	
 	public static String format(Date date, String format) {
 
-		SimpleDateFormat dateFormat = dateFormats.get().getDateFormat(format, Locale.US, TimeZone.getTimeZone("JST"));
+		SimpleDateFormat dateFormat = dateFormats.get().getDateFormat(format, Locale.US, TimeZone.getDefault());
 		String text = dateFormat.format(date);
 		return text;
 		

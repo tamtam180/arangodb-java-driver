@@ -786,6 +786,13 @@ public class AvocadoDriver {
 	// ---------------------------------------- end of index ----------------------------------------
 
 	// ---------------------------------------- start of edge ----------------------------------------
+
+	public <T> EdgeEntity<T> createEdge(
+			long collectionId, 
+			String fromHandle, String toHandle, 
+			T attribute) throws AvocadoException {
+		return createEdge(String.valueOf(collectionId), fromHandle, toHandle, attribute);
+	}
 	
 	public <T> EdgeEntity<T> createEdge(
 			String collectionName, 
@@ -806,7 +813,6 @@ public class AvocadoDriver {
 				);
 		
 		try {
-			//T obj = createEntityImpl(res, attribute.getClass());
 			EdgeEntity<T> entity = createEntity(res, EdgeEntity.class);
 			return entity;
 		} catch (AvocadoException e) {
@@ -816,6 +822,7 @@ public class AvocadoDriver {
 	}
 
 	// TODO UpdateEdge
+	// TODO HEAD
 	
 	/**
 	 * エッジハンドルを指定して、エッジの情報を取得する。
@@ -844,6 +851,9 @@ public class AvocadoDriver {
 		
 	}
 
+	public EdgeEntity<?> deleteEdge(long collectionId, String edgeHandle) throws AvocadoException {
+		return deleteEdge(String.valueOf(collectionId), edgeHandle);
+	}
 	public EdgeEntity<?> deleteEdge(String collectionName, String edgeHandle) throws AvocadoException {
 		
 		validateDocumentHandle(edgeHandle);

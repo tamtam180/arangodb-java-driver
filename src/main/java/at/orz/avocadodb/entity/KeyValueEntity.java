@@ -20,6 +20,7 @@ package at.orz.avocadodb.entity;
  * @author tamtam180 - kirscheless at gmail.com
  *
  */
+@Deprecated
 public class KeyValueEntity extends BaseEntity {
 
 	boolean saved;

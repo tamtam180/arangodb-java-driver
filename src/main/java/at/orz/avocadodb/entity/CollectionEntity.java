@@ -18,8 +18,6 @@ package at.orz.avocadodb.entity;
 
 import java.io.Serializable;
 
-import com.google.gson.annotations.SerializedName;
-
 
 /**
  * @author tamtam180 - kirscheless at gmail.com

@@ -43,6 +43,8 @@ public class EntityFactory {
 			.registerTypeAdapter(DefaultEntity.class, new EntityDeserializers.DefaultEntityDeserializer())
 			.registerTypeAdapter(Figures.class, new EntityDeserializers.FiguresDeserializer())
 			.registerTypeAdapter(CursorEntity.class, new EntityDeserializers.CursorEntityDeserializer())
+			.registerTypeAdapter(IndexEntity.class, new EntityDeserializers.IndexEntityDeserializer())
+			.registerTypeAdapter(IndexesEntity.class, new EntityDeserializers.IndexesEntityDeserializer())
 			.create();
 	}
 	

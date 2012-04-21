@@ -17,7 +17,6 @@
 package at.orz.avocadodb;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -25,8 +24,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.apache.http.HttpStatus;
-
-import com.google.gson.reflect.TypeToken;
 
 import at.orz.avocadodb.entity.BaseEntity;
 import at.orz.avocadodb.entity.CollectionEntity;
@@ -36,6 +33,9 @@ import at.orz.avocadodb.entity.DefaultEntity;
 import at.orz.avocadodb.entity.DocumentEntity;
 import at.orz.avocadodb.entity.DocumentsEntity;
 import at.orz.avocadodb.entity.EntityFactory;
+import at.orz.avocadodb.entity.IndexEntity;
+import at.orz.avocadodb.entity.IndexType;
+import at.orz.avocadodb.entity.IndexesEntity;
 import at.orz.avocadodb.entity.KeyValueEntity;
 import at.orz.avocadodb.entity.Policy;
 import at.orz.avocadodb.entity.Version;
@@ -44,7 +44,6 @@ import at.orz.avocadodb.http.HttpResponseEntity;
 import at.orz.avocadodb.util.CollectionUtils;
 import at.orz.avocadodb.util.DateUtils;
 import at.orz.avocadodb.util.MapBuilder;
-import at.orz.avocadodb.util.StringUtils;
 
 /**
  * @author tamtam180 - kirscheless at gmail.com
@@ -689,10 +688,105 @@ public class AvocadoDriver {
 
 	
 	// ---------------------------------------- start of index ----------------------------------------
+	// IndexはModeなしにする。
 
+	public IndexEntity createIndex(long collectionId, IndexType type, boolean unique, String... fields) throws AvocadoException {
+		return createIndex(String.valueOf(collectionId), type, unique, fields);
+	}
+	public IndexEntity createIndex(String collectionName, IndexType type, boolean unique, String... fields) throws AvocadoException {
+		
+		if (type == IndexType.PRIMARY) {
+			throw new IllegalArgumentException("cannot create primary index.");
+		}
+		
+		validateCollectionName(collectionName);
+		HttpResponseEntity res = httpManager.doPost(
+				baseUrl + "/_api/index", 
+				new MapBuilder("collection", collectionName).get(),
+				EntityFactory.toJsonString(
+						new MapBuilder()
+						.put("type", type.name().toLowerCase(Locale.US))
+						.put("unique", unique)
+						.put("fields", fields)
+						.get()));
+		
+		// HTTP:200,201,404
+		
+		try {
+			IndexEntity entity = createEntity(res, IndexEntity.class);
+			return entity;
+		} catch (AvocadoException e) {
+			return null;
+		}
+		
+	}
+	
+	public IndexEntity deleteIndex(String indexHandle) throws AvocadoException {
+		
+		validateDocumentHandle(indexHandle); // 書式同じなので
+		HttpResponseEntity res = httpManager.doDelete(
+				baseUrl + "/_api/index/" + indexHandle, 
+				null);
+		
+		try {
+			IndexEntity entity = createEntity(res, IndexEntity.class);
+			return entity;
+		} catch (AvocadoException e) {
+			return null;
+		}
+		
+	}
+
+	public IndexEntity getIndex(long collectionId) throws AvocadoException {
+		return getIndex(String.valueOf(collectionId));
+	}
+	public IndexEntity getIndex(String collectionName) throws AvocadoException {
+		
+		validateCollectionName(collectionName);
+		HttpResponseEntity res = httpManager.doGet(
+				baseUrl + "/_api/index/" + collectionName);
+		
+		try {
+			IndexEntity entity = createEntity(res, IndexEntity.class);
+			return entity;
+		} catch (AvocadoException e) {
+			return null;
+		}
+		
+	}
+
+	public IndexesEntity getIndexes(long collectionId) throws AvocadoException {
+		return getIndexes(String.valueOf(collectionId));
+	}
+	public IndexesEntity getIndexes(String collectionName) throws AvocadoException {
+		
+		validateCollectionName(collectionName);
+		HttpResponseEntity res = httpManager.doGet(
+				baseUrl + "/_api/index",
+				new MapBuilder("collection", collectionName).get());
+		
+		try {
+			IndexesEntity entity = createEntity(res, IndexesEntity.class);
+			return entity;
+		} catch (AvocadoException e) {
+			return null;
+		}
+		
+	}
+	
+//	public IndexEntity deleteIndexByFields(long collectionId, String... fields) throws AvocadoException {
+//	}
+//	public IndexEntity deleteIndexByFields(String collectionName, String... fields) throws AvocadoException {
+//		
+//	}
+	
 	// ---------------------------------------- end of index ----------------------------------------
 
-	
+
+	// ---------------------------------------- start of xxx ----------------------------------------
+
+	// ---------------------------------------- end of xxx ----------------------------------------
+
 	
 	private String createDocumentHandle(long collectionId, long documentId) {
 		// validateCollectionNameは不要

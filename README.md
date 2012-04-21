@@ -58,10 +58,11 @@ Example1.javaを参照してください。
 ## AvocadoJDBCDriver
 
 ## ライブラリの実装状況
-    * AvocadoDriver (WORKING)
-    * Base/Configure (WORKING)
-    * Base/HTTP (DONE)
-    * Base/ErrorCode (未着手)
+* Base/Configure (WORKING)
+* Base/HTTP (DONE)
+* Base/ErrorCode (未着手)
+* Base/ServerLocator:複数ホストの対応(未着手)
+* AvocadoDriver (WORKING)
     * REST/Collection (DONE)
     * REST/Document (DONE)
     * REST/Index

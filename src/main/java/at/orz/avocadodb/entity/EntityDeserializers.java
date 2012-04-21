@@ -18,6 +18,7 @@ package at.orz.avocadodb.entity;
 
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import at.orz.avocadodb.entity.CollectionEntity.Figures;
@@ -282,5 +283,72 @@ public class EntityDeserializers {
 		}
 		
 	}
+
+	public static class IndexEntityDeserializer implements JsonDeserializer<IndexEntity> {
+		private Type fieldsType = new TypeToken<List<String>>(){}.getType();
+		public IndexEntity deserialize(JsonElement json, Type typeOfT,
+				JsonDeserializationContext context) throws JsonParseException {
+			
+			if (json.isJsonNull()) {
+				return null;
+			}
 	
+			JsonObject obj = json.getAsJsonObject();
+			IndexEntity entity = deserializeBaseParameter(obj, new IndexEntity());
+			
+			if (obj.has("id")) {
+				entity.id = obj.getAsJsonPrimitive("id").getAsString();
+			}
+			
+			if (obj.has("type")) {
+				entity.type = IndexType.valueOf(obj.getAsJsonPrimitive("type").getAsString().toUpperCase(Locale.US));
+			}
+
+			if (obj.has("fields")) {
+				entity.fields = context.deserialize(obj.getAsJsonArray("fields"), fieldsType);
+			}
+			
+			if (obj.has("getJson")) {
+				entity.getJson = obj.getAsJsonPrimitive("getJson").getAsBoolean();
+			}
+			
+			if (obj.has("isNewlyCreated")) {
+				entity.isNewlyCreated = obj.getAsJsonPrimitive("isNewlyCreated").getAsBoolean();
+			}
+
+			if (obj.has("unique")) {
+				entity.unique = obj.getAsJsonPrimitive("unique").getAsBoolean();
+			}
+			
+			return entity;
+		}
+	}
+
+	public static class IndexesEntityDeserializer implements JsonDeserializer<IndexesEntity> {
+		private Type indexesType = new TypeToken<List<IndexEntity>>(){}.getType();
+		private Type identifiersType = new TypeToken<Map<String, IndexEntity>>(){}.getType();
+		public IndexesEntity deserialize(JsonElement json,
+				Type typeOfT, JsonDeserializationContext context)
+				throws JsonParseException {
+
+			if (json.isJsonNull()) {
+				return null;
+			}
+			
+			JsonObject obj = json.getAsJsonObject();
+			IndexesEntity entity = deserializeBaseParameter(obj, new IndexesEntity());
+
+			if (obj.has("indexes")) {
+				entity.indexes = context.deserialize(obj.get("indexes"), indexesType);
+			}
+
+			if (obj.has("identifiers")) {
+				entity.identifiers = context.deserialize(obj.get("identifiers"), identifiersType);
+			}
+
+			return entity;
+		}
+		
+	}
+
 }

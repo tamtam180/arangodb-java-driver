@@ -14,31 +14,32 @@
  * limitations under the License.
  */
 
-package at.orz.avocadodb;
+package at.orz.avocadodb.entity;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+import java.util.List;
+import java.util.Map;
 
 /**
- * 全ての単体テストを実行する。
  * @author tamtam180 - kirscheless at gmail.com
  *
  */
-@RunWith(Suite.class)
-@SuiteClasses({
-	NegativeTest.class,
-	AvocadoDriverVersionTest.class,
-	PrimitiveDocumentTest.class,
-	AvocadoDriverDocumentTest.class,
-	AvocadoDriverCollectionTest.class,
-	MyTDD.class,
-	AvocadoDriverCursorTest.class,
-	AvocadoDriverCursorResultSetTest.class,
-	AvocadoDriverIndexTest.class,
-	AvocadoDriverKeyValueTest.class,
-	AvocadoDriverStoryTest.class
-})
-public class AvocadoTestSuite {
+public class IndexesEntity extends BaseEntity {
 
+	List<IndexEntity> indexes;
+	Map<String, IndexEntity> identifiers;
+	
+	public List<IndexEntity> getIndexes() {
+		return indexes;
+	}
+	public Map<String, IndexEntity> getIdentifiers() {
+		return identifiers;
+	}
+	public void setIndexes(List<IndexEntity> indexes) {
+		this.indexes = indexes;
+	}
+	public void setIdentifiers(Map<String, IndexEntity> identifiers) {
+		this.identifiers = identifiers;
+	}
+	
+	
 }

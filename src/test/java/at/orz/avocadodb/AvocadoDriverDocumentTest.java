@@ -54,7 +54,7 @@ public class AvocadoDriverDocumentTest extends BaseTest {
 		client.deleteCollection(collectionName404, null);
 
 		// 1と2は作る
-		col1 =  client.createCollection(collectionName, true, Mode.RAISE_ERROR);
+		col1 = client.createCollection(collectionName, false, Mode.RAISE_ERROR);
 		col2 = client.createCollection(collectionName2, true, Mode.RAISE_ERROR);
 		
 		logger.debug("--");
@@ -72,7 +72,7 @@ public class AvocadoDriverDocumentTest extends BaseTest {
 		// 適当にドキュメントを作る
 		for (int i = 0; i < 100; i++) {
 			TestComplexEntity01 value = new TestComplexEntity01("user-" + i, "説明:" + i, i);
-			client.createDocument(collectionName, value, null, true, Mode.RETURN_NULL);
+			client.createDocument(collectionName, value, null, false, Mode.RETURN_NULL);
 		}
 		
 		// 100個格納できていることを確認する

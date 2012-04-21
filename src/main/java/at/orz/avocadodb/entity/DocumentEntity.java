@@ -16,8 +16,6 @@
 
 package at.orz.avocadodb.entity;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
 
 
 /**
@@ -26,12 +24,8 @@ import com.google.gson.annotations.SerializedName;
  */
 public class DocumentEntity<T> extends BaseEntity {
 	
-	@SerializedName("_rev")
 	long documentRevision;
-	@SerializedName("_id")
 	String documentHandle;
-	
-	@Expose(deserialize=false)
 	T entity;
 	
 	public DocumentEntity() {

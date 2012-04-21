@@ -65,7 +65,7 @@ Example1.javaを参照してください。
 * AvocadoDriver (WORKING)
     * REST/Collection (DONE)
     * REST/Document (DONE)
-    * REST/Index
+    * REST/Index(DONE)
     * REST/Key
     * REST/Cursor
     * REST/Edge

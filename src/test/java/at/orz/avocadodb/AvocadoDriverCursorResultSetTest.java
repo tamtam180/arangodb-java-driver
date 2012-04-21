@@ -16,17 +16,14 @@
 
 package at.orz.avocadodb;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 import java.util.Map;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
-import at.orz.avocadodb.entity.CursorEntity;
-import at.orz.avocadodb.entity.DefaultEntity;
 import at.orz.avocadodb.util.MapBuilder;
 
 /**
@@ -142,6 +139,58 @@ public class AvocadoDriverCursorResultSetTest extends BaseTest {
 			count++;
 		}
 		assertThat(count, is(10));
+		
+	}
+
+	/**
+	 * Iterableを使わないバージョン。
+	 * @throws AvocadoException
+	 */
+	@Test
+	public void test6() throws AvocadoException {
+		
+		String query = "SELECT t FROM unit_test_query_test t WHERE t.age >= @age@ order by t.age";
+		Map<String, Object> bindVars = new MapBuilder().put("age", 90).get();
+		
+		CursorResultSet<TestComplexEntity01> rs = client.executeQueryWithResultSet(
+				query, bindVars, TestComplexEntity01.class, true, 2);
+		
+		int count = 0;
+		while (rs.hasNext()) {
+			TestComplexEntity01 obj = rs.next();
+			assertThat(obj.getAge(), is(90+count));
+			count++;
+		}
+		rs.close();
+		assertThat(count, is(10));
+		
+	}
+
+	/**
+	 * Iterableを使わないバージョン。
+	 * 途中で終了。
+	 * @throws AvocadoException
+	 */
+	@Test
+	public void test7() throws AvocadoException {
+		
+		String query = "SELECT t FROM unit_test_query_test t WHERE t.age >= @age@ order by t.age";
+		Map<String, Object> bindVars = new MapBuilder().put("age", 90).get();
+		
+		CursorResultSet<TestComplexEntity01> rs = client.executeQueryWithResultSet(
+				query, bindVars, TestComplexEntity01.class, true, 2);
+		
+		int count = 0;
+		while (rs.hasNext()) {
+			TestComplexEntity01 obj = rs.next();
+			assertThat(obj.getAge(), is(90+count));
+			count++;
+			if (count == 5) {
+				rs.close();
+				break;
+			}
+		}
+		assertThat(count, is(5));
 		
 	}
 

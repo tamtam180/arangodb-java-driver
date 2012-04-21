@@ -32,6 +32,7 @@ public class CursorResultSet<T> implements Iterable<T> {
 	private transient CursorEntity<T> entity;
 	private transient int pos;
 	private int totalCount;
+	private transient Iterator<T> itr;
 	
 	CursorResultSet(AvocadoDriver driver, Class<T> clazz, CursorEntity<T> entity) {
 		this.driver = driver;
@@ -39,6 +40,24 @@ public class CursorResultSet<T> implements Iterable<T> {
 		this.entity = entity;
 		this.totalCount = entity == null ? 0 : entity.getCount();
 		this.pos = 0;
+		this.itr = new CursorIterator();
+	}
+
+	public Iterator<T> iterator() {
+		return new CursorIterator();
+	}
+	
+	public boolean hasNext() {
+		return itr.hasNext();
+	}
+	
+	public T next() {
+		return itr.next();
+	}
+	
+	public void close() throws AvocadoException {
+		long cursorId = entity.getCursorId();
+		driver.finishQuery(cursorId);
 	}
 	
 	public int getTotalCount() {
@@ -49,10 +68,6 @@ public class CursorResultSet<T> implements Iterable<T> {
 		long cursorId = entity.getCursorId();
 		this.entity = driver.continueQuery(cursorId, this.clazz);
 		this.pos = 0;
-	}
-	
-	public Iterator<T> iterator() {
-		return new CursorIterator();
 	}
 	
 	public class CursorIterator implements Iterator<T> {

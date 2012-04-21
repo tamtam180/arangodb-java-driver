@@ -14,32 +14,14 @@
  * limitations under the License.
  */
 
-package at.orz.avocadodb;
-
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+package at.orz.avocadodb.entity;
 
 /**
- * 全ての単体テストを実行する。
  * @author tamtam180 - kirscheless at gmail.com
  *
  */
-@RunWith(Suite.class)
-@SuiteClasses({
-	MyTDD.class,
-	NegativeTest.class,
-	AvocadoDriverVersionTest.class,
-	PrimitiveDocumentTest.class,
-	AvocadoDriverDocumentTest.class,
-	AvocadoDriverCollectionTest.class,
-	AvocadoDriverCursorTest.class,
-	AvocadoDriverCursorResultSetTest.class,
-	AvocadoDriverIndexTest.class,
-	AvocadoDriverEdgeTest.class,
-	AvocadoDriverKeyValueTest.class,
-	AvocadoDriverStoryTest.class
-})
-public class AvocadoTestSuite {
-
+public enum Direction {
+	ANY,
+	IN,
+	OUT
 }

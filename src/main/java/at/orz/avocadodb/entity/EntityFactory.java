@@ -19,11 +19,13 @@ package at.orz.avocadodb.entity;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import at.orz.avocadodb.entity.CollectionEntity.Figures;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 
 /**
@@ -45,6 +47,8 @@ public class EntityFactory {
 			.registerTypeAdapter(CursorEntity.class, new EntityDeserializers.CursorEntityDeserializer())
 			.registerTypeAdapter(IndexEntity.class, new EntityDeserializers.IndexEntityDeserializer())
 			.registerTypeAdapter(IndexesEntity.class, new EntityDeserializers.IndexesEntityDeserializer())
+			.registerTypeAdapter(EdgeEntity.class, new EntityDeserializers.EdgeEntityDeserializer())
+			.registerTypeAdapter(EdgesEntity.class, new EntityDeserializers.EdgesEntityDeserializer())
 			.create();
 	}
 	
@@ -71,6 +75,30 @@ public class EntityFactory {
 	
 	public static <T> String toJsonString(T obj) {
 		return gson.toJson(obj);
+	}
+	
+	public static <T> EdgesEntity<T> createEdges(String jsonText, Class<T> clazz) {
+		EdgesEntity<T> edges = createEntity(jsonText, EdgesEntity.class);
+		edges.edges = createEdges(edges._edges, clazz);
+		edges._edges = null;
+		return edges;
+	}
+	private static <T> List<EdgeEntity<T>> createEdges(JsonArray array, Class<T> clazz) {
+		
+		if (array == null) {
+			return null;
+		}
+		
+		ArrayList<EdgeEntity<T>> edges = new ArrayList<EdgeEntity<T>>(array.size());
+		for (JsonElement elem: array) {
+			EdgeEntity<T> edge = gson.fromJson(elem, EdgeEntity.class);
+			if (clazz != null) {
+				edge.attributes = gson.fromJson(elem, clazz);
+			}
+			edges.add(edge);
+		}
+		
+		return edges;
 	}
 	
 }

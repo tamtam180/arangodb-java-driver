@@ -351,4 +351,56 @@ public class EntityDeserializers {
 		
 	}
 
+	public static class EdgeEntityDeserializer implements JsonDeserializer<EdgeEntity<?>> {
+		public EdgeEntity<?> deserialize(JsonElement json, Type typeOfT,
+				JsonDeserializationContext context) throws JsonParseException {
+			
+			if (json.isJsonNull()) {
+				return null;
+			}
+	
+			JsonObject obj = json.getAsJsonObject();
+			EdgeEntity<?> entity = deserializeBaseParameter(obj, new EdgeEntity<Object>());
+			
+			if (obj.has("_rev")) {
+				entity.revision = obj.getAsJsonPrimitive("_rev").getAsLong();
+			}
+			
+			if (obj.has("_id")) {
+				entity.edgeHandle = obj.getAsJsonPrimitive("_id").getAsString();
+			}
+			
+			if (obj.has("_from")) {
+				entity.fromHandle = obj.getAsJsonPrimitive("_from").getAsString();
+			}
+			
+			if (obj.has("_to")) {
+				entity.toHandle = obj.getAsJsonPrimitive("_to").getAsString();
+			}
+			
+			// attributeは処理しない
+			
+			return entity;
+		}
+	}
+
+	public static class EdgesEntityDeserializer implements JsonDeserializer<EdgesEntity<?>> {
+		public EdgesEntity<?> deserialize(JsonElement json, Type typeOfT,
+				JsonDeserializationContext context) throws JsonParseException {
+			
+			if (json.isJsonNull()) {
+				return null;
+			}
+	
+			JsonObject obj = json.getAsJsonObject();
+			EdgesEntity<?> entity = deserializeBaseParameter(obj, new EdgesEntity<Object>());
+			if (obj.has("edges")) {
+				entity._edges = obj.getAsJsonArray("edges");
+			}
+			
+			return entity;
+		}
+	}
+
+	
 }

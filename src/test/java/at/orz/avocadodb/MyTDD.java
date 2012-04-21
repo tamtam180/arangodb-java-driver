@@ -16,11 +16,8 @@
 
 package at.orz.avocadodb;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
-
-import java.util.Map;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -28,13 +25,10 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.reflect.TypeToken;
+import at.orz.avocadodb.entity.EdgesEntity;
+import at.orz.avocadodb.entity.EntityFactory;
 
-import at.orz.avocadodb.AvocadoDriver.Mode;
-import at.orz.avocadodb.entity.CollectionEntity;
-import at.orz.avocadodb.entity.CollectionsEntity;
-import at.orz.avocadodb.entity.DocumentEntity;
-import at.orz.avocadodb.entity.Version;
+import com.google.gson.Gson;
 
 /**
  * UnitTest for {@link AvocadoDriver}.
@@ -71,6 +65,11 @@ public class MyTDD {
 			this.age = age;
 		}
 	}
+
+	public static class TestAA {
+		public String a;
+		public int b;
+	}
 	
 	@Test
 	public void for_tdd() throws Exception {
@@ -102,6 +101,16 @@ public class MyTDD {
 //		System.out.println(x.getEntity());
 //		
 	}
-	
+
+	@Test
+	public void test1() {
+		
+		String jsonText = "{\"edges\":[{\"_id\":\"1506327903/1514126687\",\"_rev\":1514126687,\"_from\":\"1506327903/1513471327\",\"_to\":\"1506327903/1513536863\",\"b\":100,\"a\":\"edge1\"},{\"_id\":\"1506327903/1514192223\",\"_rev\":1514192223,\"_from\":\"1506327903/1513471327\",\"_to\":\"1506327903/1513602399\",\"b\":200,\"a\":\"edge2\"}],\"error\":false,\"code\":200}";
+		
+		EdgesEntity<TestAA> e = EntityFactory.createEdges(jsonText, TestAA.class);
+		System.out.println(new Gson().toJson(e));
+		
+	}
+
 	
 }

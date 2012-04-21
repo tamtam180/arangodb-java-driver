@@ -30,8 +30,11 @@ import at.orz.avocadodb.entity.CollectionEntity;
 import at.orz.avocadodb.entity.CollectionsEntity;
 import at.orz.avocadodb.entity.CursorEntity;
 import at.orz.avocadodb.entity.DefaultEntity;
+import at.orz.avocadodb.entity.Direction;
 import at.orz.avocadodb.entity.DocumentEntity;
 import at.orz.avocadodb.entity.DocumentsEntity;
+import at.orz.avocadodb.entity.EdgeEntity;
+import at.orz.avocadodb.entity.EdgesEntity;
 import at.orz.avocadodb.entity.EntityFactory;
 import at.orz.avocadodb.entity.IndexEntity;
 import at.orz.avocadodb.entity.IndexType;
@@ -782,6 +785,106 @@ public class AvocadoDriver {
 	
 	// ---------------------------------------- end of index ----------------------------------------
 
+	// ---------------------------------------- start of edge ----------------------------------------
+	
+	public <T> EdgeEntity<T> createEdge(
+			String collectionName, 
+			String fromHandle, String toHandle, 
+			T attribute) throws AvocadoException {
+		
+		validateCollectionName(collectionName);
+		validateDocumentHandle(fromHandle);
+		validateDocumentHandle(toHandle);
+		HttpResponseEntity res = httpManager.doPost(
+				baseUrl + "/edge", 
+				new MapBuilder()
+					.put("collection", collectionName)
+					.put("from", fromHandle)
+					.put("to", toHandle)
+					.get(), 
+				EntityFactory.toJsonString(attribute)
+				);
+		
+		try {
+			//T obj = createEntityImpl(res, attribute.getClass());
+			EdgeEntity<T> entity = createEntity(res, EdgeEntity.class);
+			return entity;
+		} catch (AvocadoException e) {
+			return null;
+		}
+		
+	}
+
+	// TODO UpdateEdge
+	
+	/**
+	 * エッジハンドルを指定して、エッジの情報を取得する。
+	 * @param edgeHandle
+	 * @param attributeClass
+	 * @return
+	 * @throws AvocadoException
+	 */
+	public <T> EdgeEntity<T> getEdge(String edgeHandle, Class<T> attributeClass) throws AvocadoException {
+		
+		validateDocumentHandle(edgeHandle);
+		HttpResponseEntity res = httpManager.doGet(
+				baseUrl + "/edge/" + edgeHandle
+				);
+		
+		try {
+			EdgeEntity<T> entity = createEntity(res, EdgeEntity.class);
+			if (entity != null) {
+				T obj = createEntityImpl(res, attributeClass);
+				entity.setAttributes(obj);
+			}
+			return entity;
+		} catch (AvocadoException e) {
+			return null;
+		}
+		
+	}
+
+	public EdgeEntity<?> deleteEdge(String collectionName, String edgeHandle) throws AvocadoException {
+		
+		validateDocumentHandle(edgeHandle);
+		HttpResponseEntity res = httpManager.doDelete(
+				baseUrl + "/edge/" + edgeHandle,
+				null);
+		
+		try {
+			EdgeEntity<?> entity = createEntity(res, EdgeEntity.class);
+			return entity;
+		} catch (AvocadoException e) {
+			return null;
+		}
+		
+	}
+	
+	public <T> EdgesEntity<T> getEdges(String collectionName, String vertexHandle, Direction direction, Class<T> edgeAttributeClass) throws AvocadoException {
+		
+		validateCollectionName(collectionName);
+		validateDocumentHandle(vertexHandle);
+		HttpResponseEntity res = httpManager.doGet(
+				baseUrl + "/edges/" + collectionName, 
+				new MapBuilder()
+					.put("vertex", vertexHandle)
+					.put("direction", direction.name().toLowerCase(Locale.US))
+					.get()
+				);
+		
+		try {
+			EdgesEntity<T> entity = EntityFactory.createEdges(res.getText(), edgeAttributeClass);
+			validateAndSetStatusCode(res, entity);
+			return entity;
+		} catch (AvocadoException e) {
+			return null;
+		}
+		
+	}
+	
+	
+	// ---------------------------------------- end of edge ----------------------------------------
+
 
 	// ---------------------------------------- start of xxx ----------------------------------------
 
@@ -828,13 +931,16 @@ public class AvocadoDriver {
 	 */
 	private <T extends BaseEntity> T createEntity(HttpResponseEntity res, Type type) throws AvocadoException {
 		T entity = createEntityImpl(res, type);
+		validateAndSetStatusCode(res, entity);
+		return entity;
+	}
+	private void validateAndSetStatusCode(HttpResponseEntity res, BaseEntity entity) throws AvocadoException {
 		if (entity != null) {
 			entity.setStatusCode(res.getStatusCode());
 			if (entity.isError()) {
 				throw new AvocadoException(entity);
 			}
 		}
-		return entity;
 	}
 	private <T> T createEntityImpl(HttpResponseEntity res, Type type) throws AvocadoException {
 		T entity = EntityFactory.createEntity(res.getText(), type);

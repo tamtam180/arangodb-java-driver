@@ -259,14 +259,14 @@ public class AvocadoDriverIndexTest extends BaseTest {
 	
 	/**
 	 * ユニークインデックスの列が重複した場合。
-	 * まだ未実装中らしい。
+	 * TODO: あとで
 	 * @throws AvocadoException
 	 */
 	@Test
 	@Ignore
 	public void test_create_hash_index_dup_unique() throws AvocadoException {
 		
-		IndexEntity entity = client.createIndex(collectionName, IndexType.HASH, true, "name", "age");
+		IndexEntity entity = client.createIndex(collectionName, IndexType.HASH, true, "user", "age");
 
 		assertThat(client.createDocument(collectionName, new TestComplexEntity01("寿司天ぷら", "", 18), false, false, null), is(notNullValue()));
 		assertThat(client.createDocument(collectionName, new TestComplexEntity01("寿司天ぷら", "", 18), false, false, null), is(notNullValue()));

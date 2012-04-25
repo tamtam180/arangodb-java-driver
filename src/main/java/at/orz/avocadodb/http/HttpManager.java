@@ -238,12 +238,10 @@ public class HttpManager {
 			
 		} catch (ClientProtocolException e) {
 			// TODO
-			throw new AvocadoException();
-			//throw new JYahooException(ErrorCode.HTTP_PROTOCOL_ERROR, e);
+			throw new AvocadoException(e);
 		} catch (IOException e) {
 			// TODO
-			throw new AvocadoException();
-			//throw new JYahooException(ErrorCode.IO_ERROR, e);
+			throw new AvocadoException(e);
 		}
 		
 	}

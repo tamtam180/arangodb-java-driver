@@ -171,5 +171,14 @@ public class AvocadoDriverDocumentTest extends BaseTest {
 		
 	}
 
+	// TODO Delete
+	@Test
+	public void test_checkDocument() throws AvocadoException {
+
+		DocumentEntity<String> doc = client.createDocument(collectionName, "xx", null, false, Mode.RETURN_NULL);
+
+		client.checkDocument(doc.getDocumentHandle());
+		
+	}
 	
 }

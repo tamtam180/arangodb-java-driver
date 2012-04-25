@@ -117,6 +117,13 @@ public class AvocadoDriverEdgeTest extends BaseTest {
 		assertThat(edges2.size(), is(1));
 		assertThat(edges2.get(0).getAttributes().a, is("edge1"));
 		
+		// head
+		long etag = client.checkEdge(edge1.getEdgeHandle());
+		assertThat(etag, is(not(0L)));
+		
 	}
+
+	// TODO テストを分離する
+	// TODO UpdateEdgeのテストを追加する
 	
 }

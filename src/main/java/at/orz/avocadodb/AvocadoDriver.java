@@ -47,6 +47,7 @@ import at.orz.avocadodb.http.HttpResponseEntity;
 import at.orz.avocadodb.util.CollectionUtils;
 import at.orz.avocadodb.util.DateUtils;
 import at.orz.avocadodb.util.MapBuilder;
+import at.orz.avocadodb.util.ReflectionUtils;
 
 /**
  * @author tamtam180 - kirscheless at gmail.com
@@ -476,13 +477,13 @@ public class AvocadoDriver {
 		
 	}
 
-	public <T> DocumentEntity<T> getDocument(long collectionId, long documentId, Type type, Mode mode) throws AvocadoException {
-		return getDocument(createDocumentHandle(collectionId, documentId), type, mode);
+	public <T> DocumentEntity<T> getDocument(long collectionId, long documentId, Class<T> clazz, Mode mode) throws AvocadoException {
+		return getDocument(createDocumentHandle(collectionId, documentId), clazz, mode);
 	}
-	public <T> DocumentEntity<T> getDocument(String collectionName, long documentId, Type type, Mode mode) throws AvocadoException {
-		return getDocument(createDocumentHandle(collectionName, documentId), type, mode);
+	public <T> DocumentEntity<T> getDocument(String collectionName, long documentId, Class<T> clazz, Mode mode) throws AvocadoException {
+		return getDocument(createDocumentHandle(collectionName, documentId), clazz, mode);
 	}
-	public <T> DocumentEntity<T> getDocument(String documentHandle, Type type, Mode mode) throws AvocadoException {
+	public <T> DocumentEntity<T> getDocument(String documentHandle, Class<T> clazz, Mode mode) throws AvocadoException {
 		
 		// TODO If-None-Match http-header
 		// TODO CAS
@@ -495,7 +496,7 @@ public class AvocadoDriver {
 		// TODO Case of StatusCode=304
 		
 		try {
-			T obj = createEntityImpl(res, type);
+			T obj = createEntityImpl(res, clazz);
 			DocumentEntity<T> entity = createEntity(res, DocumentEntity.class);
 			if (entity == null) {
 				entity = new DocumentEntity<T>();
@@ -822,7 +823,45 @@ public class AvocadoDriver {
 	}
 
 	// TODO UpdateEdge
-	// TODO HEAD
+	public <T> EdgeEntity<T> updateEdge(
+			String collectionName, 
+			String fromHandle, String toHandle, 
+			T attribute) throws AvocadoException {
+		
+		validateCollectionName(collectionName);
+		validateDocumentHandle(fromHandle);
+		validateDocumentHandle(toHandle);
+		HttpResponseEntity res = httpManager.doPut(
+				baseUrl + "/edge", 
+				new MapBuilder()
+					.put("collection", collectionName)
+					.put("from", fromHandle)
+					.put("to", toHandle)
+					.get(), 
+				EntityFactory.toJsonString(attribute)
+				);
+		
+		try {
+			EdgeEntity<T> entity = createEntity(res, EdgeEntity.class);
+			return entity;
+		} catch (AvocadoException e) {
+			return null;
+		}
+		
+	}
+	
+	public long checkEdge(String edgeHandle) throws AvocadoException {
+		
+		validateDocumentHandle(edgeHandle);
+		HttpResponseEntity res = httpManager.doHead(
+				baseUrl + "/edge/" + edgeHandle,
+				null
+				);
+		
+		EdgeEntity<?> entity = createEntity(res, EdgeEntity.class);
+		return entity.getEtag();
+
+	}
 	
 	/**
 	 * エッジハンドルを指定して、エッジの情報を取得する。
@@ -939,21 +978,27 @@ public class AvocadoDriver {
 	 * @return
 	 * @throws AvocadoException
 	 */
-	private <T extends BaseEntity> T createEntity(HttpResponseEntity res, Type type) throws AvocadoException {
-		T entity = createEntityImpl(res, type);
+	private <T extends BaseEntity> T createEntity(HttpResponseEntity res, Class<T> clazz) throws AvocadoException {
+		T entity = createEntityImpl(res, clazz);
+		if (entity == null) {
+			entity = ReflectionUtils.newInstance(clazz);
+		}
 		validateAndSetStatusCode(res, entity);
 		return entity;
 	}
 	private void validateAndSetStatusCode(HttpResponseEntity res, BaseEntity entity) throws AvocadoException {
 		if (entity != null) {
+			if (res.getEtag() > 0) {
+				entity.setEtag(res.getEtag());
+			}
 			entity.setStatusCode(res.getStatusCode());
 			if (entity.isError()) {
 				throw new AvocadoException(entity);
 			}
 		}
 	}
-	private <T> T createEntityImpl(HttpResponseEntity res, Type type) throws AvocadoException {
-		T entity = EntityFactory.createEntity(res.getText(), type);
+	private <T> T createEntityImpl(HttpResponseEntity res, Class<T> clazz) throws AvocadoException {
+		T entity = EntityFactory.createEntity(res.getText(), clazz);
 		return entity;
 	}
 

@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-package at.orz.avocadodb;
+package at.orz.avocadodb.example;
 
 import java.util.HashMap;
 
-import at.orz.avocadodb.util.MapBuilder;
+import at.orz.avocadodb.AvocadoConfigure;
+import at.orz.avocadodb.AvocadoDriver;
+import at.orz.avocadodb.AvocadoException;
+import at.orz.avocadodb.CursorResultSet;
 
 /**
  * @author tamtam180 - kirscheless at gmail.com

@@ -23,6 +23,7 @@ package at.orz.avocadodb.entity;
 public enum IndexType {
 	
 	PRIMARY,
+	CAP,
 	GEO,
 	HASH,
 	SKIPLIST

@@ -320,6 +320,10 @@ public class EntityDeserializers {
 				entity.unique = obj.getAsJsonPrimitive("unique").getAsBoolean();
 			}
 			
+			if (obj.has("size")) {
+				entity.size = obj.getAsJsonPrimitive("size").getAsInt();
+			}
+			
 			return entity;
 		}
 	}

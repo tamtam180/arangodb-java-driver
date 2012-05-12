@@ -282,6 +282,36 @@ public class AvocadoDriverIndexTest extends BaseTest {
 	}
 
 	@Test
+	public void test_create_cap_index() throws AvocadoException {
+		
+		IndexEntity entity = client.createCappedIndex(collectionName, 10);
+
+		assertThat(entity, is(notNullValue()));
+		assertThat(entity.getCode(), is(201));
+		assertThat(entity.isError(), is(false));
+		assertThat(entity.isNewlyCreated(), is(true));
+		assertThat(entity.getSize(), is(10));
+		assertThat(entity.getId(), is(notNullValue()));
+		assertThat(entity.getType(), is(IndexType.CAP));
+		
+		// 確認
+		///client.getIndex(entity.getId());
+		
+	}
+
+	@Test
+	public void test_create_cap_index_404() throws AvocadoException {
+		
+		IndexEntity entity = client.createCappedIndex(collectionName404, 10);
+
+		assertThat(entity, is(nullValue()));
+		//assertThat(entity.getCode(), is(404));
+		//assertThat(entity.getErrorNumber(), is(1203));
+		
+	}
+
+	
+	@Test
 	public void test_getIndexes() throws AvocadoException {
 		
 		IndexEntity entity = client.createIndex(collectionName, IndexType.HASH, true, "name", "age");

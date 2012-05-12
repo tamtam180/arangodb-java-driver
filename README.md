@@ -3,6 +3,7 @@
 ひとまず私がAvocadoDBをテストするために書いているものです。
 
 !! This is a prototype version !!
+
 ※このプログラムはプロトタイプです。
 エラー処理とかはまだまだ全然書いていません。
 
@@ -62,13 +63,16 @@ Example1.javaを参照してください。
 * Base/HTTP (DONE)
 * Base/ErrorCode (未着手)
 * Base/ServerLocator:複数ホストの対応(未着手)
+* Base/ErrorHandling (未着手)
 * AvocadoDriver (WORKING)
     * REST/Collection (DONE)
     * REST/Document (DONE)
-    * REST/Index(DONE)
+    * REST/Index (DONE)
     * REST/Key
-    * REST/Cursor
-    * REST/Edge
+    * REST/Cursor (DONE)
+    * REST/Edge (DONE)
+    * REST/Graph
+    * REST/Admin
     * UnitTest (WORKING)
     * JavaDoc (WORKING)
 * AvocadoClient (未着手)

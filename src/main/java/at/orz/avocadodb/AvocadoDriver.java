@@ -654,7 +654,7 @@ public class AvocadoDriver {
 	
 	// ---------------------------------------- end of cursor ----------------------------------------
 
-	// ---------------------------------------- kvs of index ----------------------------------------
+	// ---------------------------------------- start of kvs ----------------------------------------
 	
 	@Deprecated
 	public KeyValueEntity createKeyValue(
@@ -688,7 +688,7 @@ public class AvocadoDriver {
 		
 	}
 	
-	// ---------------------------------------- kvs of index ----------------------------------------
+	// ---------------------------------------- end of kvs ----------------------------------------
 
 	
 	// ---------------------------------------- start of index ----------------------------------------
@@ -701,6 +701,9 @@ public class AvocadoDriver {
 		
 		if (type == IndexType.PRIMARY) {
 			throw new IllegalArgumentException("cannot create primary index.");
+		}
+		if (type == IndexType.CAP) {
+			throw new IllegalArgumentException("cannot create cap index. use createCappedIndex.");
 		}
 		
 		validateCollectionName(collectionName);
@@ -723,6 +726,31 @@ public class AvocadoDriver {
 			return null;
 		}
 		
+	}
+
+	public IndexEntity createCappedIndex(long collectionId, int size) throws AvocadoException {
+		return createCappedIndex(String.valueOf(collectionId), size);
+	}
+	public IndexEntity createCappedIndex(String collectionName, int size) throws AvocadoException {
+		
+		validateCollectionName(collectionName);
+		HttpResponseEntity res = httpManager.doPost(
+				baseUrl + "/_api/index", 
+				new MapBuilder("collection", collectionName).get(),
+				EntityFactory.toJsonString(
+						new MapBuilder()
+						.put("type", IndexType.CAP.name().toLowerCase(Locale.US))
+						.put("size", size)
+						.get()));
+		
+		// HTTP:200,201,404
+		
+		try {
+			IndexEntity entity = createEntity(res, IndexEntity.class);
+			return entity;
+		} catch (AvocadoException e) {
+			return null;
+		}
 	}
 	
 	public IndexEntity deleteIndex(String indexHandle) throws AvocadoException {

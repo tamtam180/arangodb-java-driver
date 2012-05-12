@@ -30,6 +30,7 @@ public class IndexEntity extends BaseEntity {
 	boolean getJson;
 	boolean isNewlyCreated;
 	boolean unique;
+	int size;
 	
 	public String getId() {
 		return id;
@@ -49,6 +50,9 @@ public class IndexEntity extends BaseEntity {
 	public boolean isUnique() {
 		return unique;
 	}
+	public int getSize() {
+		return size;
+	}
 	public void setId(String id) {
 		this.id = id;
 	}
@@ -66,6 +70,9 @@ public class IndexEntity extends BaseEntity {
 	}
 	public void setUnique(boolean unique) {
 		this.unique = unique;
+	}
+	public void setSize(int size) {
+		this.size = size;
 	}
 	
 }

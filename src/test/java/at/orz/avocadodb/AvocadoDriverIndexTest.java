@@ -294,8 +294,31 @@ public class AvocadoDriverIndexTest extends BaseTest {
 		assertThat(entity.getId(), is(notNullValue()));
 		assertThat(entity.getType(), is(IndexType.CAP));
 		
-		// 確認
-		///client.getIndex(entity.getId());
+		// 確認 ピンポイントで取得
+		IndexEntity entity2 = client.getIndex(entity.getId());
+		assertThat(entity2.getCode(), is(200));
+		assertThat(entity2.isError(), is(false));
+		assertThat(entity2.isNewlyCreated(), is(false));
+		assertThat(entity2.getSize(), is(10));
+		assertThat(entity2.getId(), is(entity.getId()));
+		assertThat(entity2.getType(), is(IndexType.CAP));
+		
+		// 確認 インデックス一覧を取得
+		IndexesEntity indexes = client.getIndexes(collectionName);
+		assertThat(indexes.getCode(), is(200));
+		assertThat(indexes.isError(), is(false));
+		assertThat(indexes.getIndexes().size(), is(2));
+		
+		String pkHandle = col1.getId() + "/0";
+		IndexEntity pk = indexes.getIdentifiers().get(pkHandle);
+		assertThat(pk.getType(), is(IndexType.PRIMARY));
+		assertThat(pk.getFields().size(), is(1));
+		assertThat(pk.getFields().get(0), is("_id"));
+		
+		IndexEntity idx1 = indexes.getIdentifiers().get(entity.getId());
+		assertThat(idx1.getType(), is(IndexType.CAP));
+		assertThat(idx1.getFields(), is(nullValue()));
+		assertThat(idx1.getSize(), is(10));
 		
 	}
 

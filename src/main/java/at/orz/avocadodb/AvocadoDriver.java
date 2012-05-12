@@ -769,14 +769,11 @@ public class AvocadoDriver {
 		
 	}
 
-	public IndexEntity getIndex(long collectionId) throws AvocadoException {
-		return getIndex(String.valueOf(collectionId));
-	}
-	public IndexEntity getIndex(String collectionName) throws AvocadoException {
+	public IndexEntity getIndex(String indexHandle) throws AvocadoException {
 		
-		validateCollectionName(collectionName);
+		validateDocumentHandle(indexHandle);
 		HttpResponseEntity res = httpManager.doGet(
-				baseUrl + "/_api/index/" + collectionName);
+				baseUrl + "/_api/index/" + indexHandle);
 		
 		try {
 			IndexEntity entity = createEntity(res, IndexEntity.class);

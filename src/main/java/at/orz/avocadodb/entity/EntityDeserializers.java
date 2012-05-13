@@ -301,7 +301,12 @@ public class EntityDeserializers {
 			}
 			
 			if (obj.has("type")) {
-				entity.type = IndexType.valueOf(obj.getAsJsonPrimitive("type").getAsString().toUpperCase(Locale.US));
+				String type = obj.getAsJsonPrimitive("type").getAsString().toUpperCase(Locale.US);
+				if (type.startsWith("GEO")) {
+					entity.type = IndexType.GEO;
+				} else {
+					entity.type = IndexType.valueOf(type);
+				}
 			}
 
 			if (obj.has("fields")) {

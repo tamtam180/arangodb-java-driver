@@ -302,7 +302,7 @@ public class EntityDeserializers {
 			
 			if (obj.has("type")) {
 				String type = obj.getAsJsonPrimitive("type").getAsString().toUpperCase(Locale.US);
-				if (type.startsWith("GEO")) {
+				if (type.startsWith(IndexType.GEO.name())) {
 					entity.type = IndexType.GEO;
 				} else {
 					entity.type = IndexType.valueOf(type);

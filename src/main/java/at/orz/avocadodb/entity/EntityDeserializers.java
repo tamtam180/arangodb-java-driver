@@ -508,7 +508,6 @@ public class EntityDeserializers {
 			JsonObject obj = json.getAsJsonObject();
 			AdminConfigurationEntity entity = deserializeBaseParameter(obj, new AdminConfigurationEntity());
 			
-			context.deserialize(obj, Map.class);
 			convertMap(context, entity, null, obj);
 
 			return entity;

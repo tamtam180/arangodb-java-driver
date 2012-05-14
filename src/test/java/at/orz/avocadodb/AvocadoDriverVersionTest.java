@@ -36,8 +36,8 @@ public class AvocadoDriverVersionTest extends BaseTest {
 		Version version = client.getVersion();
 		
 		assertThat(version, is(notNullValue()));
-		assertThat(version.getServer(), is("avocado"));
-		assertThat(version.getVersion(), is("0.4.0")); // FIXME 固定はよくないね
+		assertThat(version.getServer(), is("arango"));
+		assertThat(version.getVersion(), is("0.5.0")); // FIXME 固定はよくないね
 		
 	}
 	

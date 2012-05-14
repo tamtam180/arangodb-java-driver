@@ -509,12 +509,12 @@ public class EntityDeserializers {
 			AdminConfigurationEntity entity = deserializeBaseParameter(obj, new AdminConfigurationEntity());
 			
 			context.deserialize(obj, Map.class);
-			convertMap(entity, null, obj);
+			convertMap(context, entity, null, obj);
 
 			return entity;
 		}
 		
-		private void convertMap(AdminConfigurationEntity entity, String prefixKey, JsonObject obj) {
+		private void convertMap(JsonDeserializationContext context, AdminConfigurationEntity entity, String prefixKey, JsonObject obj) {
 			
 			for (Entry<String, JsonElement> entry : obj.entrySet()) {
 				String key = entry.getKey();
@@ -523,25 +523,32 @@ public class EntityDeserializers {
 				if (value.isJsonObject()) {
 					JsonObject childObj = value.getAsJsonObject();
 					if (childObj.has("value")) {
-						JsonPrimitive prim = childObj.getAsJsonPrimitive("value");
-						if (prim.isNumber()) {
-							entity.put(actualKey, prim.getAsNumber());
-						} else if (prim.isBoolean()) {
-							entity.put(actualKey, prim.getAsBoolean());
-						} else if (prim.isString()) {
-							entity.put(actualKey, prim.getAsString());
-						} else if (prim.isJsonNull()) {
+						if (childObj.isJsonPrimitive()) {
+							JsonPrimitive prim = childObj.getAsJsonPrimitive("value");
+							if (prim.isNumber()) {
+								entity.put(actualKey, prim.getAsNumber());
+							} else if (prim.isBoolean()) {
+								entity.put(actualKey, prim.getAsBoolean());
+							} else if (prim.isString()) {
+								entity.put(actualKey, prim.getAsString());
+							} else if (prim.isJsonNull()) {
+								entity.put(actualKey, null);
+							}
+						} else if (childObj.isJsonNull()) {
 							entity.put(actualKey, null);
+						} else if (childObj.isJsonArray()) {
+							entity.put(actualKey, context.deserialize(childObj, List.class));
+						} else if (childObj.isJsonObject()) {
+							entity.put(actualKey, context.deserialize(childObj, Map.class));
 						}
 					} else {
-						convertMap(entity, actualKey, childObj);
+						// value属性が無い場合はセクション扱いなので再帰的に処理する
+						convertMap(context, entity, actualKey, childObj);
 					}
+				// 形式としてObject配下のvalue属性に値が入るので、以下は無視する
 				} else if (value.isJsonArray()) {
-					//entity.put(actualKey, value);
 				} else if (value.isJsonNull()) {
-					
 				} else if (value.isJsonPrimitive()) {
-					
 				}
 			}
 		}

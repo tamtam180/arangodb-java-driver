@@ -19,6 +19,8 @@ package at.orz.avocadodb;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
+import java.util.Map;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -29,6 +31,7 @@ import at.orz.avocadodb.entity.EdgesEntity;
 import at.orz.avocadodb.entity.EntityFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 
 /**
  * UnitTest for {@link AvocadoDriver}.
@@ -112,5 +115,20 @@ public class MyTDD {
 		
 	}
 
+	@Test
+	public void hoge() throws Exception {
+		
+		String jsonText = 
+				"{" +
+						"\"test1\":\"xx\"," +
+						"\"test2\":1," +
+						"\"test3\":1.12," +
+						"\"test4\":true" +
+				"}";
+		
+		Map<String, Object> map = new Gson().fromJson(jsonText, Map.class);
+		System.out.println(map);
+		
+	}
 	
 }

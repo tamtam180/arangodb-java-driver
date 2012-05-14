@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.apache.http.HttpStatus;
 
+import at.orz.avocadodb.entity.AdminConfigurationEntity;
 import at.orz.avocadodb.entity.AdminLogEntity;
 import at.orz.avocadodb.entity.AdminStatusEntity;
 import at.orz.avocadodb.entity.BaseEntity;
@@ -963,7 +964,7 @@ public class AvocadoDriver {
 	
 	// ---------------------------------------- start of admin ----------------------------------------
 
-	public AdminLogEntity getAdminLog(
+	public AdminLogEntity getServerLog(
 			Integer logLevel, Boolean logLevelUpTo,
 			Integer start,
 			Integer size, Integer offset,
@@ -1002,7 +1003,7 @@ public class AvocadoDriver {
 		
 	}
 	
-	public AdminStatusEntity getStatus() throws AvocadoException {
+	public AdminStatusEntity getServerStatus() throws AvocadoException {
 		
 		HttpResponseEntity res = httpManager.doGet(baseUrl + "/_admin/status");
 		
@@ -1013,7 +1014,19 @@ public class AvocadoDriver {
 		}
 		
 	}
-	
+
+	public AdminConfigurationEntity getServerConfiguration() throws AvocadoException {
+		
+		HttpResponseEntity res = httpManager.doGet(baseUrl + "/_admin/config/configuration");
+		
+		try {
+			return createEntity(res, AdminConfigurationEntity.class);
+		} catch (AvocadoException e) {
+			throw e;
+		}
+		
+	}
+
 	// ---------------------------------------- end of admin ----------------------------------------
 
 

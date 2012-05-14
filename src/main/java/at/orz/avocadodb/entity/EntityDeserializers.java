@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import at.orz.avocadodb.entity.CollectionEntity.Figures;
 
@@ -30,6 +31,8 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.internal.LazilyParsedNumber;
 import com.google.gson.reflect.TypeToken;
 
 /**
@@ -490,6 +493,59 @@ public class EntityDeserializers {
 			
 			return entity;
 		}
+	}
+	
+	public static class AdminConfigurationEntityDeserializer implements JsonDeserializer<AdminConfigurationEntity> {
+
+		public AdminConfigurationEntity deserialize(JsonElement json,
+				Type typeOfT, JsonDeserializationContext context)
+				throws JsonParseException {
+			
+			if (json.isJsonNull()) {
+				return null;
+			}
+			
+			JsonObject obj = json.getAsJsonObject();
+			AdminConfigurationEntity entity = deserializeBaseParameter(obj, new AdminConfigurationEntity());
+			
+			context.deserialize(obj, Map.class);
+			convertMap(entity, null, obj);
+
+			return entity;
+		}
+		
+		private void convertMap(AdminConfigurationEntity entity, String prefixKey, JsonObject obj) {
+			
+			for (Entry<String, JsonElement> entry : obj.entrySet()) {
+				String key = entry.getKey();
+				JsonElement value = entry.getValue();
+				String actualKey = (prefixKey == null ? key : prefixKey + "." + key);
+				if (value.isJsonObject()) {
+					JsonObject childObj = value.getAsJsonObject();
+					if (childObj.has("value")) {
+						JsonPrimitive prim = childObj.getAsJsonPrimitive("value");
+						if (prim.isNumber()) {
+							entity.put(actualKey, prim.getAsNumber());
+						} else if (prim.isBoolean()) {
+							entity.put(actualKey, prim.getAsBoolean());
+						} else if (prim.isString()) {
+							entity.put(actualKey, prim.getAsString());
+						} else if (prim.isJsonNull()) {
+							entity.put(actualKey, null);
+						}
+					} else {
+						convertMap(entity, actualKey, childObj);
+					}
+				} else if (value.isJsonArray()) {
+					//entity.put(actualKey, value);
+				} else if (value.isJsonNull()) {
+					
+				} else if (value.isJsonPrimitive()) {
+					
+				}
+			}
+		}
+		
 	}
 	
 }

@@ -19,8 +19,11 @@ package at.orz.avocadodb;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
+import java.util.Map.Entry;
+
 import org.junit.Test;
 
+import at.orz.avocadodb.entity.AdminConfigurationEntity;
 import at.orz.avocadodb.entity.AdminLogEntity;
 import at.orz.avocadodb.entity.AdminStatusEntity;
 
@@ -33,7 +36,7 @@ public class AvocadoDriverAdminTest extends BaseTest {
 	@Test
 	public void test_log_all() throws AvocadoException {
 		
-		AdminLogEntity entity = client.getAdminLog(
+		AdminLogEntity entity = client.getServerLog(
 				null, null, null, null, null, null, null);
 		
 		assertThat(entity, is(notNullValue()));
@@ -50,7 +53,7 @@ public class AvocadoDriverAdminTest extends BaseTest {
 	@Test
 	public void test_log_text() throws AvocadoException {
 		
-		AdminLogEntity entity = client.getAdminLog(
+		AdminLogEntity entity = client.getServerLog(
 				null, null, null, null, null, null, "Fun");
 		
 		assertThat(entity, is(notNullValue()));
@@ -66,7 +69,7 @@ public class AvocadoDriverAdminTest extends BaseTest {
 	@Test
 	public void test_status() throws AvocadoException {
 		
-		AdminStatusEntity status = client.getStatus();
+		AdminStatusEntity status = client.getServerStatus();
 		
 		// debug
 		System.out.println(status.getMinorPageFaults());
@@ -77,6 +80,17 @@ public class AvocadoDriverAdminTest extends BaseTest {
 		System.out.println(status.getResidentSize());
 		System.out.println(status.getVirtualSize());
 
+	}
+
+	@Test
+	public void test_configure() throws AvocadoException {
+		
+		AdminConfigurationEntity conf = client.getServerConfiguration();
+		
+		for (Entry<String, Object> ent: conf.entrySet()) {
+			System.out.println(ent);
+		}
+		
 	}
 	
 }

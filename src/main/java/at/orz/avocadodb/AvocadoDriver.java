@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.apache.http.HttpStatus;
 
+import at.orz.avocadodb.entity.AdminLogEntity;
 import at.orz.avocadodb.entity.BaseEntity;
 import at.orz.avocadodb.entity.CollectionEntity;
 import at.orz.avocadodb.entity.CollectionsEntity;
@@ -958,6 +959,49 @@ public class AvocadoDriver {
 	
 	
 	// ---------------------------------------- end of edge ----------------------------------------
+
+	
+	// ---------------------------------------- start of admin ----------------------------------------
+
+	public AdminLogEntity getAdminLog(
+			Integer logLevel, Boolean logLevelUpTo,
+			Integer start,
+			Integer size, Integer offset,
+			Boolean sortAsc,
+			String text
+			) throws AvocadoException {
+		
+		// パラメータを作る
+		MapBuilder param = new MapBuilder();
+		if (logLevel != null) {
+			if (logLevelUpTo != null && logLevelUpTo.booleanValue()) {
+				param.put("upto", logLevel);
+			} else {
+				param.put("level", logLevel);
+			}
+		}
+		param.put("start", start);
+		param.put("size", size);
+		param.put("offset", offset);
+		if (sortAsc != null) {
+			param.put("sort", sortAsc.booleanValue() ?  "asc" : "desc");
+		}
+		param.put("search", text);
+		
+		// 実行
+		HttpResponseEntity res = httpManager.doGet(baseUrl + "/_admin/log", param.get());
+		
+		// 結果変換
+		try {
+			AdminLogEntity entity = createEntity(res, AdminLogEntity.class);
+			return entity;
+		} catch (AvocadoException e) {
+			return null;
+		}
+		
+	}
+	
+	// ---------------------------------------- end of admin ----------------------------------------
 
 
 	// ---------------------------------------- start of xxx ----------------------------------------

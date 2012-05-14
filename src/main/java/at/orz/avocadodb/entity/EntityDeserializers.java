@@ -17,6 +17,8 @@
 package at.orz.avocadodb.entity;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -411,5 +413,43 @@ public class EntityDeserializers {
 		}
 	}
 
+	public static class AdminLogEntryEntityDeserializer implements JsonDeserializer<AdminLogEntity> {
+		public AdminLogEntity deserialize(JsonElement json, Type typeOfT,
+				JsonDeserializationContext context) throws JsonParseException {
+			
+			if (json.isJsonNull()) {
+				return null;
+			}
+
+			JsonObject obj = json.getAsJsonObject();
+			AdminLogEntity entity = deserializeBaseParameter(obj, new AdminLogEntity());
+			// 全ての要素は必ずあることが前提なのでhasチェックはしない
+			int[] lids = context.deserialize(obj.getAsJsonArray("lid"), int[].class);
+			int[] levels = context.deserialize(obj.getAsJsonArray("level"), int[].class);
+			long[] timestamps = context.deserialize(obj.getAsJsonArray("timestamp"), long[].class);
+			String[] texts = context.deserialize(obj.getAsJsonArray("text"), String[].class);
+			
+			// 配列のサイズが全て同じであること
+			if (lids.length != levels.length || lids.length != timestamps.length || lids.length != texts.length) {
+				throw new IllegalStateException("each parameters returns wrong length.");
+			}
+			
+			entity.logs = new ArrayList<AdminLogEntity.LogEntry>(lids.length);
+			for (int i = 0; i < lids.length; i++) {
+				AdminLogEntity.LogEntry entry = new AdminLogEntity.LogEntry();
+				entry.lid = lids[i];
+				entry.level = levels[i];
+				entry.timestamp = new Date(timestamps[i] * 1000L);
+				entry.text = texts[i];
+				entity.logs.add(entry);
+			}
+
+			if (obj.has("totalAmount")) {
+				entity.totalAmount = obj.getAsJsonPrimitive("totalAmount").getAsInt();
+			}
+
+			return entity;
+		}
+	}
 	
 }

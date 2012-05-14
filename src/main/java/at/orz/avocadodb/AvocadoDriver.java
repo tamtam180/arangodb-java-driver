@@ -16,7 +16,6 @@
 
 package at.orz.avocadodb;
 
-import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -26,6 +25,7 @@ import java.util.Map;
 import org.apache.http.HttpStatus;
 
 import at.orz.avocadodb.entity.AdminLogEntity;
+import at.orz.avocadodb.entity.AdminStatusEntity;
 import at.orz.avocadodb.entity.BaseEntity;
 import at.orz.avocadodb.entity.CollectionEntity;
 import at.orz.avocadodb.entity.CollectionsEntity;
@@ -996,7 +996,20 @@ public class AvocadoDriver {
 			AdminLogEntity entity = createEntity(res, AdminLogEntity.class);
 			return entity;
 		} catch (AvocadoException e) {
-			return null;
+			throw e;
+			//return null;
+		}
+		
+	}
+	
+	public AdminStatusEntity getStatus() throws AvocadoException {
+		
+		HttpResponseEntity res = httpManager.doGet(baseUrl + "/_admin/status");
+		
+		try {
+			return createEntity(res, AdminStatusEntity.class);
+		} catch (AvocadoException e) {
+			throw e;
 		}
 		
 	}

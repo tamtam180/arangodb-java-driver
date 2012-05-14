@@ -22,6 +22,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import at.orz.avocadodb.entity.AdminLogEntity;
+import at.orz.avocadodb.entity.AdminStatusEntity;
 
 /**
  * @author tamtam180 - kirscheless at gmail.com
@@ -62,6 +63,20 @@ public class AvocadoDriverAdminTest extends BaseTest {
 
 	// TODO テスト増やす
 	
-	
+	@Test
+	public void test_status() throws AvocadoException {
+		
+		AdminStatusEntity status = client.getStatus();
+		
+		// debug
+		System.out.println(status.getMinorPageFaults());
+		System.out.println(status.getMajorPageFaults());
+		System.out.println(status.getUserTime());
+		System.out.println(status.getSystemTime());
+		System.out.println(status.getNumberThreads());
+		System.out.println(status.getResidentSize());
+		System.out.println(status.getVirtualSize());
+
+	}
 	
 }

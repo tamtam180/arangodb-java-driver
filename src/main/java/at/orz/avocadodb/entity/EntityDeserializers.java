@@ -452,4 +452,44 @@ public class EntityDeserializers {
 		}
 	}
 	
+	public static class AdminStatusEntityDeserializer implements JsonDeserializer<AdminStatusEntity> {
+		public AdminStatusEntity deserialize(JsonElement json, Type typeOfT,
+				JsonDeserializationContext context) throws JsonParseException {
+			
+			if (json.isJsonNull()) {
+				return null;
+			}
+			
+			JsonObject obj = json.getAsJsonObject();
+			AdminStatusEntity entity = deserializeBaseParameter(obj, new AdminStatusEntity());
+			
+			if (obj.has("system")) {
+				JsonObject system = obj.getAsJsonObject("system");
+				if (system.has("minorPageFaults")) {
+					entity.minorPageFaults = system.getAsJsonPrimitive("minorPageFaults").getAsLong();
+				}
+				if (system.has("majorPageFaults")) {
+					entity.majorPageFaults = system.getAsJsonPrimitive("majorPageFaults").getAsLong();
+				}
+				if (system.has("userTime")) {
+					entity.userTime = system.getAsJsonPrimitive("userTime").getAsDouble();
+				}
+				if (system.has("systemTime")) {
+					entity.systemTime = system.getAsJsonPrimitive("systemTime").getAsDouble();
+				}
+				if (system.has("numberThreads")) {
+					entity.numberThreads = system.getAsJsonPrimitive("numberThreads").getAsInt();
+				}
+				if (system.has("residentSize")) {
+					entity.residentSize = system.getAsJsonPrimitive("residentSize").getAsLong();
+				}
+				if (system.has("virtualSize")) {
+					entity.virtualSize = system.getAsJsonPrimitive("virtualSize").getAsLong();
+				}
+			}
+			
+			return entity;
+		}
+	}
+	
 }

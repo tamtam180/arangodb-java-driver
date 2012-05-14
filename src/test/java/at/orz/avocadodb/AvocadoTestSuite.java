@@ -37,6 +37,7 @@ import org.junit.runners.Suite.SuiteClasses;
 	AvocadoDriverCursorResultSetTest.class,
 	AvocadoDriverIndexTest.class,
 	AvocadoDriverEdgeTest.class,
+	AvocadoDriverAdminTest.class,
 	AvocadoDriverKeyValueTest.class,
 	AvocadoDriverStoryTest.class
 })

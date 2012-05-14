@@ -24,6 +24,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import at.orz.avocadodb.entity.AdminConfigDescriptionEntity.DescriptionEntry;
 import at.orz.avocadodb.entity.CollectionEntity.Figures;
 
 import com.google.gson.JsonDeserializationContext;
@@ -32,7 +33,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
-import com.google.gson.internal.LazilyParsedNumber;
 import com.google.gson.reflect.TypeToken;
 
 /**
@@ -546,6 +546,59 @@ public class EntityDeserializers {
 						convertMap(context, entity, actualKey, childObj);
 					}
 				// 形式としてObject配下のvalue属性に値が入るので、以下は無視する
+				} else if (value.isJsonArray()) {
+				} else if (value.isJsonNull()) {
+				} else if (value.isJsonPrimitive()) {
+				}
+			}
+		}
+		
+	}
+	
+	public static class AdminConfigDescriptionEntityDeserializer implements JsonDeserializer<AdminConfigDescriptionEntity> {
+		public AdminConfigDescriptionEntity deserialize(JsonElement json,
+				Type typeOfT, JsonDeserializationContext context)
+				throws JsonParseException {
+			
+			if (json.isJsonNull()) {
+				return null;
+			}
+			
+			JsonObject obj = json.getAsJsonObject();
+			AdminConfigDescriptionEntity entity = deserializeBaseParameter(obj, new AdminConfigDescriptionEntity());
+			
+			convertMap(context, entity, null, obj);
+			return entity;
+
+		}
+		
+		private void convertMap(JsonDeserializationContext context, AdminConfigDescriptionEntity entity, String prefixKey, JsonObject obj) {
+			
+			for (Entry<String, JsonElement> entry : obj.entrySet()) {
+				String key = entry.getKey();
+				JsonElement value = entry.getValue();
+				String actualKey = (prefixKey == null ? key : prefixKey + "." + key);
+				if (value.isJsonObject()) {
+					JsonObject childObj = value.getAsJsonObject();
+					String type = childObj.getAsJsonPrimitive("type").getAsString();
+					if ("section".equals(type)) {
+						// 他のFieldを全て処理する
+						convertMap(context, entity, actualKey, childObj);
+					} else {
+						DescriptionEntry description = new DescriptionEntry();
+						// 設定項目
+						description.type = type;
+						if (childObj.has("name")) {
+							description.name = childObj.getAsJsonPrimitive("name").getAsString();
+						}
+						if (childObj.has("readonly")) {
+							description.readonly = childObj.getAsJsonPrimitive("readonly").getAsBoolean();
+						}
+						if (childObj.has("values")) { // pull-downの時
+							description.values = context.deserialize(childObj.getAsJsonArray("values"), Object[].class);
+						}
+						entity.put(actualKey, description);
+					}
 				} else if (value.isJsonArray()) {
 				} else if (value.isJsonNull()) {
 				} else if (value.isJsonPrimitive()) {

@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.apache.http.HttpStatus;
 
+import at.orz.avocadodb.entity.AdminConfigDescriptionEntity;
 import at.orz.avocadodb.entity.AdminConfigurationEntity;
 import at.orz.avocadodb.entity.AdminLogEntity;
 import at.orz.avocadodb.entity.AdminStatusEntity;
@@ -1026,6 +1027,14 @@ public class AvocadoDriver {
 		}
 		
 	}
+	
+	public AdminConfigDescriptionEntity getServerConfigurationDescription() throws AvocadoException {
+		
+		HttpResponseEntity res = httpManager.doGet(baseUrl + "/_admin/config/description");
+		return createEntity(res, AdminConfigDescriptionEntity.class);
+		
+	}
+	
 
 	// ---------------------------------------- end of admin ----------------------------------------
 

@@ -23,6 +23,7 @@ import java.util.Map.Entry;
 
 import org.junit.Test;
 
+import at.orz.avocadodb.entity.AdminConfigDescriptionEntity;
 import at.orz.avocadodb.entity.AdminConfigurationEntity;
 import at.orz.avocadodb.entity.AdminLogEntity;
 import at.orz.avocadodb.entity.AdminStatusEntity;
@@ -87,8 +88,31 @@ public class AvocadoDriverAdminTest extends BaseTest {
 		
 		AdminConfigurationEntity conf = client.getServerConfiguration();
 		
+		// debug
 		for (Entry<String, Object> ent: conf.entrySet()) {
 			System.out.println(ent);
+		}
+		
+	}
+	
+	@Test
+	public void test_config_description() throws AvocadoException {
+		
+		AdminConfigDescriptionEntity desc = client.getServerConfigurationDescription();
+		
+		// debug
+		for (Entry<String, AdminConfigDescriptionEntity.DescriptionEntry> ent : desc.entrySet()) {
+			System.out.printf("%s\t%b\t%s\t%s\t%n", 
+					ent.getKey(),
+					ent.getValue().isReadonly(),
+					ent.getValue().getName(),
+					ent.getValue().getType()
+					);
+			if (ent.getValue().getValues() != null) {
+				for (Object v : ent.getValue().getValues()) {
+					System.out.println("\t" + v);
+				}
+			}
 		}
 		
 	}

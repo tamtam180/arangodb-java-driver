@@ -1,25 +1,25 @@
 # at first
 
-ひとまず私がAvocadoDBをテストするために書いているものです。
+ひとまず私がArangoDBをテストするために書いているものです。
 
 !! This is a prototype version !!
 
 ※このプログラムはプロトタイプです。
 エラー処理とかはまだまだ全然書いていません。
 
-# Avocado-Java-Driver
+# Arango-Java-Driver
 
- DukeがAvocado食べてる画像が欲しいです。
+ Dukeがアボカド食べてる画像が欲しいです。
 
-このプログラムはAvocadoDBをJavaから操作するためのライブラリです。
+このプログラムはArangoDBをJavaから操作するためのライブラリです。
 主に3つのインターフェースがあります。
 
 低レイヤー
-  AvocadoDriver
+  ArangoDriver
     Rest-APIとほぼ1:1に対応するレイヤーです。
 
 高レイヤー
-  AvocadoClient
+  ArangoClient
     オブジェクト指向のレイヤーです。
     各クラスがCRUDになっています。
     
@@ -32,8 +32,8 @@ JDBC Driver
 Example1.javaを参照してください。
 
 ``` Java
-  AvocadoConfigure configure = new AvocadoConfigure();
-  AvocadoDriver client = new AvocadoDriver(configure);
+  ArangoConfigure configure = new ArangoConfigure();
+  ArangoDriver client = new ArangoDriver(configure);
   
   String collectionName = "mytest";
   TestComplexEntity01 value = new TestComplexEntity01("name", "desc", 10); // any POJO class
@@ -54,9 +54,9 @@ Example1.javaを参照してください。
   client.shutdown();
 ```
 
-## AvocadoDriver
-## AvocadoClient
-## AvocadoJDBCDriver
+## ArangoDriver
+## ArangoClient
+## ArangoJDBCDriver
 
 ## ライブラリの実装状況
 * Base/Configure (WORKING)
@@ -64,7 +64,7 @@ Example1.javaを参照してください。
 * Base/ErrorCode (未着手)
 * Base/ServerLocator:複数ホストの対応(未着手)
 * Base/ErrorHandling (未着手)
-* AvocadoDriver (WORKING)
+* ArangoDriver (WORKING)
     * REST/Collection (DONE)
     * REST/Document (DONE)
     * REST/Index (DONE)
@@ -75,7 +75,7 @@ Example1.javaを参照してください。
     * REST/Admin
     * UnitTest (WORKING)
     * JavaDoc (WORKING)
-* AvocadoClient (未着手)
-* AvocadoJDBCDriver (未着手)
+* ArangoClient (未着手)
+* ArangoJDBCDriver (未着手)
 * Document (未着手)
 

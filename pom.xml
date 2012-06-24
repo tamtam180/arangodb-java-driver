@@ -3,13 +3,13 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>at.orz</groupId>
-	<artifactId>avocadodb-java-driver</artifactId>
+	<artifactId>arangodb-java-driver</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<inceptionYear>2012</inceptionYear>
 	<packaging>jar</packaging>
 
-	<name>avocadodb-java-driver</name>
-	<description>AvocadoDB Java Driver</description>
+	<name>arangodb-java-driver</name>
+	<description>ArangoDB Java Driver</description>
 	<url>http://maven.apache.org</url>
 
 	<licenses>

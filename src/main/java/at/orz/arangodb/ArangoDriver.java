@@ -392,7 +392,7 @@ public class ArangoDriver {
 		
 		validateCollectionName(collectionName);
 		HttpResponseEntity res = httpManager.doPost(
-				baseUrl + "/document", 
+				baseUrl + "/_api/document", 
 				new MapBuilder()
 					.put("collection", collectionName)
 					.put("createCollection", (createCollection == null) ? null : createCollection.booleanValue())
@@ -424,7 +424,7 @@ public class ArangoDriver {
 		
 		validateDocumentHandle(documentHandle);
 		HttpResponseEntity res = httpManager.doPut(
-				baseUrl + "/document/" + documentHandle, 
+				baseUrl + "/_api/document/" + documentHandle, 
 				new MapBuilder()
 					.put("rev", rev == -1 ? null : rev)
 					.put("waitForSync", waitForSync == null ? null : waitForSync.booleanValue())
@@ -452,7 +452,7 @@ public class ArangoDriver {
 	public List<String> getDocuments(String collectionName) throws ArangoException {
 		
 		HttpResponseEntity res = httpManager.doGet(
-				baseUrl + "/document", 
+				baseUrl + "/_api/document", 
 				new MapBuilder("collection", collectionName).get()
 				);
 		
@@ -472,7 +472,7 @@ public class ArangoDriver {
 		
 		validateDocumentHandle(documentHandle);
 		HttpResponseEntity res = httpManager.doHead(
-				baseUrl + "/document/" + documentHandle,
+				baseUrl + "/_api/document/" + documentHandle,
 				null
 				);
 		
@@ -494,7 +494,7 @@ public class ArangoDriver {
 		
 		validateDocumentHandle(documentHandle);
 		HttpResponseEntity res = httpManager.doGet(
-				baseUrl + "/document/" + documentHandle,
+				baseUrl + "/_api/document/" + documentHandle,
 				null);
 		
 		// TODO Case of StatusCode=304
@@ -528,7 +528,7 @@ public class ArangoDriver {
 		
 		validateDocumentHandle(documentHandle);
 		HttpResponseEntity res = httpManager.doDelete(
-				baseUrl + "/document/" + documentHandle, 
+				baseUrl + "/_api/document/" + documentHandle, 
 				new MapBuilder()
 				.put("rev", rev == -1 ? null : rev)
 				.put("policy", policy == null ? null : policy.name().toLowerCase(Locale.US))

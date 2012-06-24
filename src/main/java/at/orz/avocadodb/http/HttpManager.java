@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -221,9 +222,17 @@ public class HttpManager {
 			logger.debug("http-{}: statusCode={}", requestEntity.type, responseEntity.statusCode);
 			
 			// ヘッダの処理
+			//// TODO etag特殊処理は削除する。
 			Header etagHeader = response.getLastHeader("etag");
 			if (etagHeader != null) {
 				responseEntity.etag = Long.parseLong(etagHeader.getValue().replace("\"", ""));
+			}
+			// ヘッダをMapに変換する
+			responseEntity.headers = new TreeMap<String, String>();
+			for (Header header : response.getAllHeaders()) {
+				responseEntity.headers.put(
+						header.getName(), 
+						header.getValue());
 			}
 			
 			// レスポンスの取得

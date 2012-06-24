@@ -16,6 +16,7 @@
 
 package at.orz.avocadodb;
 
+import java.text.ParseException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -659,7 +660,6 @@ public class AvocadoDriver {
 
 	// ---------------------------------------- start of kvs ----------------------------------------
 	
-	@Deprecated
 	public KeyValueEntity createKeyValue(
 			String collectionName, String key, Object value, 
 			Map<String, Object> attributes, Date expiredDate,
@@ -679,6 +679,7 @@ public class AvocadoDriver {
 		
 		try {
 			KeyValueEntity entity = createEntity(res, KeyValueEntity.class);
+			setKeyValueHeader(res, entity);
 			return entity;
 		} catch (AvocadoException e) {
 			if (HttpManager.is404Error(e)) { // コレクションが存在しないか、キーが既に存在する。
@@ -689,6 +690,40 @@ public class AvocadoDriver {
 			throw e;
 		}
 		
+	}
+	
+	public KeyValueEntity updateKeyValue(
+			String collectionName, String key, Object value, 
+			Map<String, Object> attributes, Date expiredDate,
+			boolean create,
+			Mode mode
+			) throws AvocadoException {
+
+		// TODO Sanitize Key
+		
+		validateCollectionName(collectionName);
+		HttpResponseEntity res = httpManager.doPut(
+				baseUrl + "/_api/key/" + collectionName + "/" + key, 
+				new MapBuilder()
+					.put("x-voc-expires", expiredDate == null ? null : DateUtils.format(expiredDate, "yyyy-MM-dd'T'HH:mm:ss'Z'"))
+					.put("x-voc-extended", attributes == null ? null : EntityFactory.toJsonString(attributes))
+					.get(),
+				null, 
+				EntityFactory.toJsonString(value));
+		
+		try {
+			KeyValueEntity entity = createEntity(res, KeyValueEntity.class);
+			setKeyValueHeader(res, entity);
+			return entity;
+		} catch (AvocadoException e) {
+			if (HttpManager.is404Error(e)) { // コレクションが存在しないか、キーが既に存在する。
+				if (mode == null || mode == Mode.RETURN_NULL) {
+					return null;
+				}
+			}
+			throw e;
+		}
+
 	}
 	
 	// ---------------------------------------- end of kvs ----------------------------------------
@@ -1072,6 +1107,33 @@ public class AvocadoDriver {
 			}
 		}
 		throw new AvocadoException("invalid format documentHandle:" + documentHandle);
+	}
+	
+	private void setKeyValueHeader(HttpResponseEntity res, KeyValueEntity entity) throws AvocadoException {
+		
+		Map<String, String> headers = res.getHeaders();
+		
+		try {
+			String strCreated = headers.get("x-voc-created");
+			if (strCreated != null) {
+				entity.setCreated(DateUtils.parse(strCreated, "yyyy-MM-dd'T'HH:mm:ss'Z'"));
+			}
+			
+			String strExpires = headers.get("x-voc-expires");
+			if (strExpires != null) {
+				entity.setExpires(DateUtils.parse(strExpires, "yyyy-MM-dd'T'HH:mm:ss'Z'"));
+			}
+			
+			String strExtened = headers.get("x-voc-extended");
+			if (strExtened != null) {
+				Map<String, Object> attributes = EntityFactory.createEntity(strExtened, Map.class);
+				entity.setAttributes(attributes);
+			}
+			
+		} catch (ParseException e) {
+			throw new AvocadoException(e);
+		}
+		
 	}
 	
 	/**

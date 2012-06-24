@@ -16,6 +16,8 @@
 
 package at.orz.avocadodb.http;
 
+import java.util.Map;
+
 /**
  * @author tamtam180 - kirscheless at gmail.com
  *
@@ -26,6 +28,7 @@ public class HttpResponseEntity {
 	String statusPhrase;
 	String text;
 	long etag = -1;
+	Map<String, String> headers;
 	
 	public int getStatusCode() {
 		return statusCode;
@@ -50,6 +53,12 @@ public class HttpResponseEntity {
 	}
 	public void setEtag(long etag) {
 		this.etag = etag;
+	}
+	public Map<String, String> getHeaders() {
+		return headers;
+	}
+	public void setHeaders(Map<String, String> headers) {
+		this.headers = headers;
 	}
 	
 }

@@ -216,8 +216,8 @@ public class EntityDeserializers {
 				entity.count = obj.getAsJsonPrimitive("count").getAsInt();
 			}
 			
-			if (obj.has("_id")) {
-				entity.cursorId = obj.getAsJsonPrimitive("_id").getAsLong();
+			if (obj.has("id")) {
+				entity.cursorId = obj.getAsJsonPrimitive("id").getAsLong();
 			}
 			
 			if (obj.has("bindVars")) {

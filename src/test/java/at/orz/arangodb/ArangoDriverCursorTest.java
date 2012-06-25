@@ -39,7 +39,8 @@ public class ArangoDriverCursorTest extends BaseTest {
 	public void test_validateQuery() throws ArangoException {
 		
 		CursorEntity<?> entity = client.validateQuery(
-				"SELECT t FROM unit_test_cursor t WHERE t.name == @name@ && t.age >= @age@"
+				//"SELECT t FROM unit_test_cursor t WHERE t.name == @name@ && t.age >= @age@"
+				"FOR t IN unit_test_cursor FILTER t.name == @name && t.age >= @age RETURN t"
 				);
 		
 		assertThat(entity.getCode(), is(200));
@@ -54,7 +55,8 @@ public class ArangoDriverCursorTest extends BaseTest {
 		
 		// =じゃなくて==じゃないとダメ。文法間違いエラー
 		CursorEntity<?> entity = client.validateQuery(
-				"SELECT t FROM unit_test_cursor t WHERE t.name = @name@"
+				//"SELECT t FROM unit_test_cursor t WHERE t.name = @name@"
+				"FOR t IN unit_test_cursor FILTER t.name = @name@"
 				);
 		
 		assertThat(entity.getCode(), is(400));
@@ -84,7 +86,8 @@ public class ArangoDriverCursorTest extends BaseTest {
 			client.createDocument(collectionName, value, null, null, null);
 		}
 		
-		String query = "SELECT t FROM unit_test_query_test t WHERE t.age >= @age@";
+		//String query = "SELECT t FROM unit_test_query_test t WHERE t.age >= @age@";
+		String query = "FOR t IN unit_test_query_test FILTER t.age >= @age RETURN t";
 		Map<String, Object> bindVars = new MapBuilder().put("age", 90).get();
 		
 		// 全件とれる範囲
@@ -115,7 +118,8 @@ public class ArangoDriverCursorTest extends BaseTest {
 			client.createDocument(collectionName, value, null, null, null);
 		}
 		
-		String query = "SELECT t FROM unit_test_query_test t WHERE t.age >= @age@";
+		//String query = "SELECT t FROM unit_test_query_test t WHERE t.age >= @age@";
+		String query = "FOR t IN unit_test_query_test FILTER t.age >= @age RETURN t";
 		Map<String, Object> bindVars = new MapBuilder().put("age", 90).get();
 		
 		// ちまちまとる範囲

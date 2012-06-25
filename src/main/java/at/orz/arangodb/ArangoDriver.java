@@ -637,7 +637,7 @@ public class ArangoDriver {
 			return entity;
 		} catch (ArangoException e) {
 			// TODO Mode
-			if (e.getErrorNumber() == 500) {
+			if (e.getErrorNumber() == 1600) {
 				// 既に削除されている
 				return (DefaultEntity) e.entity;
 			}

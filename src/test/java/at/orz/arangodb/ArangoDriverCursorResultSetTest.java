@@ -56,7 +56,8 @@ public class ArangoDriverCursorResultSetTest extends BaseTest {
 	@Test
 	public void test1() throws ArangoException {
 		
-		String query = "SELECT t FROM unit_test_query_test t WHERE t.age >= @age@ order by t.age";
+		//String query = "SELECT t FROM unit_test_query_test t WHERE t.age >= @age@ order by t.age";
+		String query = "FOR t IN unit_test_query_test FILTER t.age >= @age SORT t.age RETURN t";
 		Map<String, Object> bindVars = new MapBuilder().put("age", 90).get();
 		
 		// 全件とれる範囲
@@ -75,7 +76,8 @@ public class ArangoDriverCursorResultSetTest extends BaseTest {
 	@Test
 	public void test2() throws ArangoException {
 		
-		String query = "SELECT t FROM unit_test_query_test t WHERE t.age >= @age@ order by t.age";
+		//String query = "SELECT t FROM unit_test_query_test t WHERE t.age >= @age@ order by t.age";
+		String query = "FOR t IN unit_test_query_test t FILTER t.age >= @age SORT t.age";
 		Map<String, Object> bindVars = new MapBuilder().put("age", 90).get();
 		
 		CursorResultSet<TestComplexEntity01> rs = client.executeQueryWithResultSet(

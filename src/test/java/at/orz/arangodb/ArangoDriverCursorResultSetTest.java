@@ -77,7 +77,7 @@ public class ArangoDriverCursorResultSetTest extends BaseTest {
 	public void test2() throws ArangoException {
 		
 		//String query = "SELECT t FROM unit_test_query_test t WHERE t.age >= @age@ order by t.age";
-		String query = "FOR t IN unit_test_query_test t FILTER t.age >= @age SORT t.age";
+		String query = "FOR t IN unit_test_query_test FILTER t.age >= @age SORT t.age RETURN t";
 		Map<String, Object> bindVars = new MapBuilder().put("age", 90).get();
 		
 		CursorResultSet<TestComplexEntity01> rs = client.executeQueryWithResultSet(
@@ -95,7 +95,8 @@ public class ArangoDriverCursorResultSetTest extends BaseTest {
 	@Test
 	public void test3() throws ArangoException {
 		
-		String query = "SELECT t FROM unit_test_query_test t WHERE t.age >= @age@ order by t.age";
+		//String query = "SELECT t FROM unit_test_query_test t WHERE t.age >= @age@ order by t.age";
+		String query = "FOR t IN unit_test_query_test FILTER t.age >= @age SORT t.age RETURN t";
 		Map<String, Object> bindVars = new MapBuilder().put("age", 90).get();
 		
 		CursorResultSet<TestComplexEntity01> rs = client.executeQueryWithResultSet(
@@ -113,7 +114,8 @@ public class ArangoDriverCursorResultSetTest extends BaseTest {
 	@Test
 	public void test4() throws ArangoException {
 		
-		String query = "SELECT t FROM unit_test_query_test t WHERE t.age >= @age@ order by t.age";
+		//String query = "SELECT t FROM unit_test_query_test t WHERE t.age >= @age@ order by t.age";
+		String query = "FOR t IN unit_test_query_test FILTER t.age >= @age SORT t.age RETURN t";
 		Map<String, Object> bindVars = new MapBuilder().put("age", 90).get();
 		
 		CursorResultSet<TestComplexEntity01> rs = client.executeQueryWithResultSet(
@@ -131,7 +133,8 @@ public class ArangoDriverCursorResultSetTest extends BaseTest {
 	@Test
 	public void test5() throws ArangoException {
 		
-		String query = "SELECT t FROM unit_test_query_test t WHERE t.age >= @age@ order by t.age";
+		//String query = "SELECT t FROM unit_test_query_test t WHERE t.age >= @age@ order by t.age";
+		String query = "FOR t IN unit_test_query_test FILTER t.age >= @age SORT t.age RETURN t";
 		Map<String, Object> bindVars = new MapBuilder().put("age", 90).get();
 		
 		CursorResultSet<TestComplexEntity01> rs = client.executeQueryWithResultSet(
@@ -153,7 +156,8 @@ public class ArangoDriverCursorResultSetTest extends BaseTest {
 	@Test
 	public void test6() throws ArangoException {
 		
-		String query = "SELECT t FROM unit_test_query_test t WHERE t.age >= @age@ order by t.age";
+		//String query = "SELECT t FROM unit_test_query_test t WHERE t.age >= @age@ order by t.age";
+		String query = "FOR t IN unit_test_query_test FILTER t.age >= @age SORT t.age RETURN t";
 		Map<String, Object> bindVars = new MapBuilder().put("age", 90).get();
 		
 		CursorResultSet<TestComplexEntity01> rs = client.executeQueryWithResultSet(
@@ -178,7 +182,8 @@ public class ArangoDriverCursorResultSetTest extends BaseTest {
 	@Test
 	public void test7() throws ArangoException {
 		
-		String query = "SELECT t FROM unit_test_query_test t WHERE t.age >= @age@ order by t.age";
+		//String query = "SELECT t FROM unit_test_query_test t WHERE t.age >= @age@ order by t.age";
+		String query = "FOR t IN unit_test_query_test FILTER t.age >= @age SORT t.age RETURN t";
 		Map<String, Object> bindVars = new MapBuilder().put("age", 90).get();
 		
 		CursorResultSet<TestComplexEntity01> rs = client.executeQueryWithResultSet(

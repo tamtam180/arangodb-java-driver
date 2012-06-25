@@ -41,7 +41,7 @@ public class EntityFactory {
 			.registerTypeAdapter(CollectionEntity.class, new EntityDeserializers.CollectionEntityDeserializer())
 			.registerTypeAdapter(DocumentEntity.class, new EntityDeserializers.DocumentEntityDeserializer())
 			.registerTypeAdapter(DocumentsEntity.class, new EntityDeserializers.DocumentsEntityDeserializer())
-			.registerTypeAdapter(Version.class, new EntityDeserializers.VersionDeserializer())
+			.registerTypeAdapter(V8Version.class, new EntityDeserializers.VersionDeserializer())
 			.registerTypeAdapter(DefaultEntity.class, new EntityDeserializers.DefaultEntityDeserializer())
 			.registerTypeAdapter(Figures.class, new EntityDeserializers.FiguresDeserializer())
 			.registerTypeAdapter(CursorEntity.class, new EntityDeserializers.CursorEntityDeserializer())

@@ -22,19 +22,12 @@ package at.orz.arangodb.entity;
  * @author tamtam180 - kirscheless at gmail.com
  *
  */
-public class Version extends BaseEntity {
+public class V8Version extends BaseEntity {
 	
-	String server;
 	String version;
 	
-	public String getServer() {
-		return server;
-	}
 	public String getVersion() {
 		return version;
-	}
-	public void setServer(String server) {
-		this.server = server;
 	}
 	public void setVersion(String version) {
 		this.version = version;

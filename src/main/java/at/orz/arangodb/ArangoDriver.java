@@ -45,7 +45,7 @@ import at.orz.arangodb.entity.IndexType;
 import at.orz.arangodb.entity.IndexesEntity;
 import at.orz.arangodb.entity.KeyValueEntity;
 import at.orz.arangodb.entity.Policy;
-import at.orz.arangodb.entity.Version;
+import at.orz.arangodb.entity.V8Version;
 import at.orz.arangodb.http.HttpManager;
 import at.orz.arangodb.http.HttpResponseEntity;
 import at.orz.arangodb.util.CollectionUtils;
@@ -89,12 +89,12 @@ public class ArangoDriver {
 		}
 	}
 	
-	public Version getVersion() throws ArangoException {
-		HttpResponseEntity res = httpManager.doGet(baseUrl + "/version");
+	public V8Version getVersion() throws ArangoException {
+		HttpResponseEntity res = httpManager.doGet(baseUrl + "/_admin/v8-version");
 		if (res == null) {
 			// TODO
 		}
-		return createEntityImpl(res, Version.class);
+		return createEntityImpl(res, V8Version.class);
 	}
 
 	// ---------------------------------------- start of collection ----------------------------------------

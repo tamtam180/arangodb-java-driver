@@ -72,8 +72,8 @@ public class EntityDeserializers {
 		}
 	}
 	
-	public static class VersionDeserializer implements JsonDeserializer<Version> {
-		public Version deserialize(JsonElement json, Type typeOfT,
+	public static class VersionDeserializer implements JsonDeserializer<V8Version> {
+		public V8Version deserialize(JsonElement json, Type typeOfT,
 				JsonDeserializationContext context) throws JsonParseException {
 			
 			if (json.isJsonNull()) {
@@ -81,11 +81,7 @@ public class EntityDeserializers {
 			}
 			
 			JsonObject obj = json.getAsJsonObject();
-			Version entity = deserializeBaseParameter(obj, new Version());
-			
-			if (obj.has("server")) {
-				entity.server = obj.getAsJsonPrimitive("server").getAsString();
-			}
+			V8Version entity = deserializeBaseParameter(obj, new V8Version());
 			
 			if (obj.has("version")) {
 				entity.version = obj.getAsJsonPrimitive("version").getAsString();

@@ -867,7 +867,7 @@ public class ArangoDriver {
 		validateDocumentHandle(fromHandle);
 		validateDocumentHandle(toHandle);
 		HttpResponseEntity res = httpManager.doPost(
-				baseUrl + "/edge", 
+				baseUrl + "/_api/edge", 
 				new MapBuilder()
 					.put("collection", collectionName)
 					.put("from", fromHandle)
@@ -895,7 +895,7 @@ public class ArangoDriver {
 		validateDocumentHandle(fromHandle);
 		validateDocumentHandle(toHandle);
 		HttpResponseEntity res = httpManager.doPut(
-				baseUrl + "/edge", 
+				baseUrl + "/_api/edge", 
 				new MapBuilder()
 					.put("collection", collectionName)
 					.put("from", fromHandle)
@@ -917,7 +917,7 @@ public class ArangoDriver {
 		
 		validateDocumentHandle(edgeHandle);
 		HttpResponseEntity res = httpManager.doHead(
-				baseUrl + "/edge/" + edgeHandle,
+				baseUrl + "/_api/edge/" + edgeHandle,
 				null
 				);
 		
@@ -937,7 +937,7 @@ public class ArangoDriver {
 		
 		validateDocumentHandle(edgeHandle);
 		HttpResponseEntity res = httpManager.doGet(
-				baseUrl + "/edge/" + edgeHandle
+				baseUrl + "/_api/edge/" + edgeHandle
 				);
 		
 		try {
@@ -960,7 +960,7 @@ public class ArangoDriver {
 		
 		validateDocumentHandle(edgeHandle);
 		HttpResponseEntity res = httpManager.doDelete(
-				baseUrl + "/edge/" + edgeHandle,
+				baseUrl + "/_api/edge/" + edgeHandle,
 				null);
 		
 		try {
@@ -977,7 +977,7 @@ public class ArangoDriver {
 		validateCollectionName(collectionName);
 		validateDocumentHandle(vertexHandle);
 		HttpResponseEntity res = httpManager.doGet(
-				baseUrl + "/edges/" + collectionName, 
+				baseUrl + "/_api/edges/" + collectionName, 
 				new MapBuilder()
 					.put("vertex", vertexHandle)
 					.put("direction", direction.name().toLowerCase(Locale.US))

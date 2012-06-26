@@ -87,11 +87,7 @@ public class ArangoDriver extends BaseArangoDriver {
 	}
 	
 	public V8Version getVersion() throws ArangoException {
-		HttpResponseEntity res = httpManager.doGet(baseUrl + "/_admin/v8-version");
-		if (res == null) {
-			// TODO
-		}
-		return createEntityImpl(res, V8Version.class);
+		return adminDriver.getVersion();
 	}
 
 	// ---------------------------------------- start of collection ----------------------------------------

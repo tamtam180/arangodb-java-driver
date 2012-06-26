@@ -22,6 +22,7 @@ import at.orz.arangodb.entity.AdminConfigDescriptionEntity;
 import at.orz.arangodb.entity.AdminConfigurationEntity;
 import at.orz.arangodb.entity.AdminLogEntity;
 import at.orz.arangodb.entity.AdminStatusEntity;
+import at.orz.arangodb.entity.V8Version;
 import at.orz.arangodb.http.HttpResponseEntity;
 import at.orz.arangodb.util.MapBuilder;
 
@@ -103,6 +104,14 @@ public class InternalAdminDriverImpl extends BaseArangoDriverImpl {
 		HttpResponseEntity res = httpManager.doGet(baseUrl + "/_admin/config/description");
 		return createEntity(res, AdminConfigDescriptionEntity.class);
 		
+	}
+
+	public V8Version getVersion() throws ArangoException {
+		HttpResponseEntity res = httpManager.doGet(baseUrl + "/_admin/v8-version");
+		if (res == null) {
+			// TODO
+		}
+		return createEntityImpl(res, V8Version.class);
 	}
 
 	

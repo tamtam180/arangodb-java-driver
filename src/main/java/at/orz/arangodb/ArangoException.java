@@ -16,8 +16,6 @@
 
 package at.orz.arangodb;
 
-import java.io.ObjectInputStream.GetField;
-
 import at.orz.arangodb.entity.BaseEntity;
 
 /**

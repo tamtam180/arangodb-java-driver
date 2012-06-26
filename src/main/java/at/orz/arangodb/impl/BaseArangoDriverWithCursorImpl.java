@@ -14,34 +14,21 @@
  * limitations under the License.
  */
 
-package at.orz.arangodb;
-
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+package at.orz.arangodb.impl;
 
 import at.orz.arangodb.ArangoConfigure;
-import at.orz.arangodb.ArangoDriver;
 
 /**
  * @author tamtam180 - kirscheless at gmail.com
  *
  */
-public class BaseTest {
-
-	protected static ArangoConfigure configure;
-	protected static ArangoDriver client;
+class BaseArangoDriverWithCursorImpl extends BaseArangoDriverImpl {
 	
-	@BeforeClass
-	public static void _setup() {
-		configure = new ArangoConfigure();
-		configure.init();
-		client = new ArangoDriver(configure);
-	}
+	protected InternalCursorDriverImpl cursorDriver;
 	
-	@AfterClass
-	public static void _shutdown() {
-		configure.shutdown();
+	BaseArangoDriverWithCursorImpl(ArangoConfigure configure, InternalCursorDriverImpl cursorDriver) {
+		super(configure);
+		this.cursorDriver = cursorDriver;
 	}
-
 	
 }

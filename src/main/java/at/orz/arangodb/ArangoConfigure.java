@@ -16,6 +16,8 @@
 
 package at.orz.arangodb;
 
+import at.orz.arangodb.http.HttpManager;
+
 /**
  * Configure of ArangoDB
  * @author tamtam180 - kirscheless at gmail.com
@@ -43,6 +45,8 @@ public class ArangoConfigure {
 	String proxyHost;
 	int proxyPort;
 	
+	HttpManager httpManager;
+	
 	public ArangoConfigure() {
 		this.clinetPort = DEFAULT_CLIENT_PORT;
 		this.adminPort = DEFAULT_ADMIN_PORT;
@@ -51,6 +55,31 @@ public class ArangoConfigure {
 		this.host = DEFAULT_HOST;
 	}
 
+	public void init() {
+		this.httpManager = new HttpManager();
+
+		this.httpManager.setDefaultMaxPerRoute(this.maxPerConnection);
+		this.httpManager.setMaxTotal(this.maxTotalConnection);
+		this.httpManager.setProxyHost(this.proxyHost);
+		this.httpManager.setProxyPort(this.proxyPort);
+		
+		this.httpManager.init();
+	}
+	
+	public void shutdown() {
+		if (httpManager != null) {
+			httpManager.destroy();
+			httpManager = null;
+		}
+	}
+	
+	// TODO 複数ホスト接続対応までの一時的な対応。
+	// 複数ホスト対応の際は、セレクタのクラスを保持するようにする。
+	public String getBaseUrl() {
+		return "http://" + this.host + ":" + this.clinetPort;
+	}
+	
+	
 	public static String getDefaultHost() {
 		return DEFAULT_HOST;
 	}
@@ -149,6 +178,14 @@ public class ArangoConfigure {
 
 	public void setProxyPort(int proxyPort) {
 		this.proxyPort = proxyPort;
+	}
+
+	public HttpManager getHttpManager() {
+		return httpManager;
+	}
+
+	public void setHttpManager(HttpManager httpManager) {
+		this.httpManager = httpManager;
 	}
 	
 	

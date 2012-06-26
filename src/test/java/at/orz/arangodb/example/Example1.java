@@ -38,6 +38,8 @@ public class Example1 {
 	public static void main(String[] args) {
 
 		ArangoConfigure configure = new ArangoConfigure();
+		configure.init();
+		
 		ArangoDriver driver = new ArangoDriver(configure);
 		
 		try {
@@ -68,7 +70,7 @@ public class Example1 {
 		} catch (ArangoException e) {
 			e.printStackTrace();
 		} finally {
-			driver.shutdown();
+			configure.shutdown();
 		}
 		
 	}

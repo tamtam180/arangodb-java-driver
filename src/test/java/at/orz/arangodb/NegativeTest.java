@@ -75,6 +75,7 @@ public class NegativeTest extends BaseTest {
 	public void test_issue_35_and_41() throws Exception {
 		
 		ArangoConfigure configure = new ArangoConfigure();
+		configure.init();
 		ArangoDriver driver = new ArangoDriver(configure);
 		
 		TestComplex value = new TestComplex();
@@ -85,7 +86,7 @@ public class NegativeTest extends BaseTest {
 		String documentHandle = doc.getDocumentHandle();
 		DocumentEntity<TestComplex> doc2 = driver.getDocument(documentHandle, TestComplex.class, Mode.RAISE_ERROR);
 		
-		driver.shutdown();
+		configure.shutdown();
 		
 	}
 	
@@ -93,6 +94,7 @@ public class NegativeTest extends BaseTest {
 	public void test_primitive() throws Exception {
 		
 		ArangoConfigure configure = new ArangoConfigure();
+		configure.init();
 		ArangoDriver driver = new ArangoDriver(configure);
 		
 		String value = "AAA";
@@ -100,7 +102,7 @@ public class NegativeTest extends BaseTest {
 		String documentHandle = doc.getDocumentHandle();
 		DocumentEntity<String> doc2 = driver.getDocument(documentHandle, String.class, Mode.RAISE_ERROR);
 		
-		driver.shutdown();
+		configure.shutdown();
 		
 	}
 

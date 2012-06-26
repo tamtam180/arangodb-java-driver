@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import at.orz.arangodb.entity.CursorEntity;
+import at.orz.arangodb.impl.InternalCursorDriverImpl;
 
 /**
  * @author tamtam180 - kirscheless at gmail.com
@@ -27,15 +28,15 @@ import at.orz.arangodb.entity.CursorEntity;
  */
 public class CursorResultSet<T> implements Iterable<T> {
 
-	private transient ArangoDriver driver;
+	private transient InternalCursorDriverImpl cursorDriver;
 	private transient Class<T> clazz;
 	private transient CursorEntity<T> entity;
 	private transient int pos;
 	private int totalCount;
 	private transient Iterator<T> itr;
 	
-	CursorResultSet(ArangoDriver driver, Class<T> clazz, CursorEntity<T> entity) {
-		this.driver = driver;
+	public CursorResultSet(InternalCursorDriverImpl cursorDriver, Class<T> clazz, CursorEntity<T> entity) {
+		this.cursorDriver = cursorDriver;
 		this.clazz = clazz;
 		this.entity = entity;
 		this.totalCount = entity == null ? 0 : entity.getCount();
@@ -57,7 +58,7 @@ public class CursorResultSet<T> implements Iterable<T> {
 	
 	public void close() throws ArangoException {
 		long cursorId = entity.getCursorId();
-		driver.finishQuery(cursorId);
+		cursorDriver.finishQuery(cursorId);
 	}
 	
 	public int getTotalCount() {
@@ -66,7 +67,7 @@ public class CursorResultSet<T> implements Iterable<T> {
 	
 	private void updateEntity() throws ArangoException {
 		long cursorId = entity.getCursorId();
-		this.entity = driver.continueQuery(cursorId, this.clazz);
+		this.entity = cursorDriver.continueQuery(cursorId, this.clazz);
 		this.pos = 0;
 	}
 	

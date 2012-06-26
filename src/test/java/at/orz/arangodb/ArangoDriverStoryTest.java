@@ -48,6 +48,7 @@ public class ArangoDriverStoryTest {
 		
 		// hostやport, connection-poolなどの設定
 		ArangoConfigure configure = new ArangoConfigure();
+		configure.init();
 		final ArangoDriver driver = new ArangoDriver(configure);
 		
 		// コレクションを作る
@@ -106,7 +107,7 @@ public class ArangoDriverStoryTest {
 			svc.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
 		} finally {
 			// 後始末
-			driver.shutdown();
+			configure.shutdown();
 		}
 	}
 	

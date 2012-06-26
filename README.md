@@ -33,6 +33,7 @@ Example1.javaを参照してください。
 
 ``` Java
   ArangoConfigure configure = new ArangoConfigure();
+  configure.init();
   ArangoDriver client = new ArangoDriver(configure);
   
   String collectionName = "mytest";
@@ -51,7 +52,7 @@ Example1.javaを参照してください。
   // Delete Document
   driver.deleteDocument(documentHandle, -1, DeletePolicy.LAST, Mode.RAISE_ERROR);  
 
-  client.shutdown();
+  configure.shutdown();
 ```
 
 ## ArangoDriver

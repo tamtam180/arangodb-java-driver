@@ -50,12 +50,13 @@ public class MyTDD {
 	@BeforeClass
 	public static void setup() {
 		configure = new ArangoConfigure();
+		configure.init();
 		client = new ArangoDriver(configure);
 	}
 	
 	@AfterClass
 	public static void shutdown() {
-		client.shutdown();
+		configure.shutdown();
 	}
 	
 	public static class TestComplexEntity {

@@ -16,6 +16,8 @@
 
 package at.orz.arangodb.impl;
 
+import java.util.Map;
+
 import at.orz.arangodb.ArangoConfigure;
 import at.orz.arangodb.ArangoException;
 import at.orz.arangodb.CursorResultSet;
@@ -49,8 +51,9 @@ public class InternalSimpleDriverImpl extends BaseArangoDriverWithCursorImpl {
 			String collectionName, int skip, int limit,
 			Class<T> clazz) throws ArangoException {
 		
-		HttpResponseEntity res = httpManager.doPost(
-				baseUrl + "/_api/cursor", 
+		validateCollectionName(collectionName);
+		HttpResponseEntity res = httpManager.doPut(
+				baseUrl + "/_api/simple/all", 
 				null,
 				EntityFactory.toJsonString(
 						new MapBuilder()
@@ -59,6 +62,7 @@ public class InternalSimpleDriverImpl extends BaseArangoDriverWithCursorImpl {
 						.put("limit", limit > 0 ? limit : null)
 						.get())
 				);
+		
 		try {
 			CursorEntity<T> entity = createEntity(res, CursorEntity.class);
 			// resultを処理する
@@ -67,9 +71,53 @@ public class InternalSimpleDriverImpl extends BaseArangoDriverWithCursorImpl {
 		} catch (ArangoException e) {
 			// TODO
 			throw e;
-		}
+		}		
+	}
+
+	public <T> CursorEntity<T> executeSimpleByExample(
+			String collectionName,
+			Map<String, Object> example,
+			int skip, int limit,
+			Class<T> clazz
+			) throws ArangoException {
 		
+		validateCollectionName(collectionName);
+		HttpResponseEntity res = httpManager.doPut(
+				baseUrl + "/_api/simple/by-example", 
+				null,
+				EntityFactory.toJsonString(
+						new MapBuilder()
+						.put("collection", collectionName)
+						.put("example", example)
+						.put("skip", skip > 0 ? skip : null)
+						.put("limit", limit > 0 ? limit : null)
+						.get())
+				);
+		
+		try {
+			CursorEntity<T> entity = createEntity(res, CursorEntity.class);
+			// resultを処理する
+			EntityFactory.createResult(entity, clazz);
+			return entity;
+		} catch (ArangoException e) {
+			// TODO
+			throw e;
+		}		
 		
 	}
 
+	public <T> CursorResultSet<T> executeSimpleByExampleWithResultSet(
+			String collectionName, Map<String, Object> example,
+			int skip, int limit,
+			Class<T> clazz
+			) throws ArangoException {
+		
+		CursorEntity<T> entity = executeSimpleByExample(collectionName, example, skip, limit, clazz);
+		CursorResultSet<T> rs = new CursorResultSet<T>(cursorDriver, clazz, entity);
+		return rs;
+		
+	}
+
+	
+	
 }

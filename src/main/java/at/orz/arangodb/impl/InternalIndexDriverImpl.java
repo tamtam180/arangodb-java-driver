@@ -20,8 +20,6 @@ import java.util.Locale;
 
 import at.orz.arangodb.ArangoConfigure;
 import at.orz.arangodb.ArangoException;
-import at.orz.arangodb.CursorResultSet;
-import at.orz.arangodb.entity.CursorEntity;
 import at.orz.arangodb.entity.EntityFactory;
 import at.orz.arangodb.entity.IndexEntity;
 import at.orz.arangodb.entity.IndexType;

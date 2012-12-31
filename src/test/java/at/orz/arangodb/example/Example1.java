@@ -52,14 +52,15 @@ public class Example1 {
 				case 2: value.gender = "OTHER"; break;
 				}
 				value.age = (int) (Math.random() * 100) + 10;
-				driver.createDocument("example_collection1", value, true, null, null);
+				driver.createDocument("example_collection1", value, true, null);
 			}
 			
 			HashMap<String, Object> bindVars = new HashMap<String, Object>();
 			bindVars.put("gender", "WOMAN");
 			
 			CursorResultSet<ExampleEntity> rs = driver.executeQueryWithResultSet(
-					"select t from example_collection1 t where t.age >= 20 && t.age < 30 && t.gender == @gender@", 
+					//"select t from example_collection1 t where t.age >= 20 && t.age < 30 && t.gender == @gender@", 
+					"FOR t IN example_collection1 FILTER t.age >= 20 && t.age < 30 && t.gender == @gender RETURN t", 
 					bindVars, ExampleEntity.class, true, 10);
 			
 			System.out.println(rs.getTotalCount());

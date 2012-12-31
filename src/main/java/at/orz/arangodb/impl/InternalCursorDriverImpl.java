@@ -58,7 +58,6 @@ public class InternalCursorDriverImpl extends BaseArangoDriverImpl {
 	// ※Iteratorで綺麗に何回もRoundtripもしてくれる処理はClientのレイヤーで行う。
 	// ※ここでは単純にコールするだけ
 	
-	// TODO Mode
 	public <T> CursorEntity<T> executeQuery(
 			String query, Map<String, Object> bindVars,
 			Class<T> clazz,
@@ -81,13 +80,11 @@ public class InternalCursorDriverImpl extends BaseArangoDriverImpl {
 			EntityFactory.createResult(entity, clazz);
 			return entity;
 		} catch (ArangoException e) {
-			// TODO
 			throw e;
 		}
 		
 	}
 	
-	// TODO Mode
 	public <T> CursorEntity<T> continueQuery(long cursorId, Class<T> clazz) throws ArangoException {
 		
 		HttpResponseEntity res = httpManager.doPut(
@@ -102,13 +99,11 @@ public class InternalCursorDriverImpl extends BaseArangoDriverImpl {
 			EntityFactory.createResult(entity, clazz);
 			return entity;
 		} catch (ArangoException e) {
-			// TODO
 			throw e;
 		}
 		
 	}
 	
-	// TODO Mode
 	public DefaultEntity finishQuery(long cursorId) throws ArangoException {
 		HttpResponseEntity res = httpManager.doDelete(
 				baseUrl + "/_api/cursor/" + cursorId, 

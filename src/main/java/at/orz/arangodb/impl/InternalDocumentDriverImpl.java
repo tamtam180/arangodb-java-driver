@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Locale;
 
 import at.orz.arangodb.ArangoConfigure;
-import at.orz.arangodb.ArangoDriver.Mode;
 import at.orz.arangodb.ArangoException;
 import at.orz.arangodb.entity.DefaultEntity;
 import at.orz.arangodb.entity.DocumentEntity;
@@ -42,10 +41,10 @@ public class InternalDocumentDriverImpl extends BaseArangoDriverImpl {
 		super(configure);
 	}
 
-	public DocumentEntity<?> createDocument(long collectionId, Object value, Boolean createCollection, Boolean waitForSync, Mode mode) throws ArangoException {
-		return createDocument(String.valueOf(collectionId), value, createCollection, waitForSync, mode);
-	}
-	public <T> DocumentEntity<T> createDocument(String collectionName, Object value, Boolean createCollection, Boolean waitForSync, Mode mode) throws ArangoException {
+//	public DocumentEntity<?> createDocument(long collectionId, Object value, Boolean createCollection, Boolean waitForSync) throws ArangoException {
+//		return createDocument(String.valueOf(collectionId), value, createCollection, waitForSync);
+//	}
+	public <T> DocumentEntity<T> createDocument(String collectionName, Object value, Boolean createCollection, Boolean waitForSync) throws ArangoException {
 		
 		validateCollectionName(collectionName);
 		HttpResponseEntity res = httpManager.doPost(
@@ -61,23 +60,23 @@ public class InternalDocumentDriverImpl extends BaseArangoDriverImpl {
 			DocumentEntity<T> entity = createEntity(res, DocumentEntity.class);
 			return entity;
 		} catch (ArangoException e) {
-			if (HttpManager.is404Error(e)) {
-				if (mode == null || mode == Mode.RETURN_NULL) {
-					return null;
-				}
-			}
+//			if (HttpManager.is404Error(e)) {
+//				if (mode == null || mode == Mode.RETURN_NULL) {
+//					return null;
+//				}
+//			}
 			throw e;
 		}
 		
 	}
 	
-	public DocumentEntity<?> updateDocument(long collectionId, long documentId, Object value, long rev, Policy policy, Boolean waitForSync, Mode mode) throws ArangoException {
-		return updateDocument(createDocumentHandle(collectionId, documentId), value, rev, policy, waitForSync, mode);
-	}
-	public DocumentEntity<?> updateDocument(String collectionName, long documentId, Object value, long rev, Policy policy, Boolean waitForSync, Mode mode) throws ArangoException {
-		return updateDocument(createDocumentHandle(collectionName, documentId), value, rev, policy, waitForSync, mode);
-	}
-	public <T> DocumentEntity<T> updateDocument(String documentHandle, Object value, long rev, Policy policy, Boolean waitForSync, Mode mode) throws ArangoException {
+//	public DocumentEntity<?> updateDocument(long collectionId, long documentId, Object value, long rev, Policy policy, Boolean waitForSync) throws ArangoException {
+//		return updateDocument(createDocumentHandle(collectionId, documentId), value, rev, policy, waitForSync);
+//	}
+//	public DocumentEntity<?> updateDocument(String collectionName, long documentId, Object value, long rev, Policy policy, Boolean waitForSync) throws ArangoException {
+//		return updateDocument(createDocumentHandle(collectionName, documentId), value, rev, policy, waitForSync);
+//	}
+	public <T> DocumentEntity<T> updateDocument(String documentHandle, Object value, long rev, Policy policy, Boolean waitForSync) throws ArangoException {
 		
 		validateDocumentHandle(documentHandle);
 		HttpResponseEntity res = httpManager.doPut(
@@ -92,20 +91,20 @@ public class InternalDocumentDriverImpl extends BaseArangoDriverImpl {
 			DocumentEntity<T> entity = createEntity(res, DocumentEntity.class);
 			return entity;
 		} catch (ArangoException e) {
-			if (HttpManager.is404Error(e)) {
-				if (mode == null || mode == Mode.RETURN_NULL) {
-					return null;
-				}
-			}
+//			if (HttpManager.is404Error(e)) {
+//				if (mode == null || mode == Mode.RETURN_NULL) {
+//					return null;
+//				}
+//			}
 			throw e;
 		}
 		
 	}
 	
 	
-	public List<String> getDocuments(long collectionId) throws ArangoException {
-		return getDocuments(String.valueOf(collectionId));
-	}
+//	public List<String> getDocuments(long collectionId) throws ArangoException {
+//		return getDocuments(String.valueOf(collectionId));
+//	}
 	public List<String> getDocuments(String collectionName) throws ArangoException {
 		
 		HttpResponseEntity res = httpManager.doGet(
@@ -119,12 +118,12 @@ public class InternalDocumentDriverImpl extends BaseArangoDriverImpl {
 	}
 	
 	
-	public long checkDocument(long collectionId, long documentId) throws ArangoException {
-		return checkDocument(createDocumentHandle(collectionId, documentId));
-	}
-	public long checkDocument(String collectionName, long documentId) throws ArangoException {
-		return checkDocument(createDocumentHandle(collectionName, documentId));
-	}
+//	public long checkDocument(long collectionId, long documentId) throws ArangoException {
+//		return checkDocument(createDocumentHandle(collectionId, documentId));
+//	}
+//	public long checkDocument(String collectionName, long documentId) throws ArangoException {
+//		return checkDocument(createDocumentHandle(collectionName, documentId));
+//	}
 	public long checkDocument(String documentHandle) throws ArangoException {
 		
 		validateDocumentHandle(documentHandle);
@@ -138,13 +137,13 @@ public class InternalDocumentDriverImpl extends BaseArangoDriverImpl {
 		
 	}
 
-	public <T> DocumentEntity<T> getDocument(long collectionId, long documentId, Class<T> clazz, Mode mode) throws ArangoException {
-		return getDocument(createDocumentHandle(collectionId, documentId), clazz, mode);
-	}
-	public <T> DocumentEntity<T> getDocument(String collectionName, long documentId, Class<T> clazz, Mode mode) throws ArangoException {
-		return getDocument(createDocumentHandle(collectionName, documentId), clazz, mode);
-	}
-	public <T> DocumentEntity<T> getDocument(String documentHandle, Class<T> clazz, Mode mode) throws ArangoException {
+//	public <T> DocumentEntity<T> getDocument(long collectionId, long documentId, Class<T> clazz) throws ArangoException {
+//		return getDocument(createDocumentHandle(collectionId, documentId), clazz);
+//	}
+//	public <T> DocumentEntity<T> getDocument(String collectionName, long documentId, Class<T> clazz) throws ArangoException {
+//		return getDocument(createDocumentHandle(collectionName, documentId), clazz);
+//	}
+	public <T> DocumentEntity<T> getDocument(String documentHandle, Class<T> clazz) throws ArangoException {
 		
 		// TODO If-None-Match http-header
 		// TODO CAS
@@ -166,22 +165,22 @@ public class InternalDocumentDriverImpl extends BaseArangoDriverImpl {
 			return entity;
 		} catch (ArangoException e) {
 			// TODO 404
-			if (HttpManager.is404Error(e)) {
-				if (mode == null || mode == Mode.RETURN_NULL) {
-					return null;
-				}
-			}
+//			if (HttpManager.is404Error(e)) {
+//				if (mode == null || mode == Mode.RETURN_NULL) {
+//					return null;
+//				}
+//			}
 			throw e;
 		}
 	}
 
-	public DocumentEntity<?> deleteDocument(long collectionId, long documentId, long rev, Policy policy, Mode mode) throws ArangoException {
-		return deleteDocument(createDocumentHandle(collectionId, documentId), rev, policy, mode);
-	}
-	public DocumentEntity<?> deleteDocument(String collectionName, long documentId, long rev, Policy policy, Mode mode) throws ArangoException {
-		return deleteDocument(createDocumentHandle(collectionName, documentId), rev, policy, mode);
-	}
-	public DocumentEntity<?> deleteDocument(String documentHandle, long rev, Policy policy, Mode mode) throws ArangoException {
+//	public DocumentEntity<?> deleteDocument(long collectionId, long documentId, long rev, Policy policy) throws ArangoException {
+//		return deleteDocument(createDocumentHandle(collectionId, documentId), rev, policy);
+//	}
+//	public DocumentEntity<?> deleteDocument(String collectionName, long documentId, long rev, Policy policy) throws ArangoException {
+//		return deleteDocument(createDocumentHandle(collectionName, documentId), rev, policy);
+//	}
+	public DocumentEntity<?> deleteDocument(String documentHandle, long rev, Policy policy) throws ArangoException {
 		
 		validateDocumentHandle(documentHandle);
 		HttpResponseEntity res = httpManager.doDelete(
@@ -195,14 +194,14 @@ public class InternalDocumentDriverImpl extends BaseArangoDriverImpl {
 			DocumentEntity<?> entity = createEntity(res, DocumentEntity.class);
 			return entity;
 		} catch (ArangoException e) {
-			if (HttpManager.is404Error(e)) {
-				if (mode == null || mode == Mode.RETURN_NULL) {
-					return null;
-				}
-			} else if (HttpManager.is412Error(e)) {
-				// TODO mode
-				return (DocumentEntity<?>) e.getEntity();
-			}
+//			if (HttpManager.is404Error(e)) {
+//				if (mode == null || mode == Mode.RETURN_NULL) {
+//					return null;
+//				}
+//			} else if (HttpManager.is412Error(e)) {
+//				// TODO mode
+//				return (DocumentEntity<?>) e.getEntity();
+//			}
 			throw e;
 		}
 		

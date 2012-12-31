@@ -39,8 +39,10 @@ public class ArangoDriverCursorResultSetTest extends BaseTest {
 
 		// Collectionを作る
 		String collectionName = "unit_test_query_test";
-		client.createCollection(collectionName, null, null);
-		client.truncateCollection(collectionName, null);
+		try {
+			driver.createCollection(collectionName);
+		} catch (ArangoException e) {}
+		driver.truncateCollection(collectionName);
 		
 		// テストデータを作る
 		for (int i = 0; i < 100; i++) {
@@ -48,7 +50,7 @@ public class ArangoDriverCursorResultSetTest extends BaseTest {
 					"user_" + (i % 10), 
 					"desc" + (i % 10), 
 					i);
-			client.createDocument(collectionName, value, null, null, null);
+			driver.createDocument(collectionName, value, null, null);
 		}
 
 	}
@@ -61,7 +63,7 @@ public class ArangoDriverCursorResultSetTest extends BaseTest {
 		Map<String, Object> bindVars = new MapBuilder().put("age", 90).get();
 		
 		// 全件とれる範囲
-		CursorResultSet<TestComplexEntity01> rs = client.executeQueryWithResultSet(
+		CursorResultSet<TestComplexEntity01> rs = driver.executeQueryWithResultSet(
 				query, bindVars, TestComplexEntity01.class, true, 20);
 		
 		int count = 0;
@@ -80,7 +82,7 @@ public class ArangoDriverCursorResultSetTest extends BaseTest {
 		String query = "FOR t IN unit_test_query_test FILTER t.age >= @age SORT t.age RETURN t";
 		Map<String, Object> bindVars = new MapBuilder().put("age", 90).get();
 		
-		CursorResultSet<TestComplexEntity01> rs = client.executeQueryWithResultSet(
+		CursorResultSet<TestComplexEntity01> rs = driver.executeQueryWithResultSet(
 				query, bindVars, TestComplexEntity01.class, true, 10);
 		
 		int count = 0;
@@ -99,7 +101,7 @@ public class ArangoDriverCursorResultSetTest extends BaseTest {
 		String query = "FOR t IN unit_test_query_test FILTER t.age >= @age SORT t.age RETURN t";
 		Map<String, Object> bindVars = new MapBuilder().put("age", 90).get();
 		
-		CursorResultSet<TestComplexEntity01> rs = client.executeQueryWithResultSet(
+		CursorResultSet<TestComplexEntity01> rs = driver.executeQueryWithResultSet(
 				query, bindVars, TestComplexEntity01.class, true, 5);
 		
 		int count = 0;
@@ -118,7 +120,7 @@ public class ArangoDriverCursorResultSetTest extends BaseTest {
 		String query = "FOR t IN unit_test_query_test FILTER t.age >= @age SORT t.age RETURN t";
 		Map<String, Object> bindVars = new MapBuilder().put("age", 90).get();
 		
-		CursorResultSet<TestComplexEntity01> rs = client.executeQueryWithResultSet(
+		CursorResultSet<TestComplexEntity01> rs = driver.executeQueryWithResultSet(
 				query, bindVars, TestComplexEntity01.class, true, 3);
 		
 		int count = 0;
@@ -137,7 +139,7 @@ public class ArangoDriverCursorResultSetTest extends BaseTest {
 		String query = "FOR t IN unit_test_query_test FILTER t.age >= @age SORT t.age RETURN t";
 		Map<String, Object> bindVars = new MapBuilder().put("age", 90).get();
 		
-		CursorResultSet<TestComplexEntity01> rs = client.executeQueryWithResultSet(
+		CursorResultSet<TestComplexEntity01> rs = driver.executeQueryWithResultSet(
 				query, bindVars, TestComplexEntity01.class, true, 1);
 		
 		int count = 0;
@@ -160,7 +162,7 @@ public class ArangoDriverCursorResultSetTest extends BaseTest {
 		String query = "FOR t IN unit_test_query_test FILTER t.age >= @age SORT t.age RETURN t";
 		Map<String, Object> bindVars = new MapBuilder().put("age", 90).get();
 		
-		CursorResultSet<TestComplexEntity01> rs = client.executeQueryWithResultSet(
+		CursorResultSet<TestComplexEntity01> rs = driver.executeQueryWithResultSet(
 				query, bindVars, TestComplexEntity01.class, true, 2);
 		
 		int count = 0;
@@ -186,7 +188,7 @@ public class ArangoDriverCursorResultSetTest extends BaseTest {
 		String query = "FOR t IN unit_test_query_test FILTER t.age >= @age SORT t.age RETURN t";
 		Map<String, Object> bindVars = new MapBuilder().put("age", 90).get();
 		
-		CursorResultSet<TestComplexEntity01> rs = client.executeQueryWithResultSet(
+		CursorResultSet<TestComplexEntity01> rs = driver.executeQueryWithResultSet(
 				query, bindVars, TestComplexEntity01.class, true, 2);
 		
 		int count = 0;

@@ -93,143 +93,145 @@ public class ArangoDriver extends BaseArangoDriver {
 	// ---------------------------------------- start of collection ----------------------------------------
 	
 	public CollectionEntity createCollection(String name) throws ArangoException {
-		return collectionDriver.createCollection(name);
+		return collectionDriver.createCollection(name, null, null, null, null);
 	}
 	
-	public CollectionEntity createCollection(String name, Boolean waitForSync, Mode mode) throws ArangoException {
-		return collectionDriver.createCollection(name, waitForSync, mode);
+	public CollectionEntity createCollection(String name, Boolean waitForSync,
+			Integer journalSize, Boolean isSystem, Integer type) throws ArangoException {
+		return collectionDriver.createCollection(name, waitForSync, journalSize, isSystem, type);
 	}
 	
-	public CollectionEntity getCollection(long id, Mode mode) throws ArangoException {
-		return collectionDriver.getCollection(id, mode);
+	public CollectionEntity getCollection(long id) throws ArangoException {
+		return getCollection(String.valueOf(id));
 	}
-	public CollectionEntity getCollection(String name, Mode mode) throws ArangoException {
-		return collectionDriver.getCollection(name, mode);
-	}
-	
-	public CollectionEntity getCollectionProperties(long id, Mode mode) throws ArangoException {
-		return collectionDriver.getCollectionProperties(id, mode);
-	}
-	public CollectionEntity getCollectionProperties(String name, Mode mode) throws ArangoException {
-		return collectionDriver.getCollectionProperties(name, mode);
+	public CollectionEntity getCollection(String name) throws ArangoException {
+		return collectionDriver.getCollection(name);
 	}
 	
-	public CollectionEntity getCollectionCount(long id, Mode mode) throws ArangoException {
-		return collectionDriver.getCollectionCount(id, mode);
+	public CollectionEntity getCollectionProperties(long id) throws ArangoException {
+		return getCollectionProperties(String.valueOf(id));
 	}
-	public CollectionEntity getCollectionCount(String name, Mode mode) throws ArangoException {
-		return collectionDriver.getCollectionCount(name, mode);
+	public CollectionEntity getCollectionProperties(String name) throws ArangoException {
+		return collectionDriver.getCollectionProperties(name);
 	}
 	
-	public CollectionEntity getCollectionFigures(long id, Mode mode) throws ArangoException {
-		return collectionDriver.getCollectionFigures(id, mode);
+	public CollectionEntity getCollectionCount(long id) throws ArangoException {
+		return getCollectionCount(String.valueOf(id));
 	}
-	public CollectionEntity getCollectionFigures(String name, Mode mode) throws ArangoException {
-		return collectionDriver.getCollectionFigures(name, mode);
+	public CollectionEntity getCollectionCount(String name) throws ArangoException {
+		return collectionDriver.getCollectionCount(name);
+	}
+	
+	public CollectionEntity getCollectionFigures(long id) throws ArangoException {
+		return getCollectionFigures(String.valueOf(id));
+	}
+	public CollectionEntity getCollectionFigures(String name) throws ArangoException {
+		return collectionDriver.getCollectionFigures(name);
 	}
 	
 	public CollectionsEntity getCollections() throws ArangoException {
 		return collectionDriver.getCollections();
 	}
 	
-	public CollectionEntity loadCollection(long id, Mode mode) throws ArangoException {
-		return collectionDriver.loadCollection(id, mode);
+	public CollectionEntity loadCollection(long id) throws ArangoException {
+		return loadCollection(String.valueOf(id));
 	}
-	public CollectionEntity loadCollection(String name, Mode mode) throws ArangoException {
-		return collectionDriver.loadCollection(name, mode);
+	public CollectionEntity loadCollection(String name) throws ArangoException {
+		return collectionDriver.loadCollection(name);
 	}
 
-	public CollectionEntity unloadCollection(long id, Mode mode) throws ArangoException {
-		return collectionDriver.unloadCollection(id, mode);
+	public CollectionEntity unloadCollection(long id) throws ArangoException {
+		return unloadCollection(String.valueOf(id));
 	}
-	public CollectionEntity unloadCollection(String name, Mode mode) throws ArangoException {
-		return collectionDriver.unloadCollection(name, mode);
-	}
-	
-	public CollectionEntity truncateCollection(long id, Mode mode) throws ArangoException {
-		return collectionDriver.truncateCollection(id, mode);
-	}
-	public CollectionEntity truncateCollection(String name, Mode mode) throws ArangoException {
-		return collectionDriver.truncateCollection(name, mode);
+	public CollectionEntity unloadCollection(String name) throws ArangoException {
+		return collectionDriver.unloadCollection(name);
 	}
 	
-	public CollectionEntity setCollectionProperties(long id, boolean newWaitForSync, Mode mode) throws ArangoException {
-		return collectionDriver.setCollectionProperties(id, newWaitForSync, mode);
+	public CollectionEntity truncateCollection(long id) throws ArangoException {
+		return truncateCollection(String.valueOf(id));
 	}
-	public CollectionEntity setCollectionProperties(String name, boolean newWaitForSync, Mode mode) throws ArangoException {
-		return collectionDriver.setCollectionProperties(name, newWaitForSync, mode);
-	}
-	
-	public CollectionEntity renameCollection(long id, String newName, Mode mode) throws ArangoException {
-		return collectionDriver.renameCollection(id, newName, mode);
-	}
-	public CollectionEntity renameCollection(String name, String newName, Mode mode) throws ArangoException {
-		return collectionDriver.renameCollection(name, newName, mode);
+	public CollectionEntity truncateCollection(String name) throws ArangoException {
+		return collectionDriver.truncateCollection(name);
 	}
 	
-	public CollectionEntity deleteCollection(long id, Mode mode) throws ArangoException {
-		return collectionDriver.deleteCollection(id, mode);
+	public CollectionEntity setCollectionProperties(long id, boolean newWaitForSync) throws ArangoException {
+		return setCollectionProperties(String.valueOf(id), newWaitForSync);
 	}
-	public CollectionEntity deleteCollection(String name, Mode mode) throws ArangoException {
-		return collectionDriver.deleteCollection(name, mode);
+	public CollectionEntity setCollectionProperties(String name, boolean newWaitForSync) throws ArangoException {
+		return collectionDriver.setCollectionProperties(name, newWaitForSync);
 	}
+	
+	public CollectionEntity renameCollection(long id, String newName) throws ArangoException {
+		return renameCollection(String.valueOf(id), newName);
+	}
+	public CollectionEntity renameCollection(String name, String newName) throws ArangoException {
+		return collectionDriver.renameCollection(name, newName);
+	}
+	
+	public CollectionEntity deleteCollection(long id) throws ArangoException {
+		return deleteCollection(String.valueOf(id));
+	}
+	public CollectionEntity deleteCollection(String name) throws ArangoException {
+		return collectionDriver.deleteCollection(name);
+	}
+	
 	// ---------------------------------------- end of collection ----------------------------------------
 
 	
 	// ---------------------------------------- start of document ----------------------------------------
 	
-	public DocumentEntity<?> createDocument(long collectionId, Object value, Boolean createCollection, Boolean waitForSync, Mode mode) throws ArangoException {
-		return documentDriver.createDocument(collectionId, value, createCollection, waitForSync, mode);
+	public DocumentEntity<?> createDocument(long collectionId, Object value, Boolean createCollection, Boolean waitForSync) throws ArangoException {
+		return createDocument(String.valueOf(collectionId), value, createCollection, waitForSync);
 	}
-	public <T> DocumentEntity<T> createDocument(String collectionName, Object value, Boolean createCollection, Boolean waitForSync, Mode mode) throws ArangoException {
-		return documentDriver.createDocument(collectionName, value, createCollection, waitForSync, mode);
+	public <T> DocumentEntity<T> createDocument(String collectionName, Object value, Boolean createCollection, Boolean waitForSync) throws ArangoException {
+		return documentDriver.createDocument(collectionName, value, createCollection, waitForSync);
 	}
 	
-	public DocumentEntity<?> updateDocument(long collectionId, long documentId, Object value, long rev, Policy policy, Boolean waitForSync, Mode mode) throws ArangoException {
-		return documentDriver.updateDocument(collectionId, documentId, value, rev, policy, waitForSync, mode);
+	public DocumentEntity<?> updateDocument(long collectionId, long documentId, Object value, long rev, Policy policy, Boolean waitForSync) throws ArangoException {
+		return updateDocument(createDocumentHandle(collectionId, documentId), value, rev, policy, waitForSync);
 	}
-	public DocumentEntity<?> updateDocument(String collectionName, long documentId, Object value, long rev, Policy policy, Boolean waitForSync, Mode mode) throws ArangoException {
-		return documentDriver.updateDocument(collectionName, documentId, value, rev, policy, waitForSync, mode);
+	public DocumentEntity<?> updateDocument(String collectionName, long documentId, Object value, long rev, Policy policy, Boolean waitForSync) throws ArangoException {
+		return updateDocument(createDocumentHandle(collectionName, documentId), value, rev, policy, waitForSync);
 	}
-	public <T> DocumentEntity<T> updateDocument(String documentHandle, Object value, long rev, Policy policy, Boolean waitForSync, Mode mode) throws ArangoException {
-		return documentDriver.updateDocument(documentHandle, value, rev, policy, waitForSync, mode);
+	public <T> DocumentEntity<T> updateDocument(String documentHandle, Object value, long rev, Policy policy, Boolean waitForSync) throws ArangoException {
+		return documentDriver.updateDocument(documentHandle, value, rev, policy, waitForSync);
 	}
 	
 	public List<String> getDocuments(long collectionId) throws ArangoException {
-		return documentDriver.getDocuments(collectionId);
+		return getDocuments(String.valueOf(collectionId));
 	}
 	public List<String> getDocuments(String collectionName) throws ArangoException {
 		return documentDriver.getDocuments(collectionName);
 	}
 	
 	public long checkDocument(long collectionId, long documentId) throws ArangoException {
-		return documentDriver.checkDocument(collectionId, documentId);
+		return checkDocument(createDocumentHandle(collectionId, documentId));
 	}
 	public long checkDocument(String collectionName, long documentId) throws ArangoException {
-		return documentDriver.checkDocument(collectionName, documentId);
+		return checkDocument(createDocumentHandle(collectionName, documentId));
 	}
 	public long checkDocument(String documentHandle) throws ArangoException {
 		return documentDriver.checkDocument(documentHandle);
 	}
 
-	public <T> DocumentEntity<T> getDocument(long collectionId, long documentId, Class<T> clazz, Mode mode) throws ArangoException {
-		return documentDriver.getDocument(collectionId, documentId, clazz, mode);
+	public <T> DocumentEntity<T> getDocument(long collectionId, long documentId, Class<T> clazz) throws ArangoException {
+		return getDocument(createDocumentHandle(collectionId, documentId), clazz);
 	}
-	public <T> DocumentEntity<T> getDocument(String collectionName, long documentId, Class<T> clazz, Mode mode) throws ArangoException {
-		return documentDriver.getDocument(collectionName, documentId, clazz, mode);
+	public <T> DocumentEntity<T> getDocument(String collectionName, long documentId, Class<T> clazz) throws ArangoException {
+		return getDocument(createDocumentHandle(collectionName, documentId), clazz);
 	}
-	public <T> DocumentEntity<T> getDocument(String documentHandle, Class<T> clazz, Mode mode) throws ArangoException {
-		return documentDriver.getDocument(documentHandle, clazz, mode);
+	public <T> DocumentEntity<T> getDocument(String documentHandle, Class<T> clazz) throws ArangoException {
+		return documentDriver.getDocument(documentHandle, clazz);
 	}
 
-	public DocumentEntity<?> deleteDocument(long collectionId, long documentId, long rev, Policy policy, Mode mode) throws ArangoException {
-		return documentDriver.deleteDocument(collectionId, documentId, rev, policy, mode);
+	public DocumentEntity<?> deleteDocument(long collectionId, long documentId, long rev, Policy policy) throws ArangoException {
+		return deleteDocument(createDocumentHandle(collectionId, documentId), rev, policy);
 	}
-	public DocumentEntity<?> deleteDocument(String collectionName, long documentId, long rev, Policy policy, Mode mode) throws ArangoException {
-		return documentDriver.deleteDocument(collectionName, documentId, rev, policy, mode);
+	public DocumentEntity<?> deleteDocument(String collectionName, long documentId, long rev, Policy policy) throws ArangoException {
+		return deleteDocument(createDocumentHandle(collectionName, documentId), rev, policy);
 	}
-	public DocumentEntity<?> deleteDocument(String documentHandle, long rev, Policy policy, Mode mode) throws ArangoException {
-		return documentDriver.deleteDocument(documentHandle, rev, policy, mode);
+	public DocumentEntity<?> deleteDocument(String documentHandle, long rev, Policy policy) throws ArangoException {
+		return documentDriver.deleteDocument(documentHandle, rev, policy);
 	}
 	
 	// ---------------------------------------- end of document ----------------------------------------
@@ -241,7 +243,6 @@ public class ArangoDriver extends BaseArangoDriver {
 		return cursorDriver.validateQuery(query);
 	}
 	
-	// TODO Mode
 	public <T> CursorEntity<T> executeQuery(
 			String query, Map<String, Object> bindVars,
 			Class<T> clazz,
@@ -251,12 +252,10 @@ public class ArangoDriver extends BaseArangoDriver {
 		
 	}
 	
-	// TODO Mode
 	public <T> CursorEntity<T> continueQuery(long cursorId, Class<T> clazz) throws ArangoException {
 		return cursorDriver.continueQuery(cursorId, clazz);
 	}
 	
-	// TODO Mode
 	public DefaultEntity finishQuery(long cursorId) throws ArangoException {
 		return cursorDriver.finishQuery(cursorId);
 	}
@@ -274,35 +273,35 @@ public class ArangoDriver extends BaseArangoDriver {
 	
 	public KeyValueEntity createKeyValue(
 			String collectionName, String key, Object value, 
-			Map<String, Object> attributes, Date expiredDate,
-			Mode mode) throws ArangoException {
-		return kvsDriver.createKeyValue(collectionName, key, value, attributes, expiredDate, mode);
+			Map<String, Object> attributes, Date expiredDate
+			) throws ArangoException {
+		return kvsDriver.createKeyValue(collectionName, key, value, attributes, expiredDate);
 	}
 	
 	public KeyValueEntity updateKeyValue(
 			String collectionName, String key, Object value, 
 			Map<String, Object> attributes, Date expiredDate,
-			boolean create,
-			Mode mode
+			boolean create
 			) throws ArangoException {
-		return kvsDriver.updateKeyValue(collectionName, key, value, attributes, expiredDate, create, mode);
+		return kvsDriver.updateKeyValue(collectionName, key, value, attributes, expiredDate, create);
 	}
+	
+	// TODO 全部実装されていないので実装する。ただ、1.1.1の段階ではドキュメントが工事中なんだが。
 	
 	// ---------------------------------------- end of kvs ----------------------------------------
 
 	
 	// ---------------------------------------- start of index ----------------------------------------
-	// IndexはModeなしにする。
 
 	public IndexEntity createIndex(long collectionId, IndexType type, boolean unique, String... fields) throws ArangoException {
-		return indexDriver.createIndex(collectionId, type, unique, fields);
+		return createIndex(String.valueOf(collectionId), type, unique, fields);
 	}
 	public IndexEntity createIndex(String collectionName, IndexType type, boolean unique, String... fields) throws ArangoException {
 		return indexDriver.createIndex(collectionName, type, unique, fields);
 	}
 
 	public IndexEntity createCappedIndex(long collectionId, int size) throws ArangoException {
-		return indexDriver.createCappedIndex(collectionId, size);
+		return createCappedIndex(String.valueOf(collectionId), size);
 	}
 	public IndexEntity createCappedIndex(String collectionName, int size) throws ArangoException {
 		return indexDriver.createCappedIndex(collectionName, size);
@@ -317,7 +316,7 @@ public class ArangoDriver extends BaseArangoDriver {
 	}
 
 	public IndexesEntity getIndexes(long collectionId) throws ArangoException {
-		return indexDriver.getIndexes(collectionId);
+		return getIndexes(String.valueOf(collectionId));
 	}
 	public IndexesEntity getIndexes(String collectionName) throws ArangoException {
 		return indexDriver.getIndexes(collectionName);
@@ -337,7 +336,7 @@ public class ArangoDriver extends BaseArangoDriver {
 			long collectionId, 
 			String fromHandle, String toHandle, 
 			T attribute) throws ArangoException {
-		return edgeDriver.createEdge(collectionId, fromHandle, toHandle, attribute);
+		return createEdge(String.valueOf(collectionId), fromHandle, toHandle, attribute);
 	}
 	
 	public <T> EdgeEntity<T> createEdge(
@@ -372,7 +371,7 @@ public class ArangoDriver extends BaseArangoDriver {
 	}
 
 	public EdgeEntity<?> deleteEdge(long collectionId, String edgeHandle) throws ArangoException {
-		return edgeDriver.deleteEdge(collectionId, edgeHandle);
+		return deleteEdge(String.valueOf(collectionId), edgeHandle);
 	}
 	public EdgeEntity<?> deleteEdge(String collectionName, String edgeHandle) throws ArangoException {
 		return edgeDriver.deleteEdge(collectionName, edgeHandle);
@@ -418,14 +417,4 @@ public class ArangoDriver extends BaseArangoDriver {
 
 	// ---------------------------------------- end of xxx ----------------------------------------
 
-	
-
-	public static enum Mode {
-		RETURN_NULL,
-		RETURN_ERROR_ENTITY,
-		RAISE_ERROR,
-		DUP_GET,
-		CREATE
-	}
-	
 }

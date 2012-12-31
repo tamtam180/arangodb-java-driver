@@ -38,9 +38,6 @@ public class InternalIndexDriverImpl extends BaseArangoDriverWithCursorImpl {
 		super(configure, cursorDriver);
 	}
 
-	public IndexEntity createIndex(long collectionId, IndexType type, boolean unique, String... fields) throws ArangoException {
-		return createIndex(String.valueOf(collectionId), type, unique, fields);
-	}
 	public IndexEntity createIndex(String collectionName, IndexType type, boolean unique, String... fields) throws ArangoException {
 		
 		if (type == IndexType.PRIMARY) {
@@ -67,14 +64,11 @@ public class InternalIndexDriverImpl extends BaseArangoDriverWithCursorImpl {
 			IndexEntity entity = createEntity(res, IndexEntity.class);
 			return entity;
 		} catch (ArangoException e) {
-			return null;
+			throw e;
 		}
 		
 	}
 
-	public IndexEntity createCappedIndex(long collectionId, int size) throws ArangoException {
-		return createCappedIndex(String.valueOf(collectionId), size);
-	}
 	public IndexEntity createCappedIndex(String collectionName, int size) throws ArangoException {
 		
 		validateCollectionName(collectionName);
@@ -93,8 +87,9 @@ public class InternalIndexDriverImpl extends BaseArangoDriverWithCursorImpl {
 			IndexEntity entity = createEntity(res, IndexEntity.class);
 			return entity;
 		} catch (ArangoException e) {
-			return null;
+			throw e;
 		}
+		
 	}
 	
 	public IndexEntity deleteIndex(String indexHandle) throws ArangoException {
@@ -108,7 +103,7 @@ public class InternalIndexDriverImpl extends BaseArangoDriverWithCursorImpl {
 			IndexEntity entity = createEntity(res, IndexEntity.class);
 			return entity;
 		} catch (ArangoException e) {
-			return null;
+			throw e;
 		}
 		
 	}
@@ -123,14 +118,11 @@ public class InternalIndexDriverImpl extends BaseArangoDriverWithCursorImpl {
 			IndexEntity entity = createEntity(res, IndexEntity.class);
 			return entity;
 		} catch (ArangoException e) {
-			return null;
+			throw e;
 		}
 		
 	}
 
-	public IndexesEntity getIndexes(long collectionId) throws ArangoException {
-		return getIndexes(String.valueOf(collectionId));
-	}
 	public IndexesEntity getIndexes(String collectionName) throws ArangoException {
 		
 		validateCollectionName(collectionName);
@@ -142,7 +134,7 @@ public class InternalIndexDriverImpl extends BaseArangoDriverWithCursorImpl {
 			IndexesEntity entity = createEntity(res, IndexesEntity.class);
 			return entity;
 		} catch (ArangoException e) {
-			return null;
+			throw e;
 		}
 		
 	}

@@ -29,7 +29,6 @@ import com.google.gson.Gson;
 import at.orz.arangodb.ArangoConfigure;
 import at.orz.arangodb.ArangoDriver;
 import at.orz.arangodb.ArangoException;
-import at.orz.arangodb.ArangoDriver.Mode;
 import at.orz.arangodb.entity.DefaultEntity;
 import at.orz.arangodb.entity.DocumentEntity;
 import at.orz.arangodb.entity.EntityFactory;
@@ -82,9 +81,9 @@ public class NegativeTest extends BaseTest {
 		value.name = "A\"A'@:///A";
 		
 		//String value = "AAA";
-		DocumentEntity<?> doc = driver.createDocument("unit_test_issue35", value, true, true, Mode.RAISE_ERROR);
+		DocumentEntity<?> doc = driver.createDocument("unit_test_issue35", value, true, true);
 		String documentHandle = doc.getDocumentHandle();
-		DocumentEntity<TestComplex> doc2 = driver.getDocument(documentHandle, TestComplex.class, Mode.RAISE_ERROR);
+		DocumentEntity<TestComplex> doc2 = driver.getDocument(documentHandle, TestComplex.class);
 		
 		configure.shutdown();
 		
@@ -98,9 +97,9 @@ public class NegativeTest extends BaseTest {
 		ArangoDriver driver = new ArangoDriver(configure);
 		
 		String value = "AAA";
-		DocumentEntity<?> doc = driver.createDocument("unit_test_issue35", value, true, true, Mode.RAISE_ERROR);
+		DocumentEntity<?> doc = driver.createDocument("unit_test_issue35", value, true, true);
 		String documentHandle = doc.getDocumentHandle();
-		DocumentEntity<String> doc2 = driver.getDocument(documentHandle, String.class, Mode.RAISE_ERROR);
+		DocumentEntity<String> doc2 = driver.getDocument(documentHandle, String.class);
 		
 		configure.shutdown();
 		

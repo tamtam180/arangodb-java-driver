@@ -105,6 +105,7 @@ public abstract class BaseArangoDriver {
 		validateAndSetStatusCode(res, entity);
 		return entity;
 	}
+	
 	protected void validateAndSetStatusCode(HttpResponseEntity res, BaseEntity entity) throws ArangoException {
 		if (entity != null) {
 			if (res.getEtag() > 0) {
@@ -116,6 +117,7 @@ public abstract class BaseArangoDriver {
 			}
 		}
 	}
+	
 	protected <T> T createEntityImpl(HttpResponseEntity res, Class<T> clazz) throws ArangoException {
 		T entity = EntityFactory.createEntity(res.getText(), clazz);
 		return entity;

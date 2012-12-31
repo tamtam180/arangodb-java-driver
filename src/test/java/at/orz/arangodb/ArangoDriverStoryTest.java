@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
 import at.orz.arangodb.ArangoConfigure;
 import at.orz.arangodb.ArangoDriver;
 import at.orz.arangodb.ArangoException;
-import at.orz.arangodb.ArangoDriver.Mode;
 import at.orz.arangodb.entity.CollectionEntity;
 import at.orz.arangodb.entity.DocumentEntity;
 import at.orz.arangodb.entity.Policy;
@@ -53,11 +52,14 @@ public class ArangoDriverStoryTest {
 		
 		// コレクションを作る
 		final String collectionName = "unit_test_story_01";
-		CollectionEntity collection = driver.createCollection(collectionName, false, Mode.DUP_GET);
+		try {
+			driver.deleteCollection(collectionName);
+		} catch (ArangoException e) {}
+		CollectionEntity collection = driver.createCollection(collectionName, true, null, null, null);
 		logger.info("collectionId={}", collection.getId());
 		
 		// コレクションの中身を削除する
-		driver.truncateCollection(collectionName, null);
+		driver.truncateCollection(collectionName);
 		
 		// スレッドセーフです
 		try {
@@ -74,14 +76,14 @@ public class ArangoDriverStoryTest {
 										(int) (100d * Math.random()));
 								// ドキュメントを作る
 								DocumentEntity<TestComplexEntity01> ret1 = 
-										driver.createDocument(collectionName, value, null, null, null);
+										driver.createDocument(collectionName, value, null, null);
 								
 								String _id = ret1.getDocumentHandle(); // ドキュメントのID(_id)
 								long _rev = ret1.getDocumentRevision(); // ドキュメントのリビジョン(_rev)
 								
 								// ドキュメントを取得する
 								DocumentEntity<TestComplexEntity01> ret2 =
-										driver.getDocument(_id, TestComplexEntity01.class, null);
+										driver.getDocument(_id, TestComplexEntity01.class);
 								// 取得したドキュメントの確認
 								assertThat(ret2.getDocumentHandle(), is(_id));
 								assertThat(ret2.getEntity().getUser(), is(value.getUser()));
@@ -89,8 +91,7 @@ public class ArangoDriverStoryTest {
 								assertThat(ret2.getEntity().getAge(), is(value.getAge()));
 								
 								// ドキュメントを削除する
-								DocumentEntity<?> ret3 = driver.deleteDocument(
-										_id, -1, Policy.LAST, Mode.RAISE_ERROR);
+								DocumentEntity<?> ret3 = driver.deleteDocument(_id, -1, Policy.LAST);
 								assertThat(ret3.getDocumentHandle(), is(_id));
 								assertThat(ret3.getDocumentRevision(), is(_rev));
 								

@@ -34,7 +34,7 @@ public class ArangoDriverVersionTest extends BaseTest {
 	@Test
 	public void test_version() throws ArangoException {
 		
-		V8Version version = client.getVersion();
+		V8Version version = driver.getVersion();
 		
 		assertThat(version, is(notNullValue()));
 		assertThat(version.getVersion(), is("V8")); // FIXME 固定はよくないね

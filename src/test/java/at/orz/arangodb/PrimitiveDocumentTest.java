@@ -23,10 +23,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import at.orz.arangodb.ArangoException;
-import at.orz.arangodb.ArangoDriver.Mode;
 import at.orz.arangodb.entity.DocumentEntity;
 
 /**
@@ -40,10 +38,10 @@ public class PrimitiveDocumentTest extends BaseTest {
 		
 		String value = "AAA";
 		
-		DocumentEntity<?> res = client.createDocument("unit_test_primitive", value, true, true, Mode.RAISE_ERROR);
+		DocumentEntity<?> res = driver.createDocument("unit_test_primitive", value, true, true);
 		String documentHandle = res.getDocumentHandle();
 		
-		DocumentEntity<String> doc = client.getDocument(documentHandle, String.class, Mode.RAISE_ERROR);
+		DocumentEntity<String> doc = driver.getDocument(documentHandle, String.class);
 		assertThat(doc.getEntity(), is(value));
 		
 	}
@@ -53,10 +51,10 @@ public class PrimitiveDocumentTest extends BaseTest {
 		
 		String value = "AA\"A";
 		
-		DocumentEntity<?> res = client.createDocument("unit_test_primitive", value, true, true, Mode.RAISE_ERROR);
+		DocumentEntity<?> res = driver.createDocument("unit_test_primitive", value, true, true);
 		String documentHandle = res.getDocumentHandle();
 		
-		DocumentEntity<String> doc = client.getDocument(documentHandle, String.class, Mode.RAISE_ERROR);
+		DocumentEntity<String> doc = driver.getDocument(documentHandle, String.class);
 		assertThat(doc.getEntity(), is(value));
 		
 	}
@@ -66,10 +64,10 @@ public class PrimitiveDocumentTest extends BaseTest {
 		
 		String value = "AA☆A";
 		
-		DocumentEntity<?> res = client.createDocument("unit_test_primitive", value, true, true, Mode.RAISE_ERROR);
+		DocumentEntity<?> res = driver.createDocument("unit_test_primitive", value, true, true);
 		String documentHandle = res.getDocumentHandle();
 		
-		DocumentEntity<String> doc = client.getDocument(documentHandle, String.class, Mode.RAISE_ERROR);
+		DocumentEntity<String> doc = driver.getDocument(documentHandle, String.class);
 		assertThat(doc.getEntity(), is(value));
 		
 	}
@@ -80,10 +78,10 @@ public class PrimitiveDocumentTest extends BaseTest {
 		TestComplexEntity01 value = new TestComplexEntity01("寿司", "", 10);
 		System.out.println(new Gson().toJson(value));
 		
-		DocumentEntity<?> res = client.createDocument("unit_test_primitive", value, true, true, Mode.RAISE_ERROR);
+		DocumentEntity<?> res = driver.createDocument("unit_test_primitive", value, true, true);
 		String documentHandle = res.getDocumentHandle();
 		
-		DocumentEntity<TestComplexEntity01> doc = client.getDocument(documentHandle, TestComplexEntity01.class, Mode.RAISE_ERROR);
+		DocumentEntity<TestComplexEntity01> doc = driver.getDocument(documentHandle, TestComplexEntity01.class);
 		System.out.println(doc.getEntity().getUser());
 		System.out.println(doc.getEntity().getDesc());
 		System.out.println(doc.getEntity().getAge());
@@ -94,10 +92,10 @@ public class PrimitiveDocumentTest extends BaseTest {
 		
 		String value = "\\\\";
 		
-		DocumentEntity<?> res = client.createDocument("unit_test_primitive", value, true, true, Mode.RAISE_ERROR);
+		DocumentEntity<?> res = driver.createDocument("unit_test_primitive", value, true, true);
 		String documentHandle = res.getDocumentHandle();
 		
-		DocumentEntity<String> doc = client.getDocument(documentHandle, String.class, Mode.RAISE_ERROR);
+		DocumentEntity<String> doc = driver.getDocument(documentHandle, String.class);
 		assertThat(doc.getEntity(), is(value));
 		
 	}
@@ -107,10 +105,10 @@ public class PrimitiveDocumentTest extends BaseTest {
 		
 		String value = "AA\t\nA;/@*:='&%$#!~\\";
 		
-		DocumentEntity<?> res = client.createDocument("unit_test_primitive", value, true, true, Mode.RAISE_ERROR);
+		DocumentEntity<?> res = driver.createDocument("unit_test_primitive", value, true, true);
 		String documentHandle = res.getDocumentHandle();
 		
-		DocumentEntity<String> doc = client.getDocument(documentHandle, String.class, Mode.RAISE_ERROR);
+		DocumentEntity<String> doc = driver.getDocument(documentHandle, String.class);
 		assertThat(doc.getEntity(), is(value));
 		
 	}
@@ -120,10 +118,10 @@ public class PrimitiveDocumentTest extends BaseTest {
 		
 		String value = null;
 		
-		DocumentEntity<?> res = client.createDocument("unit_test_primitive", value, true, true, Mode.RAISE_ERROR);
+		DocumentEntity<?> res = driver.createDocument("unit_test_primitive", value, true, true);
 		String documentHandle = res.getDocumentHandle();
 		
-		DocumentEntity<String> doc = client.getDocument(documentHandle, String.class, Mode.RAISE_ERROR);
+		DocumentEntity<String> doc = driver.getDocument(documentHandle, String.class);
 		assertThat(doc.getEntity(), is(nullValue()));
 		
 	}
@@ -133,10 +131,10 @@ public class PrimitiveDocumentTest extends BaseTest {
 		
 		boolean value = true;
 		
-		DocumentEntity<?> res = client.createDocument("unit_test_primitive", value, true, true, Mode.RAISE_ERROR);
+		DocumentEntity<?> res = driver.createDocument("unit_test_primitive", value, true, true);
 		String documentHandle = res.getDocumentHandle();
 		
-		DocumentEntity<Boolean> doc = client.getDocument(documentHandle, boolean.class, Mode.RAISE_ERROR);
+		DocumentEntity<Boolean> doc = driver.getDocument(documentHandle, boolean.class);
 		assertThat(doc.getEntity(), is(value));
 		
 	}
@@ -146,10 +144,10 @@ public class PrimitiveDocumentTest extends BaseTest {
 		
 		boolean value = false;
 		
-		DocumentEntity<?> res = client.createDocument("unit_test_primitive", value, true, true, Mode.RAISE_ERROR);
+		DocumentEntity<?> res = driver.createDocument("unit_test_primitive", value, true, true);
 		String documentHandle = res.getDocumentHandle();
 		
-		DocumentEntity<Boolean> doc = client.getDocument(documentHandle, boolean.class, Mode.RAISE_ERROR);
+		DocumentEntity<Boolean> doc = driver.getDocument(documentHandle, boolean.class);
 		assertThat(doc.getEntity(), is(value));
 		
 	}
@@ -159,10 +157,10 @@ public class PrimitiveDocumentTest extends BaseTest {
 		
 		int value = 1000000;
 		
-		DocumentEntity<?> res = client.createDocument("unit_test_primitive", value, true, true, Mode.RAISE_ERROR);
+		DocumentEntity<?> res = driver.createDocument("unit_test_primitive", value, true, true);
 		String documentHandle = res.getDocumentHandle();
 		
-		DocumentEntity<Integer> doc = client.getDocument(documentHandle, int.class, Mode.RAISE_ERROR);
+		DocumentEntity<Integer> doc = driver.getDocument(documentHandle, int.class);
 		assertThat(doc.getEntity(), is(value));
 		
 	}
@@ -172,10 +170,10 @@ public class PrimitiveDocumentTest extends BaseTest {
 		
 		long value = Long.MAX_VALUE;
 		
-		DocumentEntity<?> res = client.createDocument("unit_test_primitive", value, true, true, Mode.RAISE_ERROR);
+		DocumentEntity<?> res = driver.createDocument("unit_test_primitive", value, true, true);
 		String documentHandle = res.getDocumentHandle();
 		
-		DocumentEntity<Long> doc = client.getDocument(documentHandle, long.class, Mode.RAISE_ERROR);
+		DocumentEntity<Long> doc = driver.getDocument(documentHandle, long.class);
 		assertThat(doc.getEntity(), is(value));
 		
 	}
@@ -186,10 +184,10 @@ public class PrimitiveDocumentTest extends BaseTest {
 		
 		double value = Double.MAX_VALUE;
 		
-		DocumentEntity<?> res = client.createDocument("unit_test_primitive", value, true, true, Mode.RAISE_ERROR);
+		DocumentEntity<?> res = driver.createDocument("unit_test_primitive", value, true, true);
 		String documentHandle = res.getDocumentHandle();
 		
-		DocumentEntity<Double> doc = client.getDocument(documentHandle, double.class, Mode.RAISE_ERROR);
+		DocumentEntity<Double> doc = driver.getDocument(documentHandle, double.class);
 		assertThat(doc.getEntity(), is(value));
 		
 	}

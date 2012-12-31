@@ -27,6 +27,7 @@ import at.orz.arangodb.entity.EdgeEntity;
 import at.orz.arangodb.entity.EdgesEntity;
 
 /**
+ * Graph Example.
  * @author tamtam180 - kirscheless at gmail.com
  *
  */
@@ -54,12 +55,15 @@ public class Example2 {
 		final String collectionName = "example";
 		try {
 			
+			// Create Collection for Graph
+			driver.createCollection(collectionName, false, null, null, 3);
+			
 			// CreateVertex
 			ArrayList<DocumentEntity<TestVertex>> docs = new ArrayList<DocumentEntity<TestVertex>>();
 			for (int i = 0; i < 10; i++) {
 				TestVertex value = new TestVertex();
 				value.name = "vvv" + i;
-				DocumentEntity<TestVertex> doc = driver.createDocument(collectionName, value, true, false, null);
+				DocumentEntity<TestVertex> doc = driver.createDocument(collectionName, value, true, false);
 				docs.add(doc);
 			}
 			

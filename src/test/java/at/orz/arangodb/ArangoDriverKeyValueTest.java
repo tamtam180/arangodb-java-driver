@@ -16,6 +16,9 @@
 
 package at.orz.arangodb;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
+
 import java.util.Date;
 
 import org.junit.After;
@@ -44,8 +47,12 @@ public class ArangoDriverKeyValueTest extends BaseTest {
 		logger.debug("----------");
 		
 		// 事前に消しておく
-		client.deleteCollection(collectionName, null);
-		client.deleteCollection(collectionName404, null);
+		try {
+			driver.deleteCollection(collectionName);
+		} catch (ArangoException e) {}
+		try {
+			driver.deleteCollection(collectionName404);
+		} catch (ArangoException e) {}
 
 		logger.debug("--");
 		
@@ -63,10 +70,13 @@ public class ArangoDriverKeyValueTest extends BaseTest {
 		
 		String key = "aaa";
 		Object value = "12345";
-		client.createKeyValue(
-				collectionName404, 
-				key, value, new MapBuilder("opt1", "aa").get(), new Date(System.currentTimeMillis() + 1000L * 60), null);
-		
+		try {
+			driver.createKeyValue(
+					collectionName404, 
+					key, value, new MapBuilder("opt1", "aa").get(), new Date(System.currentTimeMillis() + 1000L * 60));
+		} catch (ArangoException e) {
+			assertThat(e.getErrorNumber(), is(1203)); // FIXME MagicNumber
+		}
 	}
 	
 	@Test

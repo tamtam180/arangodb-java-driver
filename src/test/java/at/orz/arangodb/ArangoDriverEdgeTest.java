@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import org.junit.Test;
 
 import at.orz.arangodb.ArangoException;
+import at.orz.arangodb.entity.CollectionEntity;
 import at.orz.arangodb.entity.Direction;
 import at.orz.arangodb.entity.DocumentEntity;
 import at.orz.arangodb.entity.EdgeEntity;
@@ -49,13 +50,60 @@ public class ArangoDriverEdgeTest extends BaseTest {
 	}
 	
 	@Test
+	public void testSameCollectionType() throws ArangoException {
+		
+		// コレクションの種類が違うとエラーになることを確認する。
+		String collectionName = "unit_test_edge1";
+		try {
+			driver.deleteCollection(collectionName);
+		} catch (ArangoException e) {}
+		CollectionEntity col = driver.createCollection(collectionName, true, null, null, 3); // FIXME MagicNumber 3
+		
+		TestVertex value = new TestVertex();
+		DocumentEntity<TestVertex> v1 = driver.createDocument(collectionName, value, false, true);
+		DocumentEntity<TestVertex> v2 = driver.createDocument(collectionName, value, false, true);
+		
+		driver.createEdge(collectionName, v1.getDocumentHandle(), v2.getDocumentHandle(), null);
+		
+	}
+
+	@Test
+	public void testDifferentCollectionType() throws ArangoException {
+		
+		// コレクションの種類が違うとエラーになることを確認する。
+		String collectionName = "unit_test_edge1";
+		try {
+			driver.deleteCollection(collectionName);
+		} catch (ArangoException e) {}
+		CollectionEntity col = driver.createCollection(collectionName, true, null, null, 2); // FIXME MagicNumber 2
+		
+		TestVertex value = new TestVertex();
+		DocumentEntity<TestVertex> v1 = driver.createDocument(collectionName, value, false, true);
+		DocumentEntity<TestVertex> v2 = driver.createDocument(collectionName, value, false, true);
+		
+		try {
+			driver.createEdge(collectionName, v1.getDocumentHandle(), v2.getDocumentHandle(), null);
+			fail("例外が発生しないとダメ");
+		} catch (ArangoException e) {
+			assertThat(e.getErrorNumber(), is(4)); // FIXME MagicNumber
+		}
+		
+	}
+
+	@Test
 	public void test1() throws ArangoException {
+		
+		String collectionName = "unit_test_edge1";
+		try {
+			driver.deleteCollection(collectionName);
+		} catch (ArangoException e) {}
+		driver.createCollection(collectionName, true, null, null, 3); // FIXME MagicNumber 3
 		
 		ArrayList<DocumentEntity<TestVertex>> docs = new ArrayList<DocumentEntity<TestVertex>>();
 		for (int i = 0; i < 10; i++) {
 			TestVertex value = new TestVertex();
 			value.name = "vvv" + i;
-			DocumentEntity<TestVertex> doc = client.createDocument("unit_test", value, true, false, null);
+			DocumentEntity<TestVertex> doc = driver.createDocument(collectionName, value, true, false);
 			docs.add(doc);
 		}
 		
@@ -63,28 +111,28 @@ public class ArangoDriverEdgeTest extends BaseTest {
 		// 0 -> 2
 		// 2 -> 3
 		
-		EdgeEntity<TestEdgeAttribute> edge1 = client.createEdge(
-				"unit_test", docs.get(0).getDocumentHandle(), docs.get(1).getDocumentHandle(), 
+		EdgeEntity<TestEdgeAttribute> edge1 = driver.createEdge(
+				collectionName, docs.get(0).getDocumentHandle(), docs.get(1).getDocumentHandle(), 
 				new TestEdgeAttribute("edge1", 100));
 		assertThat(edge1.isError(), is(false));
 		assertThat(edge1.getEdgeHandle(), is(notNullValue()));
 		assertThat(edge1.getRevision(), is(not(0L)));
 
-		EdgeEntity<TestEdgeAttribute> edge2 = client.createEdge(
-				"unit_test", docs.get(0).getDocumentHandle(), docs.get(2).getDocumentHandle(), 
+		EdgeEntity<TestEdgeAttribute> edge2 = driver.createEdge(
+				collectionName, docs.get(0).getDocumentHandle(), docs.get(2).getDocumentHandle(), 
 				new TestEdgeAttribute("edge2", 200));
 		assertThat(edge2.isError(), is(false));
 		assertThat(edge2.getEdgeHandle(), is(notNullValue()));
 		assertThat(edge2.getRevision(), is(not(0L)));
 
-		EdgeEntity<TestEdgeAttribute> edge3 = client.createEdge(
-				"unit_test", docs.get(2).getDocumentHandle(), docs.get(3).getDocumentHandle(), 
+		EdgeEntity<TestEdgeAttribute> edge3 = driver.createEdge(
+				collectionName, docs.get(2).getDocumentHandle(), docs.get(3).getDocumentHandle(), 
 				new TestEdgeAttribute("edge3", 300));
 		assertThat(edge3.isError(), is(false));
 		assertThat(edge3.getEdgeHandle(), is(notNullValue()));
 		assertThat(edge3.getRevision(), is(not(0L)));
 
-		EdgeEntity<TestEdgeAttribute> edge1ex = client.getEdge(edge1.getEdgeHandle(), TestEdgeAttribute.class);
+		EdgeEntity<TestEdgeAttribute> edge1ex = driver.getEdge(edge1.getEdgeHandle(), TestEdgeAttribute.class);
 		assertThat(edge1ex.isError(), is(false));
 		assertThat(edge1ex.getEdgeHandle(), is(notNullValue()));
 		assertThat(edge1ex.getRevision(), is(not(0L)));
@@ -92,7 +140,7 @@ public class ArangoDriverEdgeTest extends BaseTest {
 		assertThat(edge1ex.getAttributes().b, is(100));
 		
 		
-		EdgesEntity<TestEdgeAttribute> edges = client.getEdges("unit_test", docs.get(0).getDocumentHandle(), Direction.ANY, TestEdgeAttribute.class);
+		EdgesEntity<TestEdgeAttribute> edges = driver.getEdges(collectionName, docs.get(0).getDocumentHandle(), Direction.ANY, TestEdgeAttribute.class);
 		assertThat(edges.size(), is(2));
 		assertThat(edges.get(0).getEdgeHandle(), is(edge1.getEdgeHandle()));
 		assertThat(edges.get(0).getRevision(), is(edge1.getRevision()));
@@ -110,16 +158,16 @@ public class ArangoDriverEdgeTest extends BaseTest {
 		
 		
 		// delete edge2
-		EdgeEntity<?> ret1 = client.deleteEdge("unit_test", edge2.getEdgeHandle());
+		EdgeEntity<?> ret1 = driver.deleteEdge(collectionName, edge2.getEdgeHandle());
 		assertThat(ret1.isError(), is(false));
 		assertThat(ret1.getEdgeHandle(), is(edge2.getEdgeHandle()));
 		
-		EdgesEntity<TestEdgeAttribute> edges2 = client.getEdges("unit_test", docs.get(0).getDocumentHandle(), Direction.ANY, TestEdgeAttribute.class);
+		EdgesEntity<TestEdgeAttribute> edges2 = driver.getEdges(collectionName, docs.get(0).getDocumentHandle(), Direction.ANY, TestEdgeAttribute.class);
 		assertThat(edges2.size(), is(1));
 		assertThat(edges2.get(0).getAttributes().a, is("edge1"));
 		
 		// head
-		long etag = client.checkEdge(edge1.getEdgeHandle());
+		long etag = driver.checkEdge(edge1.getEdgeHandle());
 		assertThat(etag, is(not(0L)));
 		
 	}

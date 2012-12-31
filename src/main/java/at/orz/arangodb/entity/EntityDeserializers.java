@@ -112,13 +112,20 @@ public class EntityDeserializers {
 				JsonObject dead = obj.getAsJsonObject("dead");
 				entity.deadCount = dead.getAsJsonPrimitive("count").getAsLong();
 				entity.deadSize = dead.getAsJsonPrimitive("size").getAsLong();
+				entity.deadDeletion = dead.getAsJsonPrimitive("deletion").getAsLong();
 			}
 			
 			if (obj.has("datafiles")) {
 				JsonObject datafiles = obj.getAsJsonObject("datafiles");
 				entity.datafileCount = datafiles.getAsJsonPrimitive("count").getAsLong();
 			}
-
+			
+			if (obj.has("journals")) {
+				JsonObject journals = obj.getAsJsonObject("journals");
+				entity.journalsCount = journals.getAsJsonPrimitive("count").getAsLong();
+				entity.journalsFileSize = journals.getAsJsonPrimitive("fileSize").getAsLong();
+			}
+			
 			return entity;
 		}
 	}

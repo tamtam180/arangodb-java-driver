@@ -26,7 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import at.orz.arangodb.ArangoException;
-import at.orz.arangodb.ArangoDriver.Mode;
 import at.orz.arangodb.entity.CollectionEntity;
 import at.orz.arangodb.entity.DocumentEntity;
 /**
@@ -50,13 +49,15 @@ public class ArangoDriverDocumentTest extends BaseTest {
 		logger.debug("----------");
 		
 		// 事前に消しておく
-		client.deleteCollection(collectionName, null);
-		client.deleteCollection(collectionName2, null);
-		client.deleteCollection(collectionName404, null);
+		for (String col: new String[]{collectionName, collectionName2, collectionName404}) {
+			try {
+				driver.deleteCollection(col);
+			} catch (ArangoException e) {}
+		}
 
 		// 1と2は作る
-		col1 = client.createCollection(collectionName, false, Mode.RAISE_ERROR);
-		col2 = client.createCollection(collectionName2, true, Mode.RAISE_ERROR);
+		col1 = driver.createCollection(collectionName, false, null, null, null);
+		col2 = driver.createCollection(collectionName2, true, null, null, null);
 		
 		logger.debug("--");
 		
@@ -73,11 +74,11 @@ public class ArangoDriverDocumentTest extends BaseTest {
 		// 適当にドキュメントを作る
 		for (int i = 0; i < 100; i++) {
 			TestComplexEntity01 value = new TestComplexEntity01("user-" + i, "説明:" + i, i);
-			client.createDocument(collectionName, value, null, false, Mode.RETURN_NULL);
+			driver.createDocument(collectionName, value, null, false);
 		}
 		
 		// 100個格納できていることを確認する
-		assertThat(client.getCollectionCount(collectionName, null).getCount(), is(100L));
+		assertThat(driver.getCollectionCount(collectionName).getCount(), is(100L));
 		
 	}
 	
@@ -86,11 +87,11 @@ public class ArangoDriverDocumentTest extends BaseTest {
 		// 適当にドキュメントを作る
 		for (int i = 0; i < 100; i++) {
 			TestComplexEntity01 value = new TestComplexEntity01("user", "説明:", 10);
-			client.createDocument(collectionName, value, null, true, Mode.RETURN_NULL);
+			driver.createDocument(collectionName, value, null, true);
 		}
 		
 		// 100個格納できていることを確認する
-		assertThat(client.getCollectionCount(collectionName, null).getCount(), is(100L));
+		assertThat(driver.getCollectionCount(collectionName).getCount(), is(100L));
 	}
 	
 	/**
@@ -101,12 +102,8 @@ public class ArangoDriverDocumentTest extends BaseTest {
 	public void test_create_404() throws ArangoException {
 		
 		TestComplexEntity01 value = new TestComplexEntity01("test-user", "テスト☆ユーザー", 22);
-		// 存在しないコレクションに追加しようとする
-		DocumentEntity<?> res = client.createDocument(collectionName404, value, false, true, null);
-		assertThat(res, is(nullValue()));
-		
 		try {
-			client.createDocument(collectionName404, value, false, true, Mode.RAISE_ERROR);
+			driver.createDocument(collectionName404, value, false, true);
 			fail("例外が発生しないといけないの");
 		} catch (ArangoException e) {
 			assertThat(e.getCode(), is(404));
@@ -124,11 +121,11 @@ public class ArangoDriverDocumentTest extends BaseTest {
 
 		TestComplexEntity01 value = new TestComplexEntity01("test-user", "テスト☆ユーザー", 22);
 		// 存在しないコレクションに追加しようとする
-		DocumentEntity<TestComplexEntity01> res = client.createDocument(collectionName404, value, true, true, null);
+		DocumentEntity<TestComplexEntity01> res = driver.createDocument(collectionName404, value, true, true);
 		assertThat(res, is(notNullValue()));
 		
 		// コレクションができている
-		CollectionEntity col3 = client.getCollection(collectionName404, null);
+		CollectionEntity col3 = driver.getCollection(collectionName404);
 		assertThat(col3, is(notNullValue()));
 		
 		assertThat(res.getDocumentHandle().startsWith(col3.getId() + "/"), is(true));
@@ -141,11 +138,8 @@ public class ArangoDriverDocumentTest extends BaseTest {
 		
 		TestComplexEntity01 value = new TestComplexEntity01("test-user", "テスト☆ユーザー", 22);
 		// 存在しないコレクションに追加しようとする
-		DocumentEntity<?> res = client.updateDocument(collectionName404, 1, value, -1, null, null, null);
-		assertThat(res, is(nullValue()));
-		
 		try {
-			client.updateDocument(collectionName404, 1, value, -1, null, null, Mode.RAISE_ERROR);
+			driver.updateDocument(collectionName404, 1, value, -1, null, null);
 			fail("例外が発生しないといけないの");
 		} catch (ArangoException e) {
 			assertThat(e.getCode(), is(404));
@@ -159,11 +153,8 @@ public class ArangoDriverDocumentTest extends BaseTest {
 		
 		TestComplexEntity01 value = new TestComplexEntity01("test-user", "テスト☆ユーザー", 22);
 		// 存在するコレクションだが、ドキュメントが存在しない
-		DocumentEntity<?> res = client.updateDocument(collectionName, 1, value, -1, null, null, null);
-		assertThat(res, is(nullValue()));
-		
 		try {
-			client.updateDocument(collectionName, 1, value, -1, null, null, Mode.RAISE_ERROR);
+			driver.updateDocument(collectionName, 1, value, -1, null, null);
 			fail("例外が発生しないといけないの");
 		} catch (ArangoException e) {
 			assertThat(e.getCode(), is(404));
@@ -173,13 +164,13 @@ public class ArangoDriverDocumentTest extends BaseTest {
 	}
 
 	// TODO Delete
-	@Test
-	public void test_checkDocument() throws ArangoException {
-
-		DocumentEntity<String> doc = client.createDocument(collectionName, "xx", null, false, Mode.RETURN_NULL);
-
-		client.checkDocument(doc.getDocumentHandle());
-		
-	}
+//	@Test
+//	public void test_checkDocument() throws ArangoException {
+//
+//		DocumentEntity<String> doc = client.createDocument(collectionName, "xx", null, false, Mode.RETURN_NULL);
+//
+//		client.checkDocument(doc.getDocumentHandle());
+//		
+//	}
 	
 }

@@ -89,7 +89,12 @@ public class CollectionEntity extends BaseEntity {
 		long aliveSize;
 		long deadCount;
 		long deadSize;
+		long deadDeletion;
 		long datafileCount;
+		long datafileFileSize;
+		long journalsCount;
+		long journalsFileSize;
+		
 		public long getAliveCount() {
 			return aliveCount;
 		}
@@ -102,8 +107,20 @@ public class CollectionEntity extends BaseEntity {
 		public long getDeadSize() {
 			return deadSize;
 		}
+		public long getDeadDeletion() {
+			return deadDeletion;
+		}
 		public long getDatafileCount() {
 			return datafileCount;
+		}
+		public long getDatafileFileSize() {
+			return datafileFileSize;
+		}
+		public long getJournalsCount() {
+			return journalsCount;
+		}
+		public long getJournalsFileSize() {
+			return journalsFileSize;
 		}
 		public void setAliveCount(long aliveCount) {
 			this.aliveCount = aliveCount;
@@ -117,8 +134,20 @@ public class CollectionEntity extends BaseEntity {
 		public void setDeadSize(long deadSize) {
 			this.deadSize = deadSize;
 		}
+		public void setDeadDeletion(long deadDeletion) {
+			this.deadDeletion = deadDeletion;
+		}
 		public void setDatafileCount(long datafileCount) {
 			this.datafileCount = datafileCount;
+		}
+		public void setDatafileFileSize(long datafileFileSize) {
+			this.datafileFileSize = datafileFileSize;
+		}
+		public void setJournalsCount(long journalsCount) {
+			this.journalsCount = journalsCount;
+		}
+		public void setJournalsFileSize(long journalsFileSize) {
+			this.journalsFileSize = journalsFileSize;
 		}
 		
 	}

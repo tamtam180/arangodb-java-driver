@@ -18,13 +18,6 @@ public class InternalEdgeDriverImpl extends BaseArangoDriverImpl {
 	}
 	
 	public <T> EdgeEntity<T> createEdge(
-			long collectionId, 
-			String fromHandle, String toHandle, 
-			T attribute) throws ArangoException {
-		return createEdge(String.valueOf(collectionId), fromHandle, toHandle, attribute);
-	}
-	
-	public <T> EdgeEntity<T> createEdge(
 			String collectionName, 
 			String fromHandle, String toHandle, 
 			T attribute) throws ArangoException {
@@ -46,7 +39,7 @@ public class InternalEdgeDriverImpl extends BaseArangoDriverImpl {
 			EdgeEntity<T> entity = createEntity(res, EdgeEntity.class);
 			return entity;
 		} catch (ArangoException e) {
-			return null;
+			throw e;
 		}
 		
 	}
@@ -119,9 +112,6 @@ public class InternalEdgeDriverImpl extends BaseArangoDriverImpl {
 		
 	}
 
-	public EdgeEntity<?> deleteEdge(long collectionId, String edgeHandle) throws ArangoException {
-		return deleteEdge(String.valueOf(collectionId), edgeHandle);
-	}
 	public EdgeEntity<?> deleteEdge(String collectionName, String edgeHandle) throws ArangoException {
 		
 		validateDocumentHandle(edgeHandle);

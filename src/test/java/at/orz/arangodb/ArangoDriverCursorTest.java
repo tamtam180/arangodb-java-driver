@@ -38,7 +38,7 @@ public class ArangoDriverCursorTest extends BaseTest {
 	@Test
 	public void test_validateQuery() throws ArangoException {
 		
-		CursorEntity<?> entity = client.validateQuery(
+		CursorEntity<?> entity = driver.validateQuery(
 				//"SELECT t FROM unit_test_cursor t WHERE t.name == @name@ && t.age >= @age@"
 				"FOR t IN unit_test_cursor FILTER t.name == @name && t.age >= @age RETURN t"
 				);
@@ -54,7 +54,7 @@ public class ArangoDriverCursorTest extends BaseTest {
 	public void test_validateQuery_400_1() throws ArangoException {
 		
 		// =じゃなくて==じゃないとダメ。文法間違いエラー
-		CursorEntity<?> entity = client.validateQuery(
+		CursorEntity<?> entity = driver.validateQuery(
 				//"SELECT t FROM unit_test_cursor t WHERE t.name = @name@"
 				"FOR t IN unit_test_cursor FILTER t.name = @name@"
 				);
@@ -74,8 +74,10 @@ public class ArangoDriverCursorTest extends BaseTest {
 		
 		// Collectionを作る
 		String collectionName = "unit_test_query_test";
-		client.createCollection(collectionName, null, null);
-		client.truncateCollection(collectionName, null);
+		try {
+			driver.createCollection(collectionName);
+		} catch (ArangoException e) {}
+		driver.truncateCollection(collectionName);
 		
 		// テストデータを作る
 		for (int i = 0; i < 100; i++) {
@@ -83,7 +85,7 @@ public class ArangoDriverCursorTest extends BaseTest {
 					"user_" + (i % 10), 
 					"desc" + (i % 10), 
 					i);
-			client.createDocument(collectionName, value, null, null, null);
+			driver.createDocument(collectionName, value, null, null);
 		}
 		
 		//String query = "SELECT t FROM unit_test_query_test t WHERE t.age >= @age@";
@@ -92,7 +94,7 @@ public class ArangoDriverCursorTest extends BaseTest {
 		
 		// 全件とれる範囲
 		{
-			CursorEntity<TestComplexEntity01> result = client.<TestComplexEntity01>executeQuery(
+			CursorEntity<TestComplexEntity01> result = driver.<TestComplexEntity01>executeQuery(
 					query, bindVars, TestComplexEntity01.class, true, 20);
 			assertThat(result.size(), is(10));
 			assertThat(result.getCount(), is(10));
@@ -106,8 +108,10 @@ public class ArangoDriverCursorTest extends BaseTest {
 		
 		// Collectionを作る
 		String collectionName = "unit_test_query_test";
-		client.createCollection(collectionName, null, null);
-		client.truncateCollection(collectionName, null);
+		try {
+			driver.createCollection(collectionName);
+		} catch (ArangoException e) {}
+		driver.truncateCollection(collectionName);
 		
 		// テストデータを作る
 		for (int i = 0; i < 100; i++) {
@@ -115,7 +119,7 @@ public class ArangoDriverCursorTest extends BaseTest {
 					"user_" + (i % 10), 
 					"desc" + (i % 10), 
 					i);
-			client.createDocument(collectionName, value, null, null, null);
+			driver.createDocument(collectionName, value, null, null);
 		}
 		
 		//String query = "SELECT t FROM unit_test_query_test t WHERE t.age >= @age@";
@@ -125,7 +129,7 @@ public class ArangoDriverCursorTest extends BaseTest {
 		// ちまちまとる範囲
 		long cursorId;
 		{
-			CursorEntity<TestComplexEntity01> result = client.executeQuery(
+			CursorEntity<TestComplexEntity01> result = driver.executeQuery(
 					query, bindVars, TestComplexEntity01.class, true, 3);
 			assertThat(result.size(), is(3));
 			assertThat(result.getCount(), is(10));
@@ -138,7 +142,7 @@ public class ArangoDriverCursorTest extends BaseTest {
 		
 		// 次のRoundTrip
 		{
-			CursorEntity<TestComplexEntity01> result = client.continueQuery(
+			CursorEntity<TestComplexEntity01> result = driver.continueQuery(
 					cursorId, TestComplexEntity01.class);
 			assertThat(result.size(), is(3));
 			assertThat(result.getCount(), is(10));
@@ -147,7 +151,7 @@ public class ArangoDriverCursorTest extends BaseTest {
 
 		// 次のRoundTrip
 		{
-			CursorEntity<TestComplexEntity01> result = client.continueQuery(
+			CursorEntity<TestComplexEntity01> result = driver.continueQuery(
 					cursorId, TestComplexEntity01.class);
 			assertThat(result.size(), is(3));
 			assertThat(result.getCount(), is(10));
@@ -156,7 +160,7 @@ public class ArangoDriverCursorTest extends BaseTest {
 
 		// 次のRoundTrip
 		{
-			CursorEntity<TestComplexEntity01> result = client.continueQuery(
+			CursorEntity<TestComplexEntity01> result = driver.continueQuery(
 					cursorId, TestComplexEntity01.class);
 			assertThat(result.size(), is(1));
 			assertThat(result.getCount(), is(10));
@@ -165,7 +169,7 @@ public class ArangoDriverCursorTest extends BaseTest {
 		
 		// 削除
 		{
-			DefaultEntity result = client.finishQuery(cursorId);
+			DefaultEntity result = driver.finishQuery(cursorId);
 		}
 		
 	}

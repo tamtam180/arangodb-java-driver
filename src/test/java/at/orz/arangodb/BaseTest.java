@@ -29,13 +29,13 @@ import at.orz.arangodb.ArangoDriver;
 public class BaseTest {
 
 	protected static ArangoConfigure configure;
-	protected static ArangoDriver client;
+	protected static ArangoDriver driver;
 	
 	@BeforeClass
 	public static void _setup() {
 		configure = new ArangoConfigure();
 		configure.init();
-		client = new ArangoDriver(configure);
+		driver = new ArangoDriver(configure);
 	}
 	
 	@AfterClass

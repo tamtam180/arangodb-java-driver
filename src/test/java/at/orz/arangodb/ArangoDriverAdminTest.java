@@ -38,7 +38,7 @@ public class ArangoDriverAdminTest extends BaseTest {
 	@Test
 	public void test_log_all() throws ArangoException {
 		
-		AdminLogEntity entity = client.getServerLog(
+		AdminLogEntity entity = driver.getServerLog(
 				null, null, null, null, null, null, null);
 		
 		assertThat(entity, is(notNullValue()));
@@ -55,7 +55,7 @@ public class ArangoDriverAdminTest extends BaseTest {
 	@Test
 	public void test_log_text() throws ArangoException {
 		
-		AdminLogEntity entity = client.getServerLog(
+		AdminLogEntity entity = driver.getServerLog(
 				null, null, null, null, null, null, "Fun");
 		
 		assertThat(entity, is(notNullValue()));
@@ -71,7 +71,7 @@ public class ArangoDriverAdminTest extends BaseTest {
 	@Test
 	public void test_status() throws ArangoException {
 		
-		AdminStatusEntity status = client.getServerStatus();
+		AdminStatusEntity status = driver.getServerStatus();
 		
 		// debug
 		System.out.println(status.getMinorPageFaults());
@@ -87,7 +87,7 @@ public class ArangoDriverAdminTest extends BaseTest {
 	@Test
 	public void test_configure() throws ArangoException {
 		
-		AdminConfigurationEntity conf = client.getServerConfiguration();
+		AdminConfigurationEntity conf = driver.getServerConfiguration();
 		
 		// debug
 		for (Entry<String, Object> ent: conf.entrySet()) {
@@ -99,7 +99,7 @@ public class ArangoDriverAdminTest extends BaseTest {
 	@Test
 	public void test_config_description() throws ArangoException {
 		
-		AdminConfigDescriptionEntity desc = client.getServerConfigurationDescription();
+		AdminConfigDescriptionEntity desc = driver.getServerConfigurationDescription();
 		
 		// debug
 		for (Entry<String, AdminConfigDescriptionEntity.DescriptionEntry> ent : desc.entrySet()) {

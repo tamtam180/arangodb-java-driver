@@ -21,7 +21,6 @@ import java.util.Map;
 
 import at.orz.arangodb.ArangoConfigure;
 import at.orz.arangodb.ArangoException;
-import at.orz.arangodb.ArangoDriver.Mode;
 import at.orz.arangodb.entity.EntityFactory;
 import at.orz.arangodb.entity.KeyValueEntity;
 import at.orz.arangodb.http.HttpManager;
@@ -41,8 +40,7 @@ public class InternalKVSDriverImpl extends BaseArangoDriverImpl {
 
 	public KeyValueEntity createKeyValue(
 			String collectionName, String key, Object value, 
-			Map<String, Object> attributes, Date expiredDate,
-			Mode mode) throws ArangoException {
+			Map<String, Object> attributes, Date expiredDate) throws ArangoException {
 		
 		// TODO Sanitize Key
 		
@@ -61,11 +59,11 @@ public class InternalKVSDriverImpl extends BaseArangoDriverImpl {
 			setKeyValueHeader(res, entity);
 			return entity;
 		} catch (ArangoException e) {
-			if (HttpManager.is404Error(e)) { // コレクションが存在しないか、キーが既に存在する。
-				if (mode == null || mode == Mode.RETURN_NULL) {
-					return null;
-				}
-			}
+//			if (HttpManager.is404Error(e)) { // コレクションが存在しないか、キーが既に存在する。
+//				if (mode == null || mode == Mode.RETURN_NULL) {
+//					return null;
+//				}
+//			}
 			throw e;
 		}
 		
@@ -74,8 +72,7 @@ public class InternalKVSDriverImpl extends BaseArangoDriverImpl {
 	public KeyValueEntity updateKeyValue(
 			String collectionName, String key, Object value, 
 			Map<String, Object> attributes, Date expiredDate,
-			boolean create,
-			Mode mode
+			boolean create
 			) throws ArangoException {
 
 		// TODO Sanitize Key
@@ -95,11 +92,11 @@ public class InternalKVSDriverImpl extends BaseArangoDriverImpl {
 			setKeyValueHeader(res, entity);
 			return entity;
 		} catch (ArangoException e) {
-			if (HttpManager.is404Error(e)) { // コレクションが存在しないか、キーが既に存在する。
-				if (mode == null || mode == Mode.RETURN_NULL) {
-					return null;
-				}
-			}
+//			if (HttpManager.is404Error(e)) { // コレクションが存在しないか、キーが既に存在する。
+//				if (mode == null || mode == Mode.RETURN_NULL) {
+//					return null;
+//				}
+//			}
 			throw e;
 		}
 

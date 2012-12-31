@@ -22,6 +22,7 @@ import at.orz.arangodb.entity.AdminConfigDescriptionEntity;
 import at.orz.arangodb.entity.AdminConfigurationEntity;
 import at.orz.arangodb.entity.AdminLogEntity;
 import at.orz.arangodb.entity.AdminStatusEntity;
+import at.orz.arangodb.entity.ArangoUnixTime;
 import at.orz.arangodb.entity.ArangoVersion;
 import at.orz.arangodb.http.HttpResponseEntity;
 import at.orz.arangodb.util.MapBuilder;
@@ -117,5 +118,9 @@ public class InternalAdminDriverImpl extends BaseArangoDriverImpl {
 		return createEntityImpl(res, ArangoVersion.class);
 	}
 
+	public ArangoUnixTime getTime() throws ArangoException {
+		HttpResponseEntity res = httpManager.doGet(baseUrl + "/_admin/time");
+		return createEntityImpl(res, ArangoUnixTime.class);
+	}
 	
 }

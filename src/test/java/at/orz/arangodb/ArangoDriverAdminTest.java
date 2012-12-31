@@ -28,7 +28,9 @@ import at.orz.arangodb.entity.AdminConfigDescriptionEntity;
 import at.orz.arangodb.entity.AdminConfigurationEntity;
 import at.orz.arangodb.entity.AdminLogEntity;
 import at.orz.arangodb.entity.AdminStatusEntity;
+import at.orz.arangodb.entity.ArangoUnixTime;
 import at.orz.arangodb.entity.ArangoVersion;
+import at.orz.arangodb.util.ReflectionUtils;
 
 /**
  * @author tamtam180 - kirscheless at gmail.com
@@ -42,6 +44,20 @@ public class ArangoDriverAdminTest extends BaseTest {
 		ArangoVersion version = driver.getVersion();
 		assertThat(version.getServer(), is("arango"));
 		assertThat(version.getVersion(), is("1.1.1"));
+		
+	}
+	
+	@Test
+	public void test_time() throws ArangoException {
+		
+		ArangoUnixTime time = driver.getTime();
+		assertThat(time.getSecond(), is(not(0)));
+		assertThat(time.getMillisecond(), is(not(0L)));
+		assertThat(time.getMicrosecond(), is(not(0L)));
+		
+		System.out.println("unixtime=" + time.getSecond());
+		System.out.println("unixtime_millis=" + time.getMillisecond());
+		System.out.println("unixtime_micros=" + time.getMicrosecond());
 		
 	}
 	

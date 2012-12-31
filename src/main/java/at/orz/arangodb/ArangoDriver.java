@@ -24,6 +24,7 @@ import at.orz.arangodb.entity.AdminConfigDescriptionEntity;
 import at.orz.arangodb.entity.AdminConfigurationEntity;
 import at.orz.arangodb.entity.AdminLogEntity;
 import at.orz.arangodb.entity.AdminStatusEntity;
+import at.orz.arangodb.entity.ArangoUnixTime;
 import at.orz.arangodb.entity.CollectionEntity;
 import at.orz.arangodb.entity.CollectionsEntity;
 import at.orz.arangodb.entity.CursorEntity;
@@ -38,6 +39,7 @@ import at.orz.arangodb.entity.IndexesEntity;
 import at.orz.arangodb.entity.KeyValueEntity;
 import at.orz.arangodb.entity.Policy;
 import at.orz.arangodb.entity.ArangoVersion;
+import at.orz.arangodb.entity.EntityDeserializers.ArangoUnixTimeDeserializer;
 import at.orz.arangodb.http.HttpManager;
 import at.orz.arangodb.http.HttpResponseEntity;
 import at.orz.arangodb.impl.ImplFactory;
@@ -86,10 +88,6 @@ public class ArangoDriver extends BaseArangoDriver {
 		this.adminDriver = ImplFactory.createAdminDriver(configure);
 	}
 	
-	public ArangoVersion getVersion() throws ArangoException {
-		return adminDriver.getVersion();
-	}
-
 	// ---------------------------------------- start of collection ----------------------------------------
 	
 	public CollectionEntity createCollection(String name) throws ArangoException {
@@ -409,6 +407,13 @@ public class ArangoDriver extends BaseArangoDriver {
 		return adminDriver.getServerConfigurationDescription();
 	}
 	
+	public ArangoVersion getVersion() throws ArangoException {
+		return adminDriver.getVersion();
+	}
+
+	public ArangoUnixTime getTime() throws ArangoException {
+		return adminDriver.getTime();
+	}
 
 	// ---------------------------------------- end of admin ----------------------------------------
 

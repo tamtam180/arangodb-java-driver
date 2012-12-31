@@ -84,13 +84,35 @@ public class EntityDeserializers {
 			ArangoVersion entity = deserializeBaseParameter(obj, new ArangoVersion());
 			
 			if (obj.has("server")) {
-			  entity.server = obj.getAsJsonPrimitive("server").getAsString();
+				entity.server = obj.getAsJsonPrimitive("server").getAsString();
 			}
 			
 			if (obj.has("version")) {
 				entity.version = obj.getAsJsonPrimitive("version").getAsString();
 			}
 				
+			return entity;
+		}
+	}
+	
+	public static class ArangoUnixTimeDeserializer implements JsonDeserializer<ArangoUnixTime> {
+		public ArangoUnixTime deserialize(JsonElement json, Type typeOfT,
+				JsonDeserializationContext context) throws JsonParseException {
+
+			if (json.isJsonNull()) {
+				return null;
+			}
+
+			JsonObject obj = json.getAsJsonObject();
+			ArangoUnixTime entity = deserializeBaseParameter(obj, new ArangoUnixTime());
+
+			if (obj.has("time")) {
+				String time = obj.getAsJsonPrimitive("time").getAsString(); // 実際はlongだけど精度の問題が心配なので文字列で処理する。
+                entity.microsecond = Long.parseLong(time.replace(".", ""));
+                entity.millisecond = entity.microsecond / 1000;
+				entity.second = (int) (entity.millisecond / 1000);
+			}
+
 			return entity;
 		}
 	}

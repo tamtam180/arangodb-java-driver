@@ -29,7 +29,6 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({
 	MyTDD.class,
 	NegativeTest.class,
-	ArangoDriverVersionTest.class,
 	PrimitiveDocumentTest.class,
 	ArangoDriverDocumentTest.class,
 	ArangoDriverCollectionTest.class,

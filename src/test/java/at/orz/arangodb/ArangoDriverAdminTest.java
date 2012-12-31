@@ -28,6 +28,7 @@ import at.orz.arangodb.entity.AdminConfigDescriptionEntity;
 import at.orz.arangodb.entity.AdminConfigurationEntity;
 import at.orz.arangodb.entity.AdminLogEntity;
 import at.orz.arangodb.entity.AdminStatusEntity;
+import at.orz.arangodb.entity.ArangoVersion;
 
 /**
  * @author tamtam180 - kirscheless at gmail.com
@@ -35,6 +36,15 @@ import at.orz.arangodb.entity.AdminStatusEntity;
  */
 public class ArangoDriverAdminTest extends BaseTest {
 
+	@Test
+	public void test_version() throws ArangoException {
+		
+		ArangoVersion version = driver.getVersion();
+		assertThat(version.getServer(), is("arango"));
+		assertThat(version.getVersion(), is("1.1.1"));
+		
+	}
+	
 	@Test
 	public void test_log_all() throws ArangoException {
 		

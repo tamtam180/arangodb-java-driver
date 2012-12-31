@@ -37,7 +37,7 @@ import at.orz.arangodb.entity.IndexType;
 import at.orz.arangodb.entity.IndexesEntity;
 import at.orz.arangodb.entity.KeyValueEntity;
 import at.orz.arangodb.entity.Policy;
-import at.orz.arangodb.entity.V8Version;
+import at.orz.arangodb.entity.ArangoVersion;
 import at.orz.arangodb.http.HttpManager;
 import at.orz.arangodb.http.HttpResponseEntity;
 import at.orz.arangodb.impl.ImplFactory;
@@ -86,7 +86,7 @@ public class ArangoDriver extends BaseArangoDriver {
 		this.adminDriver = ImplFactory.createAdminDriver(configure);
 	}
 	
-	public V8Version getVersion() throws ArangoException {
+	public ArangoVersion getVersion() throws ArangoException {
 		return adminDriver.getVersion();
 	}
 

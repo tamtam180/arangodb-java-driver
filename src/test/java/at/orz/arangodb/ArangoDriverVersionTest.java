@@ -22,7 +22,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import at.orz.arangodb.ArangoException;
-import at.orz.arangodb.entity.V8Version;
+import at.orz.arangodb.entity.ArangoVersion;
 
 /**
  * UnitTest for REST API "version".
@@ -34,7 +34,7 @@ public class ArangoDriverVersionTest extends BaseTest {
 	@Test
 	public void test_version() throws ArangoException {
 		
-		V8Version version = driver.getVersion();
+		ArangoVersion version = driver.getVersion();
 		
 		assertThat(version, is(notNullValue()));
 		assertThat(version.getVersion(), is("V8")); // FIXME 固定はよくないね

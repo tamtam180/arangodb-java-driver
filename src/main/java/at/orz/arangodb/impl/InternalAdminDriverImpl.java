@@ -22,7 +22,7 @@ import at.orz.arangodb.entity.AdminConfigDescriptionEntity;
 import at.orz.arangodb.entity.AdminConfigurationEntity;
 import at.orz.arangodb.entity.AdminLogEntity;
 import at.orz.arangodb.entity.AdminStatusEntity;
-import at.orz.arangodb.entity.V8Version;
+import at.orz.arangodb.entity.ArangoVersion;
 import at.orz.arangodb.http.HttpResponseEntity;
 import at.orz.arangodb.util.MapBuilder;
 
@@ -112,12 +112,9 @@ public class InternalAdminDriverImpl extends BaseArangoDriverImpl {
 	 * @throws ArangoException
 	 * @see http://www.arangodb.org/manuals/current/HttpMisc.html#HttpMiscVersion
 	 */
-	public V8Version getVersion() throws ArangoException {
+	public ArangoVersion getVersion() throws ArangoException {
 		HttpResponseEntity res = httpManager.doGet(baseUrl + "/_admin/version");
-		if (res == null) {
-			// TODO
-		}
-		return createEntityImpl(res, V8Version.class);
+		return createEntityImpl(res, ArangoVersion.class);
 	}
 
 	

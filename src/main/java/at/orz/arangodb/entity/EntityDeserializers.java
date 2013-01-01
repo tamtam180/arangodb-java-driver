@@ -26,7 +26,9 @@ import java.util.Map.Entry;
 
 import at.orz.arangodb.entity.AdminConfigDescriptionEntity.DescriptionEntry;
 import at.orz.arangodb.entity.CollectionEntity.Figures;
+import at.orz.arangodb.util.JsonUtils;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -523,7 +525,124 @@ public class EntityDeserializers {
 			return entity;
 		}
 	}
-	
+
+	public static class ConnectionStatisticsEntityDeserializer implements JsonDeserializer<ConnectionStatisticsEntity> {
+		public ConnectionStatisticsEntity deserialize(JsonElement json,
+				Type typeOfT, JsonDeserializationContext context)
+				throws JsonParseException {
+
+			if (json.isJsonNull()) {
+				return null;
+			}
+
+			JsonObject obj = json.getAsJsonObject();
+			ConnectionStatisticsEntity entity = deserializeBaseParameter(obj, new ConnectionStatisticsEntity());
+			
+			if (obj.has("resolution")) {
+				entity.resolution = obj.getAsJsonPrimitive("resolution").getAsInt();
+			}
+			
+			// length = currentでコールされた時は無いパラメータ
+			if (obj.has("length")) {
+				entity.length = obj.getAsJsonPrimitive("length").getAsInt();
+			}
+			if (obj.has("totalLength")) {
+				entity.totalLength = obj.getAsJsonPrimitive("totalLength").getAsInt();
+			}
+
+			if (obj.has("httpDuration")) {
+				JsonObject httpDuration = obj.getAsJsonObject("httpDuration");
+				if (httpDuration.has("cuts")) {
+					JsonArray cuts = httpDuration.getAsJsonArray("cuts");
+					entity.httpDurationCuts = new double[cuts.size()];
+					for (int i = 0; i < cuts.size(); i++) {
+						entity.httpDurationCuts[i] = cuts.get(i).getAsDouble();
+					}
+				}
+			}
+			
+			// FIXME 項目が増えてきたら List<Map<String, Object>> として汎用的に処理してしまう。
+			// その時のキーは 階層.階層.階層 とする。
+			
+			// 型が変わる...
+			int len = entity.length == 0 ? 1: entity.length;
+			entity.statistics = new ConnectionStatisticsEntity.StatisticsEntity[len];
+			for (int i = 0; i < len; i++) {
+				entity.statistics[i] = new ConnectionStatisticsEntity.StatisticsEntity();
+				
+				if (obj.has("start")) {
+					JsonElement start = obj.get("start");
+					if (start.isJsonArray()) {
+						entity.statistics[i].start = start.getAsJsonArray().get(i).getAsInt();
+					} else {
+						entity.statistics[i].start = start.getAsInt();
+					}
+				}
+				
+				if (obj.has("httpConnections")) {
+					JsonObject httpConnections = obj.getAsJsonObject("httpConnections");
+					if (httpConnections.has("count")) {
+						JsonElement count = httpConnections.get("count");
+						if (count.isJsonArray()) {
+							entity.statistics[i].httpConnectionsCount = count.getAsJsonArray().get(i).getAsInt();
+						} else {
+							entity.statistics[i].httpConnectionsCount = count.getAsInt();
+						}
+					}
+					if (httpConnections.has("perSecond")) {
+						JsonElement perSecond = httpConnections.get("perSecond");
+						if (perSecond.isJsonArray()) {
+							entity.statistics[i].httpConnectionsPerSecond = JsonUtils.toDouble(perSecond.getAsJsonArray().get(i));
+						} else {
+							entity.statistics[i].httpConnectionsPerSecond = JsonUtils.toDouble(perSecond);
+						}
+					}
+				}
+				
+				if (obj.has("httpDuration")) {
+					JsonObject httpDuration = obj.getAsJsonObject("httpDuration");
+					if (httpDuration.has("count")) {
+						JsonElement count = httpDuration.get("count");
+						if (count.isJsonArray()) {
+							entity.statistics[i].httpDurationCount = count.getAsJsonArray().get(i).getAsInt();
+						} else {
+							entity.statistics[i].httpDurationCount = count.getAsInt();
+						}
+					}
+					if (httpDuration.has("mean")) {
+						JsonElement mean = httpDuration.get("mean");
+						if (mean.isJsonArray()) {
+							entity.statistics[i].httpDurationMean = JsonUtils.toDouble(mean.getAsJsonArray().get(i));
+						} else {
+							entity.statistics[i].httpDurationMean = JsonUtils.toDouble(mean);
+						}
+					}
+					if (httpDuration.has("min")) {
+						JsonElement min = httpDuration.get("min");
+						if (min.isJsonArray()) {
+							entity.statistics[i].httpDurationMin = JsonUtils.toDouble(min.getAsJsonArray().get(i));
+						} else {
+							entity.statistics[i].httpDurationMin = JsonUtils.toDouble(min);
+						}
+					}
+					if (httpDuration.has("distribution")) {
+						JsonArray distribution = httpDuration.getAsJsonArray("distribution");
+						if (distribution.size() > 0) {
+							if (distribution.get(0).isJsonArray()) {
+								entity.statistics[i].httpDurationDistribution = JsonUtils.toArray(distribution.get(i).getAsJsonArray());
+							} else {
+								entity.statistics[i].httpDurationDistribution = JsonUtils.toArray(distribution);
+							}
+						}
+					}
+				}
+				
+			}
+
+			return entity;
+		}
+	}
+
 	public static class AdminConfigurationEntityDeserializer implements JsonDeserializer<AdminConfigurationEntity> {
 
 		public AdminConfigurationEntity deserialize(JsonElement json,

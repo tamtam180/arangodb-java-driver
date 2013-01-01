@@ -27,12 +27,14 @@ import at.orz.arangodb.entity.AdminStatusEntity;
 import at.orz.arangodb.entity.ArangoUnixTime;
 import at.orz.arangodb.entity.CollectionEntity;
 import at.orz.arangodb.entity.CollectionsEntity;
+import at.orz.arangodb.entity.ConnectionStatisticsEntity;
 import at.orz.arangodb.entity.CursorEntity;
 import at.orz.arangodb.entity.DefaultEntity;
 import at.orz.arangodb.entity.Direction;
 import at.orz.arangodb.entity.DocumentEntity;
 import at.orz.arangodb.entity.EdgeEntity;
 import at.orz.arangodb.entity.EdgesEntity;
+import at.orz.arangodb.entity.Granularity;
 import at.orz.arangodb.entity.IndexEntity;
 import at.orz.arangodb.entity.IndexType;
 import at.orz.arangodb.entity.IndexesEntity;
@@ -397,6 +399,10 @@ public class ArangoDriver extends BaseArangoDriver {
 	
 	public AdminStatusEntity getServerStatus() throws ArangoException {
 		return adminDriver.getServerStatus();
+	}
+	
+	public ConnectionStatisticsEntity getConnectionStatistics(Granularity granularity, Integer length, String... figures) throws ArangoException {
+		return adminDriver.getConnectionStatistics(granularity, length, figures);
 	}
 
 	public AdminConfigurationEntity getServerConfiguration() throws ArangoException {

@@ -24,7 +24,10 @@ import at.orz.arangodb.entity.AdminLogEntity;
 import at.orz.arangodb.entity.AdminStatusEntity;
 import at.orz.arangodb.entity.ArangoUnixTime;
 import at.orz.arangodb.entity.ArangoVersion;
+import at.orz.arangodb.entity.ConnectionStatisticsEntity;
+import at.orz.arangodb.entity.Granularity;
 import at.orz.arangodb.http.HttpResponseEntity;
+import at.orz.arangodb.util.CollectionUtils;
 import at.orz.arangodb.util.MapBuilder;
 
 /**
@@ -85,6 +88,43 @@ public class InternalAdminDriverImpl extends BaseArangoDriverImpl {
 		} catch (ArangoException e) {
 			throw e;
 		}
+		
+	}
+	
+	/**
+	 * @param granularity
+	 * @param length (special values => -1=all, 0=current)
+	 * @param figures
+	 * @return
+	 * @throws ArangoException
+	 */
+	public ConnectionStatisticsEntity getConnectionStatistics(Granularity granularity, Integer length, String... figures) throws ArangoException {
+		
+		String paramLength = null;
+		if (length != null) {
+			if (length == 0) {
+				paramLength = "current";
+			} else if (length < 0) {
+				paramLength = "all";
+			} else {
+				paramLength = String.valueOf(length);
+			}
+		}
+		
+		String paramFigures = null;
+		if (figures != null && figures.length != 0) {
+			CollectionUtils.join(figures, ",");
+		}
+		
+		HttpResponseEntity res = httpManager.doGet(
+				baseUrl + "/_admin/connection-statistics",
+				new MapBuilder()
+				.put("granularity", granularity == null ? null : granularity.name())
+				.put("length", paramLength)
+				.put("figures", paramFigures)
+				.get());
+		
+		return createEntity(res, ConnectionStatisticsEntity.class);
 		
 	}
 

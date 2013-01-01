@@ -23,6 +23,9 @@ import java.util.Map.Entry;
 
 import org.junit.Test;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import at.orz.arangodb.ArangoException;
 import at.orz.arangodb.entity.AdminConfigDescriptionEntity;
 import at.orz.arangodb.entity.AdminConfigurationEntity;
@@ -30,6 +33,7 @@ import at.orz.arangodb.entity.AdminLogEntity;
 import at.orz.arangodb.entity.AdminStatusEntity;
 import at.orz.arangodb.entity.ArangoUnixTime;
 import at.orz.arangodb.entity.ArangoVersion;
+import at.orz.arangodb.entity.ConnectionStatisticsEntity;
 import at.orz.arangodb.util.ReflectionUtils;
 
 /**
@@ -110,6 +114,19 @@ public class ArangoDriverAdminTest extends BaseTest {
 
 	}
 
+	@Test
+	public void test_connection_statistics() throws ArangoException {
+		
+		// Array
+		ConnectionStatisticsEntity cs = driver.getConnectionStatistics(null, null);
+		System.out.println(new GsonBuilder() .setPrettyPrinting().serializeSpecialFloatingPointValues().create().toJson(cs));
+
+		// One
+		cs = driver.getConnectionStatistics(null, 0);
+		System.out.println(new GsonBuilder() .setPrettyPrinting().serializeSpecialFloatingPointValues().create().toJson(cs));
+
+	}
+	
 	@Test
 	public void test_configure() throws ArangoException {
 		

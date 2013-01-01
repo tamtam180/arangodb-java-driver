@@ -61,4 +61,20 @@ public class CollectionUtils {
 		return list;
 	}
 	
+	public static <T> String join(T[] array, String separator) {
+		if (array == null || array.length == 0) {
+			return "";
+		}
+		
+		StringBuilder buffer = new StringBuilder();
+		buffer.append(array[0]);
+		
+		for (int i = 1; i < array.length; i++) {
+			buffer.append(separator);
+			buffer.append(array[i]);
+		}
+		
+		return buffer.toString();
+	}
+	
 }

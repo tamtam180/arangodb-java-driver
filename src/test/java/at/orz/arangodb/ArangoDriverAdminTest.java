@@ -27,8 +27,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import at.orz.arangodb.ArangoException;
-import at.orz.arangodb.entity.AdminConfigDescriptionEntity;
-import at.orz.arangodb.entity.AdminConfigurationEntity;
 import at.orz.arangodb.entity.AdminLogEntity;
 import at.orz.arangodb.entity.AdminStatusEntity;
 import at.orz.arangodb.entity.ArangoUnixTime;
@@ -125,40 +123,6 @@ public class ArangoDriverAdminTest extends BaseTest {
 		cs = driver.getConnectionStatistics(null, 0);
 		System.out.println(new GsonBuilder() .setPrettyPrinting().serializeSpecialFloatingPointValues().create().toJson(cs));
 
-	}
-	
-	@Test
-	public void test_configure() throws ArangoException {
-		
-		AdminConfigurationEntity conf = driver.getServerConfiguration();
-		
-		// debug
-		for (Entry<String, Object> ent: conf.entrySet()) {
-			System.out.println(ent);
-		}
-		
-	}
-	
-	@Test
-	public void test_config_description() throws ArangoException {
-		
-		AdminConfigDescriptionEntity desc = driver.getServerConfigurationDescription();
-		
-		// debug
-		for (Entry<String, AdminConfigDescriptionEntity.DescriptionEntry> ent : desc.entrySet()) {
-			System.out.printf("%s\t%b\t%s\t%s\t%n", 
-					ent.getKey(),
-					ent.getValue().isReadonly(),
-					ent.getValue().getName(),
-					ent.getValue().getType()
-					);
-			if (ent.getValue().getValues() != null) {
-				for (Object v : ent.getValue().getValues()) {
-					System.out.println("\t" + v);
-				}
-			}
-		}
-		
 	}
 	
 }

@@ -20,11 +20,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import at.orz.arangodb.entity.AdminConfigDescriptionEntity;
-import at.orz.arangodb.entity.AdminConfigurationEntity;
 import at.orz.arangodb.entity.AdminLogEntity;
 import at.orz.arangodb.entity.AdminStatusEntity;
 import at.orz.arangodb.entity.ArangoUnixTime;
+import at.orz.arangodb.entity.ArangoVersion;
 import at.orz.arangodb.entity.CollectionEntity;
 import at.orz.arangodb.entity.CollectionsEntity;
 import at.orz.arangodb.entity.ConnectionStatisticsEntity;
@@ -40,10 +39,7 @@ import at.orz.arangodb.entity.IndexType;
 import at.orz.arangodb.entity.IndexesEntity;
 import at.orz.arangodb.entity.KeyValueEntity;
 import at.orz.arangodb.entity.Policy;
-import at.orz.arangodb.entity.ArangoVersion;
-import at.orz.arangodb.entity.EntityDeserializers.ArangoUnixTimeDeserializer;
 import at.orz.arangodb.http.HttpManager;
-import at.orz.arangodb.http.HttpResponseEntity;
 import at.orz.arangodb.impl.ImplFactory;
 import at.orz.arangodb.impl.InternalAdminDriverImpl;
 import at.orz.arangodb.impl.InternalCollectionDriverImpl;
@@ -405,14 +401,6 @@ public class ArangoDriver extends BaseArangoDriver {
 		return adminDriver.getConnectionStatistics(granularity, length, figures);
 	}
 
-	public AdminConfigurationEntity getServerConfiguration() throws ArangoException {
-		return adminDriver.getServerConfiguration();
-	}
-	
-	public AdminConfigDescriptionEntity getServerConfigurationDescription() throws ArangoException {
-		return adminDriver.getServerConfigurationDescription();
-	}
-	
 	public ArangoVersion getVersion() throws ArangoException {
 		return adminDriver.getVersion();
 	}

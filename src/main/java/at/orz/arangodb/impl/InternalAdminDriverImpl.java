@@ -18,8 +18,6 @@ package at.orz.arangodb.impl;
 
 import at.orz.arangodb.ArangoConfigure;
 import at.orz.arangodb.ArangoException;
-import at.orz.arangodb.entity.AdminConfigDescriptionEntity;
-import at.orz.arangodb.entity.AdminConfigurationEntity;
 import at.orz.arangodb.entity.AdminLogEntity;
 import at.orz.arangodb.entity.AdminStatusEntity;
 import at.orz.arangodb.entity.ArangoUnixTime;
@@ -128,25 +126,6 @@ public class InternalAdminDriverImpl extends BaseArangoDriverImpl {
 		
 	}
 
-	public AdminConfigurationEntity getServerConfiguration() throws ArangoException {
-		
-		HttpResponseEntity res = httpManager.doGet(baseUrl + "/_admin/config/configuration");
-		
-		try {
-			return createEntity(res, AdminConfigurationEntity.class);
-		} catch (ArangoException e) {
-			throw e;
-		}
-		
-	}
-	
-	public AdminConfigDescriptionEntity getServerConfigurationDescription() throws ArangoException {
-		
-		HttpResponseEntity res = httpManager.doGet(baseUrl + "/_admin/config/description");
-		return createEntity(res, AdminConfigDescriptionEntity.class);
-		
-	}
-	
 	/**
 	 * 
 	 * @return

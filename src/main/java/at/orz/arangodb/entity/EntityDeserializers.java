@@ -193,6 +193,10 @@ public class EntityDeserializers {
 			if (obj.has("figures")) {
 				entity.figures = context.deserialize(obj.get("figures"), Figures.class);
 			}
+			
+			if (obj.has("type")) {
+				entity.type = CollectionType.valueOf(obj.getAsJsonPrimitive("type").getAsInt());
+			}
 
 			return entity;
 		}

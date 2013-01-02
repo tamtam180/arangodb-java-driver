@@ -25,6 +25,7 @@ import at.orz.arangodb.entity.AdminStatusEntity;
 import at.orz.arangodb.entity.ArangoUnixTime;
 import at.orz.arangodb.entity.ArangoVersion;
 import at.orz.arangodb.entity.CollectionEntity;
+import at.orz.arangodb.entity.CollectionType;
 import at.orz.arangodb.entity.CollectionsEntity;
 import at.orz.arangodb.entity.ConnectionStatisticsEntity;
 import at.orz.arangodb.entity.CursorEntity;
@@ -93,7 +94,7 @@ public class ArangoDriver extends BaseArangoDriver {
 	}
 	
 	public CollectionEntity createCollection(String name, Boolean waitForSync,
-			Integer journalSize, Boolean isSystem, Integer type) throws ArangoException {
+			Integer journalSize, Boolean isSystem, CollectionType type) throws ArangoException {
 		return collectionDriver.createCollection(name, waitForSync, journalSize, isSystem, type);
 	}
 	

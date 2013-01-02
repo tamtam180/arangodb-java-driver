@@ -29,6 +29,8 @@ public class CollectionEntity extends BaseEntity {
 	
 	long id;
 	
+	CollectionType type;
+	
 	CollectionStatus status;
 	
 	Boolean waitForSync;
@@ -38,51 +40,72 @@ public class CollectionEntity extends BaseEntity {
 	long count;
 	
 	Figures figures;
-	
+
+
 	public String getName() {
 		return name;
 	}
+
 	public long getId() {
 		return id;
 	}
+
+	public CollectionType getType() {
+		return type;
+	}
+
 	public CollectionStatus getStatus() {
 		return status;
 	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public void setId(long id) {
-		this.id = id;
-	}
-	public void setStatus(CollectionStatus status) {
-		this.status = status;
-	}
+
 	public Boolean getWaitForSync() {
 		return waitForSync;
 	}
+
 	public long getJournalSize() {
 		return journalSize;
 	}
+
 	public long getCount() {
 		return count;
 	}
+
 	public Figures getFigures() {
 		return figures;
 	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	public void setType(CollectionType type) {
+		this.type = type;
+	}
+
+	public void setStatus(CollectionStatus status) {
+		this.status = status;
+	}
+
 	public void setWaitForSync(Boolean waitForSync) {
 		this.waitForSync = waitForSync;
 	}
+
 	public void setJournalSize(long journalSize) {
 		this.journalSize = journalSize;
 	}
+
 	public void setCount(long count) {
 		this.count = count;
 	}
+
 	public void setFigures(Figures figures) {
 		this.figures = figures;
 	}
 	
-
 	public static class Figures implements Serializable {
 		
 		long aliveCount;
@@ -151,5 +174,5 @@ public class CollectionEntity extends BaseEntity {
 		}
 		
 	}
-	
+
 }

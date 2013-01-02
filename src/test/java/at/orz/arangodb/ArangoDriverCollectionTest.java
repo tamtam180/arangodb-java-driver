@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import at.orz.arangodb.ArangoException;
 import at.orz.arangodb.entity.CollectionEntity;
 import at.orz.arangodb.entity.CollectionStatus;
+import at.orz.arangodb.entity.CollectionType;
 import at.orz.arangodb.entity.CollectionsEntity;
 import at.orz.arangodb.entity.DocumentEntity;
 
@@ -74,15 +75,34 @@ public class ArangoDriverCollectionTest extends BaseTest {
 	 * @throws ArangoException
 	 */
 	@Test
-	@Parameters
-	public void test_create_01() throws ArangoException {
+	//@Parameters
+	public void test_create_document_collection() throws ArangoException {
 		
+		// DocumentCollection
 		CollectionEntity res1 = driver.createCollection(collectionName);
 		assertThat(res1, is(notNullValue()));
 		assertThat(res1.getCode(), is(200));
+		assertThat(res1.getStatus(), is(CollectionStatus.LOADED));
+		assertThat(res1.getType(), is(CollectionType.DOCUMENT));
 		
 	}
-	
+
+	/**
+	 * 正常系のテスト。
+	 * @throws ArangoException
+	 */
+	@Test
+	//@Parameters
+	public void test_create_edge_collection() throws ArangoException {
+		
+		CollectionEntity res2 = driver.createCollection(collectionName, null, null, null, CollectionType.EDGE);
+		assertThat(res2, is(notNullValue()));
+		assertThat(res2.getCode(), is(200));
+		assertThat(res2.getStatus(), is(CollectionStatus.LOADED));
+		assertThat(res2.getType(), is(CollectionType.EDGE));
+		
+	}
+
 	/**
 	 * 既に存在する場合の挙動確認。
 	 * @throws ArangoException
@@ -127,6 +147,10 @@ public class ArangoDriverCollectionTest extends BaseTest {
 		assertThat(entity1.getName(), is(collectionName));
 		assertThat(entity2.getName(), is(collectionName));
 		
+		// Type確認
+		assertThat(entity1.getType(), is(CollectionType.DOCUMENT));
+		assertThat(entity2.getType(), is(CollectionType.DOCUMENT));
+		
 	}
 	
 	/**
@@ -135,9 +159,6 @@ public class ArangoDriverCollectionTest extends BaseTest {
 	 */
 	@Test
 	public void test_getCollection_404() throws ArangoException {
-		
-//		CollectionEntity collection = client.getCollection(collectionName404);
-//		assertThat(collection, is(nullValue()));
 		
 		try {
 			driver.getCollection(collectionName404);

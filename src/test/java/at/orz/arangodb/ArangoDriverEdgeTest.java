@@ -25,6 +25,7 @@ import org.junit.Test;
 
 import at.orz.arangodb.ArangoException;
 import at.orz.arangodb.entity.CollectionEntity;
+import at.orz.arangodb.entity.CollectionType;
 import at.orz.arangodb.entity.Direction;
 import at.orz.arangodb.entity.DocumentEntity;
 import at.orz.arangodb.entity.EdgeEntity;
@@ -57,7 +58,7 @@ public class ArangoDriverEdgeTest extends BaseTest {
 		try {
 			driver.deleteCollection(collectionName);
 		} catch (ArangoException e) {}
-		CollectionEntity col = driver.createCollection(collectionName, true, null, null, 3); // FIXME MagicNumber 3
+		CollectionEntity col = driver.createCollection(collectionName, true, null, null, CollectionType.EDGE);
 		
 		TestVertex value = new TestVertex();
 		DocumentEntity<TestVertex> v1 = driver.createDocument(collectionName, value, false, true);
@@ -75,7 +76,7 @@ public class ArangoDriverEdgeTest extends BaseTest {
 		try {
 			driver.deleteCollection(collectionName);
 		} catch (ArangoException e) {}
-		CollectionEntity col = driver.createCollection(collectionName, true, null, null, 2); // FIXME MagicNumber 2
+		CollectionEntity col = driver.createCollection(collectionName, true, null, null, CollectionType.DOCUMENT);
 		
 		TestVertex value = new TestVertex();
 		DocumentEntity<TestVertex> v1 = driver.createDocument(collectionName, value, false, true);
@@ -97,7 +98,7 @@ public class ArangoDriverEdgeTest extends BaseTest {
 		try {
 			driver.deleteCollection(collectionName);
 		} catch (ArangoException e) {}
-		driver.createCollection(collectionName, true, null, null, 3); // FIXME MagicNumber 3
+		driver.createCollection(collectionName, true, null, null, CollectionType.EDGE);
 		
 		ArrayList<DocumentEntity<TestVertex>> docs = new ArrayList<DocumentEntity<TestVertex>>();
 		for (int i = 0; i < 10; i++) {

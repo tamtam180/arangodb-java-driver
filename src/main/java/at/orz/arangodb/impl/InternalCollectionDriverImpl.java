@@ -19,6 +19,7 @@ package at.orz.arangodb.impl;
 import at.orz.arangodb.ArangoConfigure;
 import at.orz.arangodb.ArangoException;
 import at.orz.arangodb.entity.CollectionEntity;
+import at.orz.arangodb.entity.CollectionType;
 import at.orz.arangodb.entity.CollectionsEntity;
 import at.orz.arangodb.entity.EntityFactory;
 import at.orz.arangodb.http.HttpResponseEntity;
@@ -34,29 +35,12 @@ public class InternalCollectionDriverImpl extends BaseArangoDriverImpl {
 		super(configure);
 	}
 
-//	public CollectionEntity createCollection(String name, Boolean waitForSync) throws ArangoException {
-//		try {
-//			return createCollectionImpl(name, waitForSync);
-//		} catch (ArangoException e) {
-//			if (HttpManager.is400Error(e) && e.getErrorNumber() == 1207) { // Duplicate
-//				if (mode == null || mode == Mode.RETURN_NULL) {
-//					return null;
-//				}
-//				if (mode == Mode.DUP_GET) {
-//					// TODO get Document. 別スレッドから消されているかもしれないので取得できるとは限らない。
-//					return getCollection(name, Mode.RETURN_NULL);
-//				}
-//			}
-//			throw e;
-//		}
-//	}
-	
 	public CollectionEntity createCollection(
 			String name, 
 			Boolean waitForSync, 
 			Integer journalSize, 
 			Boolean isSystem, 
-			Integer type // TODO
+			CollectionType type
 			) throws ArangoException {
 		
 		HttpResponseEntity res = httpManager.doPost(
@@ -67,17 +51,13 @@ public class InternalCollectionDriverImpl extends BaseArangoDriverImpl {
 					.put("waitForSync", waitForSync)
 					.put("journalSize", journalSize)
 					.put("isSystem", isSystem)
-					.put("type", type)
+					.put("type", type == null ? null : type.getType())
 					.get())
 					);
 		
 		return createEntity(res, CollectionEntity.class);
 		
 	}
-	
-//	public CollectionEntity getCollection(long id) throws ArangoException {
-//		return getCollection(String.valueOf(id));
-//	}
 	
 	public CollectionEntity getCollection(String name) throws ArangoException {
 		validateCollectionName(name);

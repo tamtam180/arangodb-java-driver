@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import at.orz.arangodb.ArangoConfigure;
 import at.orz.arangodb.ArangoDriver;
 import at.orz.arangodb.ArangoException;
+import at.orz.arangodb.entity.CollectionType;
 import at.orz.arangodb.entity.Direction;
 import at.orz.arangodb.entity.DocumentEntity;
 import at.orz.arangodb.entity.EdgeEntity;
@@ -56,7 +57,7 @@ public class Example2 {
 		try {
 			
 			// Create Collection for Graph
-			driver.createCollection(collectionName, false, null, null, 3);
+			driver.createCollection(collectionName, false, null, null, CollectionType.EDGE);
 			
 			// CreateVertex
 			ArrayList<DocumentEntity<TestVertex>> docs = new ArrayList<DocumentEntity<TestVertex>>();

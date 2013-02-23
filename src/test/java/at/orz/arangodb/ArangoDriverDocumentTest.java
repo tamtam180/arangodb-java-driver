@@ -142,8 +142,9 @@ public class ArangoDriverDocumentTest extends BaseTest {
 		CollectionEntity col3 = driver.getCollection(collectionName404);
 		assertThat(col3, is(notNullValue()));
 		
-		assertThat(res.getDocumentHandle().startsWith(col3.getId() + "/"), is(true));
+		assertThat(res.getDocumentHandle().startsWith(collectionName404 + "/"), is(true));
 		assertThat(res.getDocumentRevision(), is(not(0L)));
+		assertThat(res.getDocumentKey(), is(notNullValue()));
 		
 	}
 	

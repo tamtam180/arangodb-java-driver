@@ -45,7 +45,7 @@ public class ArangoDriverAdminTest extends BaseTest {
 		
 		ArangoVersion version = driver.getVersion();
 		assertThat(version.getServer(), is("arango"));
-		assertThat(version.getVersion(), is("1.1.1"));
+		assertThat(version.getVersion(), is("1.2.beta3"));
 		
 	}
 	

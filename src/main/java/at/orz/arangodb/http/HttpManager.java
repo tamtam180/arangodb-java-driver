@@ -169,7 +169,14 @@ public class HttpManager {
 	public HttpResponseEntity execute(HttpRequestEntity requestEntity) throws ArangoException {
 		
 		String url = buildUrl(requestEntity);
-		logger.debug("http-{}: url={}", requestEntity.type, url);
+		
+		if (logger.isDebugEnabled()) {
+			if (requestEntity.type == RequestType.POST || requestEntity.type == RequestType.PUT) {
+				logger.debug("http-{}: url={}, body={}", new Object[]{ requestEntity.type, url, requestEntity.bodyText });
+			} else {
+				logger.debug("http-{}: url={}", requestEntity.type, url);
+			}
+		}
 		
 		HttpRequestBase request = null;
 		switch (requestEntity.type) {

@@ -66,11 +66,11 @@ public class CollectionEntity extends BaseEntity {
 		return waitForSync;
 	}
 	
-	public Boolean isSystem() {
+	public Boolean getIsSystem() {
 		return isSystem;
 	}
 	
-	public Boolean isVolatile() {
+	public Boolean getIsVolatile() {
 		return isVolatile;
 	}
 

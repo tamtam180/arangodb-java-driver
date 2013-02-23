@@ -84,8 +84,8 @@ public class ArangoDriverCollectionTest extends BaseTest {
 		assertThat(res1.getId(), is(notNullValue()));
 		assertThat(res1.getName(), is(collectionName));
 		assertThat(res1.getWaitForSync(), is(false));
-		assertThat(res1.isVolatile(), is(false));
-		assertThat(res1.isSystem(), is(false));
+		assertThat(res1.getIsVolatile(), is(false));
+		assertThat(res1.getIsSystem(), is(false));
 		assertThat(res1.getStatus(), is(CollectionStatus.LOADED));
 		assertThat(res1.getType(), is(CollectionType.DOCUMENT));
 		
@@ -105,8 +105,8 @@ public class ArangoDriverCollectionTest extends BaseTest {
 		assertThat(res2.getId(), is(notNullValue()));
 		assertThat(res2.getName(), is(collectionName));
 		assertThat(res2.getWaitForSync(), is(false));
-		assertThat(res2.isVolatile(), is(false));
-		assertThat(res2.isSystem(), is(false));
+		assertThat(res2.getIsVolatile(), is(false));
+		assertThat(res2.getIsSystem(), is(false));
 		assertThat(res2.getStatus(), is(CollectionStatus.LOADED));
 		assertThat(res2.getType(), is(CollectionType.EDGE));
 		
@@ -125,8 +125,8 @@ public class ArangoDriverCollectionTest extends BaseTest {
 		assertThat(res.getId(), is(not(0L)));
 		assertThat(res.getName(), is(collectionName));
 		assertThat(res.getWaitForSync(), is(false));
-		assertThat(res.isVolatile(), is(true));
-		assertThat(res.isSystem(), is(false));
+		assertThat(res.getIsVolatile(), is(true));
+		assertThat(res.getIsSystem(), is(false));
 		assertThat(res.getStatus(), is(CollectionStatus.LOADED));
 		assertThat(res.getType(), is(CollectionType.DOCUMENT));
 		
@@ -145,8 +145,8 @@ public class ArangoDriverCollectionTest extends BaseTest {
 		assertThat(res.getId(), is(not(0L)));
 		assertThat(res.getName(), is(collectionName));
 		assertThat(res.getWaitForSync(), is(false));
-		assertThat(res.isVolatile(), is(true));
-		assertThat(res.isSystem(), is(false));
+		assertThat(res.getIsVolatile(), is(true));
+		assertThat(res.getIsSystem(), is(false));
 		assertThat(res.getStatus(), is(CollectionStatus.LOADED));
 		assertThat(res.getType(), is(CollectionType.EDGE));
 		
@@ -166,8 +166,8 @@ public class ArangoDriverCollectionTest extends BaseTest {
 		assertThat(res1.getId(), is(not(0L)));
 		assertThat(res1.getName(), is(collectionName));
 		assertThat(res1.getWaitForSync(), is(false));
-		assertThat(res1.isVolatile(), is(false));
-		assertThat(res1.isSystem(), is(false));
+		assertThat(res1.getIsVolatile(), is(false));
+		assertThat(res1.getIsSystem(), is(false));
 		assertThat(res1.getStatus(), is(CollectionStatus.LOADED));
 		
 		{

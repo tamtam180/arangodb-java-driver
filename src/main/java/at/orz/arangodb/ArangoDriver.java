@@ -166,11 +166,11 @@ public class ArangoDriver extends BaseArangoDriver {
 		return collectionDriver.truncateCollection(name);
 	}
 	
-	public CollectionEntity setCollectionProperties(long id, boolean newWaitForSync) throws ArangoException {
-		return setCollectionProperties(String.valueOf(id), newWaitForSync);
+	public CollectionEntity setCollectionProperties(long id, Boolean newWaitForSync, Long journalSize) throws ArangoException {
+		return collectionDriver.setCollectionProperties(String.valueOf(id), newWaitForSync, journalSize);
 	}
-	public CollectionEntity setCollectionProperties(String name, boolean newWaitForSync) throws ArangoException {
-		return collectionDriver.setCollectionProperties(name, newWaitForSync);
+	public CollectionEntity setCollectionProperties(String name, Boolean newWaitForSync, Long journalSize) throws ArangoException {
+		return collectionDriver.setCollectionProperties(name, newWaitForSync, journalSize);
 	}
 	
 	public CollectionEntity renameCollection(long id, String newName) throws ArangoException {

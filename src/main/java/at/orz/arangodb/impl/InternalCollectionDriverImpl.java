@@ -220,30 +220,21 @@ public class InternalCollectionDriverImpl extends BaseArangoDriverImpl {
 		
 	}
 	
-//	public CollectionEntity setCollectionProperties(long id, boolean newWaitForSync) throws ArangoException {
-//		return setCollectionProperties(String.valueOf(id), newWaitForSync);
-//	}
-	public CollectionEntity setCollectionProperties(String name, boolean newWaitForSync) throws ArangoException {
+	public CollectionEntity setCollectionProperties(String name, Boolean newWaitForSync, Long journalSize) throws ArangoException {
 		
 		validateCollectionName(name);
 		HttpResponseEntity res = httpManager.doPut(
 				baseUrl + "/_api/collection/" + name + "/properties",
 				null,
 				EntityFactory.toJsonString(
-						new MapBuilder("waitForSync", newWaitForSync).get()
+						new MapBuilder()
+						.put("waitForSync", newWaitForSync)
+						.put("journalSize", journalSize)
+						.get()
 				)
 		);
 		
-		try {
-			return createEntity(res, CollectionEntity.class);
-		} catch (ArangoException e) {
-//			if (HttpManager.is404Error(e)) {
-//				if (mode == null || mode == Mode.RETURN_NULL) {
-//					return null;
-//				}
-//			}
-			throw e;
-		}
+		return createEntity(res, CollectionEntity.class);
 		
 	}
 	

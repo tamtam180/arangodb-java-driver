@@ -529,18 +529,23 @@ public class ArangoDriverCollectionTest extends BaseTest {
 		assertThat(collection.getCode(), is(200));
 		assertThat(collection.getWaitForSync(), is(Boolean.FALSE));
 		
-		// waitForSyncをFalseからTrueに設定
-		CollectionEntity col = driver.setCollectionProperties(collectionName, true);
+		// Change waitForSync: false -> true
+		CollectionEntity col = driver.setCollectionProperties(collectionName, true, null);
 		assertThat(col.getCode(), is(200));
 		assertThat(col.getWaitForSync(), is(Boolean.TRUE));
-	
+		
+		// Change journalSize: default -> 1234567Byte
+		col = driver.setCollectionProperties(collectionName, null, 1234567L);
+		assertThat(col.getCode(), is(200));
+		assertThat(col.getJournalSize(), is(1234567L));
+		
 	}
 	
 	@Test
 	public void test_setCollectionProperties_404() throws ArangoException {
 		
 		try {
-			driver.setCollectionProperties(collectionName404, true);
+			driver.setCollectionProperties(collectionName404, true, null);
 			fail("ここに来てはダメー！");
 		} catch (ArangoException e) {
 			assertThat(e.getCode(), is(404));

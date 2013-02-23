@@ -19,6 +19,7 @@ package at.orz.arangodb;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
+import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -67,9 +68,22 @@ public class ArangoDriverDocumentTest extends BaseTest {
 	public void after() {
 		logger.debug("----------");
 	}
-	
+
 	@Test
 	public void test_create_normal() throws ArangoException {
+		
+		// 適当にドキュメントを作る
+		TestComplexEntity01 value = new TestComplexEntity01("user-" + 9999, "説明:" + 9999, 9999);
+		DocumentEntity<TestComplexEntity01> doc = driver.createDocument(collectionName, value, null, false);
+		
+		assertThat(doc.getDocumentKey(), is(notNullValue()));
+		assertThat(doc.getDocumentHandle(), is(collectionName + "/" + doc.getDocumentKey()));
+		assertThat(doc.getDocumentRevision(), is(not(0L)));
+		
+	}
+	
+	@Test
+	public void test_create_normal100() throws ArangoException {
 		
 		// 適当にドキュメントを作る
 		for (int i = 0; i < 100; i++) {

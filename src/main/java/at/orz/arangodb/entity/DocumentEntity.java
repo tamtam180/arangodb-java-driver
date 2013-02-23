@@ -26,6 +26,7 @@ public class DocumentEntity<T> extends BaseEntity {
 	
 	long documentRevision;
 	String documentHandle;
+	String documentKey;
 	T entity;
 	
 	public DocumentEntity() {
@@ -53,6 +54,14 @@ public class DocumentEntity<T> extends BaseEntity {
 
 	public void setEntity(T entity) {
 		this.entity = entity;
+	}
+
+	public String getDocumentKey() {
+		return documentKey;
+	}
+
+	public void setDocumentKey(String documentKey) {
+		this.documentKey = documentKey;
 	}
 	
 }

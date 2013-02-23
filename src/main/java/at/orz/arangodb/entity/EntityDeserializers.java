@@ -292,6 +292,10 @@ public class EntityDeserializers {
 				entity.documentHandle = obj.getAsJsonPrimitive("_id").getAsString();
 			}
 			
+			if (obj.has("_key")) {
+				entity.documentKey = obj.getAsJsonPrimitive("_key").getAsString();
+			}
+			
 			// 他のフィールドはリフレクションで。
 			
 			return entity;

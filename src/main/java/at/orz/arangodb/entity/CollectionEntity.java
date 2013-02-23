@@ -34,6 +34,10 @@ public class CollectionEntity extends BaseEntity {
 	CollectionStatus status;
 	
 	Boolean waitForSync;
+
+	Boolean isSystem;
+	
+	Boolean isVolatile;
 	
 	long journalSize;
 	
@@ -60,6 +64,14 @@ public class CollectionEntity extends BaseEntity {
 
 	public Boolean getWaitForSync() {
 		return waitForSync;
+	}
+	
+	public Boolean isSystem() {
+		return isSystem;
+	}
+	
+	public Boolean isVolatile() {
+		return isVolatile;
 	}
 
 	public long getJournalSize() {
@@ -94,6 +106,14 @@ public class CollectionEntity extends BaseEntity {
 		this.waitForSync = waitForSync;
 	}
 
+	public void setSystem(Boolean isSystem) {
+		this.isSystem = isSystem;
+	}
+	
+	public void setVolatile(Boolean isVolatile) {
+		this.isVolatile = isVolatile;
+	}
+	
 	public void setJournalSize(long journalSize) {
 		this.journalSize = journalSize;
 	}

@@ -57,8 +57,8 @@ public class ArangoDriverDocumentTest extends BaseTest {
 		}
 
 		// 1と2は作る
-		col1 = driver.createCollection(collectionName, false, null, null, null);
-		col2 = driver.createCollection(collectionName2, true, null, null, null);
+		col1 = driver.createCollection(collectionName, false, null, null, null, null);
+		col2 = driver.createCollection(collectionName2, true, null, null, null, null);
 		
 		logger.debug("--");
 		

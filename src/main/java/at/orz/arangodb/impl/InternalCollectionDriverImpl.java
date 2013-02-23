@@ -40,6 +40,7 @@ public class InternalCollectionDriverImpl extends BaseArangoDriverImpl {
 			Boolean waitForSync, 
 			Integer journalSize, 
 			Boolean isSystem, 
+			Boolean isVolatile,
 			CollectionType type
 			) throws ArangoException {
 		
@@ -51,6 +52,7 @@ public class InternalCollectionDriverImpl extends BaseArangoDriverImpl {
 					.put("waitForSync", waitForSync)
 					.put("journalSize", journalSize)
 					.put("isSystem", isSystem)
+					.put("isVolatile", isVolatile)
 					.put("type", type == null ? null : type.getType())
 					.get())
 					);

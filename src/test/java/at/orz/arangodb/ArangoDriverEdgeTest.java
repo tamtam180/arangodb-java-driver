@@ -58,7 +58,7 @@ public class ArangoDriverEdgeTest extends BaseTest {
 		try {
 			driver.deleteCollection(collectionName);
 		} catch (ArangoException e) {}
-		CollectionEntity col = driver.createCollection(collectionName, true, null, null, CollectionType.EDGE);
+		CollectionEntity col = driver.createCollection(collectionName, true, null, null, null, CollectionType.EDGE);
 		
 		TestVertex value = new TestVertex();
 		DocumentEntity<TestVertex> v1 = driver.createDocument(collectionName, value, false, true);
@@ -76,7 +76,7 @@ public class ArangoDriverEdgeTest extends BaseTest {
 		try {
 			driver.deleteCollection(collectionName);
 		} catch (ArangoException e) {}
-		CollectionEntity col = driver.createCollection(collectionName, true, null, null, CollectionType.DOCUMENT);
+		CollectionEntity col = driver.createCollection(collectionName, true, null, null, null, CollectionType.DOCUMENT);
 		
 		TestVertex value = new TestVertex();
 		DocumentEntity<TestVertex> v1 = driver.createDocument(collectionName, value, false, true);
@@ -98,7 +98,7 @@ public class ArangoDriverEdgeTest extends BaseTest {
 		try {
 			driver.deleteCollection(collectionName);
 		} catch (ArangoException e) {}
-		driver.createCollection(collectionName, true, null, null, CollectionType.EDGE);
+		driver.createCollection(collectionName, true, null, null, null, CollectionType.EDGE);
 		
 		ArrayList<DocumentEntity<TestVertex>> docs = new ArrayList<DocumentEntity<TestVertex>>();
 		for (int i = 0; i < 10; i++) {

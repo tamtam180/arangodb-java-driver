@@ -57,7 +57,7 @@ public class Example2 {
 		try {
 			
 			// Create Collection for Graph
-			driver.createCollection(collectionName, false, null, null, CollectionType.EDGE);
+			driver.createCollection(collectionName, false, null, null, null, CollectionType.EDGE);
 			
 			// CreateVertex
 			ArrayList<DocumentEntity<TestVertex>> docs = new ArrayList<DocumentEntity<TestVertex>>();

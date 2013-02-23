@@ -181,6 +181,14 @@ public class EntityDeserializers {
 			if (obj.has("waitForSync")) {
 				entity.waitForSync = obj.getAsJsonPrimitive("waitForSync").getAsBoolean();
 			}
+			
+			if (obj.has("isSystem")) {
+				entity.isSystem = obj.getAsJsonPrimitive("isSystem").getAsBoolean();
+			}
+			
+			if (obj.has("isVolatile")) {
+				entity.isVolatile = obj.getAsJsonPrimitive("isVolatile").getAsBoolean();
+			}
 
 			if (obj.has("journalSize")) {
 				entity.journalSize = obj.getAsJsonPrimitive("journalSize").getAsLong();

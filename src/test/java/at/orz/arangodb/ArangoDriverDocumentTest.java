@@ -149,6 +149,32 @@ public class ArangoDriverDocumentTest extends BaseTest {
 	}
 	
 	@Test
+	public void test_update() throws ArangoException {
+		
+		TestComplexEntity01 value = new TestComplexEntity01("test-user", "テスト☆ユーザー", 22);
+		
+		// Create Document
+		DocumentEntity<TestComplexEntity01> doc = driver.createDocument(collectionName, value, true, false);
+		assertThat(doc, is(notNullValue()));
+		
+		// Update
+		value.setUser(null);
+		value.setDesc("UpdatedDescription");
+		value.setAge(15);
+		DocumentEntity<TestComplexEntity01> doc2 = driver.updateDocument(doc.getDocumentHandle(), value, -1L, null, null);
+		assertThat(doc2.getStatusCode(), is(200));
+		
+		// Get
+		DocumentEntity<TestComplexEntity01> doc3 = driver.getDocument(doc2.getDocumentHandle(), TestComplexEntity01.class);
+		assertThat(doc3.getStatusCode(), is(200));
+		assertThat(doc3.getEntity(), is(notNullValue()));
+		assertThat(doc3.getEntity().getUser(), is(nullValue()));
+		assertThat(doc3.getEntity().getDesc(), is("UpdatedDescription"));
+		assertThat(doc3.getEntity().getAge(), is(15));
+		
+	}
+	
+	@Test
 	public void test_update_404() throws ArangoException {
 		
 		TestComplexEntity01 value = new TestComplexEntity01("test-user", "テスト☆ユーザー", 22);
@@ -178,6 +204,33 @@ public class ArangoDriverDocumentTest extends BaseTest {
 		
 	}
 
+	@Test
+	public void test_partial_update() throws ArangoException {
+		
+		TestComplexEntity01 value = new TestComplexEntity01("test-user", "テスト☆ユーザー", 22);
+		
+		// Create Document
+		DocumentEntity<TestComplexEntity01> doc = driver.createDocument(collectionName, value, true, false);
+		assertThat(doc, is(notNullValue()));
+		
+		// PartialUpdate
+		value.setUser(null);
+		value.setDesc("UpdatedDescription");
+		value.setAge(15);
+		DocumentEntity<TestComplexEntity01> doc2 = driver.partialUpdateDocument(doc.getDocumentHandle(), value, -1L, null, null, null);
+		assertThat(doc2.getStatusCode(), is(200));
+		
+		// Get
+		DocumentEntity<TestComplexEntity01> doc3 = driver.getDocument(doc2.getDocumentHandle(), TestComplexEntity01.class);
+		assertThat(doc3.getStatusCode(), is(200));
+		assertThat(doc3.getEntity(), is(notNullValue()));
+		assertThat(doc3.getEntity().getUser(), is("test-user"));
+		assertThat(doc3.getEntity().getDesc(), is("UpdatedDescription"));
+		assertThat(doc3.getEntity().getAge(), is(15));
+		
+	}
+
+	
 	// TODO Delete
 //	@Test
 //	public void test_checkDocument() throws ArangoException {

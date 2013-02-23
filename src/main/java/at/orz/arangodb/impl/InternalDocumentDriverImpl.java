@@ -51,8 +51,8 @@ public class InternalDocumentDriverImpl extends BaseArangoDriverImpl {
 				baseUrl + "/_api/document", 
 				new MapBuilder()
 					.put("collection", collectionName)
-					.put("createCollection", (createCollection == null) ? null : createCollection.booleanValue())
-					.put("waitForSync", waitForSync == null ? null : waitForSync.booleanValue())
+					.put("createCollection", createCollection)
+					.put("waitForSync", waitForSync)
 					.get(),
 				EntityFactory.toJsonString(value));
 		
@@ -70,12 +70,6 @@ public class InternalDocumentDriverImpl extends BaseArangoDriverImpl {
 		
 	}
 	
-//	public DocumentEntity<?> updateDocument(long collectionId, long documentId, Object value, long rev, Policy policy, Boolean waitForSync) throws ArangoException {
-//		return updateDocument(createDocumentHandle(collectionId, documentId), value, rev, policy, waitForSync);
-//	}
-//	public DocumentEntity<?> updateDocument(String collectionName, long documentId, Object value, long rev, Policy policy, Boolean waitForSync) throws ArangoException {
-//		return updateDocument(createDocumentHandle(collectionName, documentId), value, rev, policy, waitForSync);
-//	}
 	public <T> DocumentEntity<T> updateDocument(String documentHandle, Object value, long rev, Policy policy, Boolean waitForSync) throws ArangoException {
 		
 		validateDocumentHandle(documentHandle);
@@ -83,24 +77,34 @@ public class InternalDocumentDriverImpl extends BaseArangoDriverImpl {
 				baseUrl + "/_api/document/" + documentHandle, 
 				new MapBuilder()
 					.put("rev", rev == -1 ? null : rev)
-					.put("waitForSync", waitForSync == null ? null : waitForSync.booleanValue())
+					.put("policy", policy == null ? null : policy.name())
+					.put("waitForSync", waitForSync)
 					.get(),
 				EntityFactory.toJsonString(value));
 		
-		try {
-			DocumentEntity<T> entity = createEntity(res, DocumentEntity.class);
-			return entity;
-		} catch (ArangoException e) {
-//			if (HttpManager.is404Error(e)) {
-//				if (mode == null || mode == Mode.RETURN_NULL) {
-//					return null;
-//				}
-//			}
-			throw e;
-		}
+		DocumentEntity<T> entity = createEntity(res, DocumentEntity.class);
+		return entity;
 		
 	}
-	
+
+	public <T> DocumentEntity<T> partialUpdateDocument(String documentHandle, Object value, long rev, Policy policy, Boolean waitForSync, Boolean keepNull) throws ArangoException {
+		
+		validateDocumentHandle(documentHandle);
+		HttpResponseEntity res = httpManager.doPatch(
+				baseUrl + "/_api/document/" + documentHandle, 
+				new MapBuilder()
+					.put("rev", rev == -1 ? null : rev)
+					.put("policy", policy == null ? null : policy.name())
+					.put("waitForSync", waitForSync)
+					.put("keepNull", keepNull)
+					.get(),
+				EntityFactory.toJsonString(value));
+		
+		DocumentEntity<T> entity = createEntity(res, DocumentEntity.class);
+		return entity;
+		
+	}
+
 	
 //	public List<String> getDocuments(long collectionId) throws ArangoException {
 //		return getDocuments(String.valueOf(collectionId));

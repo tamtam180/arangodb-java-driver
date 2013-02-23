@@ -22,9 +22,9 @@ package at.orz.arangodb;
  */
 public class TestComplexEntity01 {
 
-	private String user = "testUser01";
-	private String desc = "テストユーザーです。";
-	private int age = 18;
+	private String user;// = "testUser01";
+	private String desc;// = "テストユーザーです。";
+	private int age;// = 18;
 	public TestComplexEntity01() {
 	}
 	public TestComplexEntity01(String user, String desc, int age) {

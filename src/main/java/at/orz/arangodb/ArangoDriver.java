@@ -208,6 +208,16 @@ public class ArangoDriver extends BaseArangoDriver {
 	public <T> DocumentEntity<T> updateDocument(String documentHandle, Object value, long rev, Policy policy, Boolean waitForSync) throws ArangoException {
 		return documentDriver.updateDocument(documentHandle, value, rev, policy, waitForSync);
 	}
+
+	public DocumentEntity<?> updateDocument(long collectionId, long documentId, Object value, long rev, Policy policy, Boolean waitForSync, Boolean keepNull) throws ArangoException {
+		return partialUpdateDocument(createDocumentHandle(collectionId, documentId), value, rev, policy, waitForSync, keepNull);
+	}
+	public DocumentEntity<?> updateDocument(String collectionName, long documentId, Object value, long rev, Policy policy, Boolean waitForSync, Boolean keepNull) throws ArangoException {
+		return partialUpdateDocument(createDocumentHandle(collectionName, documentId), value, rev, policy, waitForSync, keepNull);
+	}
+	public <T> DocumentEntity<T> partialUpdateDocument(String documentHandle, Object value, long rev, Policy policy, Boolean waitForSync, Boolean keepNull) throws ArangoException {
+		return documentDriver.partialUpdateDocument(documentHandle, value, rev, policy, waitForSync, keepNull);
+	}
 	
 	public List<String> getDocuments(long collectionId) throws ArangoException {
 		return getDocuments(String.valueOf(collectionId));

@@ -182,9 +182,9 @@ public class HttpManager {
 		
 		if (logger.isDebugEnabled()) {
 			if (requestEntity.type == RequestType.POST || requestEntity.type == RequestType.PUT || requestEntity.type == RequestType.PATCH) {
-				logger.debug("http-{}: url={}, body={}", new Object[]{ requestEntity.type, url, requestEntity.bodyText });
+				logger.debug("[REQ]http-{}: url={}, body={}", new Object[]{ requestEntity.type, url, requestEntity.bodyText });
 			} else {
-				logger.debug("http-{}: url={}", requestEntity.type, url);
+				logger.debug("[REQ]http-{}: url={}", requestEntity.type, url);
 			}
 		}
 		
@@ -241,7 +241,7 @@ public class HttpManager {
 			responseEntity.statusCode = status.getStatusCode();
 			responseEntity.statusPhrase = status.getReasonPhrase();
 
-			logger.debug("http-{}: statusCode={}", requestEntity.type, responseEntity.statusCode);
+			logger.debug("[RES]http-{}: statusCode={}", requestEntity.type, responseEntity.statusCode);
 			
 			// ヘッダの処理
 			//// TODO etag特殊処理は削除する。
@@ -262,7 +262,7 @@ public class HttpManager {
 			if (entity != null) {
 				// Close stream in this method.
 				responseEntity.text = IOUtils.toString(entity.getContent());
-				logger.debug("http-{}: text={}", requestEntity.type, responseEntity.text);
+				logger.debug("[RES]http-{}: text={}", requestEntity.type, responseEntity.text);
 			}
 			
 			return responseEntity;

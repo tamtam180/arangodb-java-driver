@@ -37,7 +37,6 @@ public class EntityFactory {
 	private static Gson gson;
 	static {
 		gson = new GsonBuilder()
-			.serializeNulls()
 			.registerTypeAdapter(CollectionStatus.class, new CollectionStatusTypeAdapter())
 			.registerTypeAdapter(CollectionEntity.class, new EntityDeserializers.CollectionEntityDeserializer())
 			.registerTypeAdapter(DocumentEntity.class, new EntityDeserializers.DocumentEntityDeserializer())

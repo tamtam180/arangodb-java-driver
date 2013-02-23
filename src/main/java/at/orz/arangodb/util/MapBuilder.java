@@ -25,16 +25,28 @@ import java.util.Map;
  */
 public class MapBuilder {
 	
+	private boolean ignoreValue = true;
 	private LinkedHashMap<String, Object> map;
+	
 	public MapBuilder() {
 		map = new LinkedHashMap<String, Object>();
+	}
+	public MapBuilder(boolean ignoreValue) {
+		this();
+		this.ignoreValue = ignoreValue;
 	}
 	public MapBuilder(String key, Object value) {
 		this();
 		put(key, value);
 	}
+	public MapBuilder(String key, Object value, boolean ignoreValue) {
+		this();
+		this.ignoreValue = ignoreValue;
+		put(key, value);
+	}
+
 	public MapBuilder put(String key, Object value) {
-		if (key != null && value != null) {
+		if (!this.ignoreValue || (key != null && value != null)) {
 			map.put(key, value);
 		}
 		return this;

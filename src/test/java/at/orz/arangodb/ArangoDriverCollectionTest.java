@@ -35,6 +35,7 @@ import at.orz.arangodb.entity.CollectionStatus;
 import at.orz.arangodb.entity.CollectionType;
 import at.orz.arangodb.entity.CollectionsEntity;
 import at.orz.arangodb.entity.DocumentEntity;
+import at.orz.arangodb.util.MapBuilder;
 
 /**
  * UnitTest for REST API "collections"
@@ -419,13 +420,18 @@ public class ArangoDriverCollectionTest extends BaseTest {
 	@Test
 	public void test_load_unload() throws ArangoException {
 		
+		// create
 		CollectionEntity collection = driver.createCollection(collectionName, null, null, null, null, null);
 		assertThat(collection, is(notNullValue()));
 		assertThat(collection.getCode(), is(200));
+		
+		// add document, for count parameter test.
+		driver.createDocument(collectionName, new MapBuilder("hoge", "fuga").put("fuga", "piyoko").get(), false, null);
 
 		CollectionEntity collection1 = driver.unloadCollection(collectionName);
 		assertThat(collection1, is(notNullValue()));
 		assertThat(collection1.getCode(), is(200));
+		assertThat(collection1.getCount(), is(0L));
 		
 		assertThat(collection1.getStatus(), anyOf(is(CollectionStatus.UNLOADED), is(CollectionStatus.IN_THE_PROCESS_OF_BEING_UNLOADED)));
 		
@@ -433,7 +439,21 @@ public class ArangoDriverCollectionTest extends BaseTest {
 		assertThat(collection2, is(notNullValue()));
 		assertThat(collection2.getCode(), is(200));
 		assertThat(collection2.getStatus(), is(CollectionStatus.LOADED));
+		assertThat(collection2.getCount(), is(1L));
 
+		// unload again, for count parameter test.
+		collection1 = driver.unloadCollection(collectionName);
+		assertThat(collection1, is(notNullValue()));
+		assertThat(collection1.getCode(), is(200));
+		assertThat(collection1.getCount(), is(0L));
+
+		// with count parameter
+		CollectionEntity col3 = driver.loadCollection(collectionName, false);
+		assertThat(col3, is(notNullValue()));
+		assertThat(col3.getCode(), is(200));
+		assertThat(col3.getStatus(), is(CollectionStatus.LOADED));
+		assertThat(col3.getCount(), is(0L)); // Not contains count in response.
+		
 	}
 	
 	@Test

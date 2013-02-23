@@ -159,27 +159,17 @@ public class InternalCollectionDriverImpl extends BaseArangoDriverImpl {
 		
 	}
 	
-//	public CollectionEntity loadCollection(long id) throws ArangoException {
-//		return loadCollection(String.valueOf(id));
-//	}
-	public CollectionEntity loadCollection(String name) throws ArangoException {
+	public CollectionEntity loadCollection(String name, Boolean count) throws ArangoException {
 		
 		validateCollectionName(name);
 		HttpResponseEntity res = httpManager.doPut(
 				baseUrl + "/_api/collection/" + name + "/load", 
-				null, 
-				null);
+				null,
+				EntityFactory.toJsonString(
+					new MapBuilder("count", count).get()
+				));
 		
-		try {
-			return createEntity(res, CollectionEntity.class);
-		} catch (ArangoException e) {
-//			if (HttpManager.is404Error(e)) {
-//				if (mode == null || mode == Mode.RETURN_NULL) {
-//					return null;
-//				}
-//			}
-			throw e;
-		}
+		return createEntity(res, CollectionEntity.class);
 		
 	}
 

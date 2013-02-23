@@ -140,10 +140,16 @@ public class ArangoDriver extends BaseArangoDriver {
 	}
 	
 	public CollectionEntity loadCollection(long id) throws ArangoException {
-		return loadCollection(String.valueOf(id));
+		return collectionDriver.loadCollection(String.valueOf(id), null);
 	}
 	public CollectionEntity loadCollection(String name) throws ArangoException {
-		return collectionDriver.loadCollection(name);
+		return collectionDriver.loadCollection(name, null);
+	}
+	public CollectionEntity loadCollection(long id, Boolean count) throws ArangoException {
+		return collectionDriver.loadCollection(String.valueOf(id), count);
+	}
+	public CollectionEntity loadCollection(String name, Boolean count) throws ArangoException {
+		return collectionDriver.loadCollection(name, count);
 	}
 
 	public CollectionEntity unloadCollection(long id) throws ArangoException {

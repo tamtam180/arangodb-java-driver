@@ -16,6 +16,9 @@
 
 package at.orz.arangodb.impl;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import at.orz.arangodb.ArangoConfigure;
 import at.orz.arangodb.ArangoException;
 import at.orz.arangodb.entity.CollectionEntity;
@@ -41,7 +44,8 @@ public class InternalCollectionDriverImpl extends BaseArangoDriverImpl {
 			Integer journalSize, 
 			Boolean isSystem, 
 			Boolean isVolatile,
-			CollectionType type
+			CollectionType type,
+			Map<String, Object> createOptions
 			) throws ArangoException {
 		
 		HttpResponseEntity res = httpManager.doPost(
@@ -53,6 +57,7 @@ public class InternalCollectionDriverImpl extends BaseArangoDriverImpl {
 					.put("journalSize", journalSize)
 					.put("isSystem", isSystem)
 					.put("isVolatile", isVolatile)
+					.put("createOptions", createOptions)
 					.put("type", type == null ? null : type.getType())
 					.get())
 					);

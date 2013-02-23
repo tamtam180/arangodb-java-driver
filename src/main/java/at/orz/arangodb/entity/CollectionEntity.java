@@ -17,6 +17,7 @@
 package at.orz.arangodb.entity;
 
 import java.io.Serializable;
+import java.util.Map;
 
 
 /**
@@ -45,6 +46,7 @@ public class CollectionEntity extends BaseEntity {
 	
 	Figures figures;
 
+	Map<String, Object> createOptions;
 
 	public String getName() {
 		return name;
@@ -86,6 +88,10 @@ public class CollectionEntity extends BaseEntity {
 		return figures;
 	}
 
+	public Map<String, Object> getCreateOptions() {
+		return createOptions;
+	}
+	
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -124,6 +130,10 @@ public class CollectionEntity extends BaseEntity {
 
 	public void setFigures(Figures figures) {
 		this.figures = figures;
+	}
+	
+	public void setCreateOptions(Map<String, Object> createOptions) {
+		this.createOptions = createOptions;
 	}
 	
 	public static class Figures implements Serializable {

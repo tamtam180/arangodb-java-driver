@@ -19,6 +19,7 @@ package at.orz.arangodb;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeSet;
 
@@ -152,6 +153,35 @@ public class ArangoDriverCollectionTest extends BaseTest {
 		
 	}
 
+	@Test
+	public void test_create_with_options() throws ArangoException {
+		
+		Map<String, Object> createOptions = new LinkedHashMap<String, Object>();
+		createOptions.put("ext_opt1", 100.0);
+		createOptions.put("ext_opt2", "寿司・天ぷら");
+		createOptions.put("ext_opt3", true);
+		
+		CollectionEntity res = driver.createCollection(collectionName, null, null, null, null, CollectionType.DOCUMENT, createOptions);
+		assertThat(res, is(notNullValue()));
+		assertThat(res.getCode(), is(200));
+		assertThat(res.getId(), is(not(0L)));
+		assertThat(res.getName(), is(collectionName));
+		assertThat(res.getWaitForSync(), is(false));
+		assertThat(res.getIsVolatile(), is(false));
+		assertThat(res.getIsSystem(), is(false));
+		assertThat(res.getStatus(), is(CollectionStatus.LOADED));
+		assertThat(res.getType(), is(CollectionType.DOCUMENT));
+		
+		// 現状では戻り値でとれないので別のAPIで確認する
+		//// TODO 現状では戻ってこないことを確認する
+		assertThat(res.getCreateOptions(), is(nullValue()));
+		
+		CollectionEntity ent = driver.getCollectionProperties(collectionName);
+		Map<String, Object> map = ent.getCreateOptions();
+		assertThat(map.size(), is(3));
+		assertThat(map, is(createOptions));
+		
+	}
 	
 	/**
 	 * 既に存在する場合の挙動確認。

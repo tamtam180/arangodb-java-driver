@@ -205,6 +205,10 @@ public class EntityDeserializers {
 			if (obj.has("type")) {
 				entity.type = CollectionType.valueOf(obj.getAsJsonPrimitive("type").getAsInt());
 			}
+			
+			if (obj.has("createOptions")) {
+				entity.createOptions = context.deserialize(obj.get("createOptions"), Map.class);
+			}
 
 			return entity;
 		}

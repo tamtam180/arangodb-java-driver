@@ -90,12 +90,17 @@ public class ArangoDriver extends BaseArangoDriver {
 	// ---------------------------------------- start of collection ----------------------------------------
 	
 	public CollectionEntity createCollection(String name) throws ArangoException {
-		return collectionDriver.createCollection(name, null, null, null, null, null);
+		return collectionDriver.createCollection(name, null, null, null, null, null, null);
 	}
-	
+
 	public CollectionEntity createCollection(String name, Boolean waitForSync,
 			Integer journalSize, Boolean isSystem, Boolean isVolatile, CollectionType type) throws ArangoException {
-		return collectionDriver.createCollection(name, waitForSync, journalSize, isSystem, isVolatile, type);
+		return collectionDriver.createCollection(name, waitForSync, journalSize, isSystem, isVolatile, type, null);
+	}
+
+	public CollectionEntity createCollection(String name, Boolean waitForSync,
+			Integer journalSize, Boolean isSystem, Boolean isVolatile, CollectionType type, Map<String, Object> createOptions) throws ArangoException {
+		return collectionDriver.createCollection(name, waitForSync, journalSize, isSystem, isVolatile, type, createOptions);
 	}
 	
 	public CollectionEntity getCollection(long id) throws ArangoException {

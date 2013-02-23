@@ -130,9 +130,13 @@ public class ArangoDriver extends BaseArangoDriver {
 	public CollectionEntity getCollectionFigures(String name) throws ArangoException {
 		return collectionDriver.getCollectionFigures(name);
 	}
-	
+
 	public CollectionsEntity getCollections() throws ArangoException {
-		return collectionDriver.getCollections();
+		return collectionDriver.getCollections(null);
+	}
+
+	public CollectionsEntity getCollections(Boolean excludeSystem) throws ArangoException {
+		return collectionDriver.getCollections(excludeSystem);
 	}
 	
 	public CollectionEntity loadCollection(long id) throws ArangoException {

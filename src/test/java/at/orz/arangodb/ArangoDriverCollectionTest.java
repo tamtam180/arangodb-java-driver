@@ -409,6 +409,11 @@ public class ArangoDriverCollectionTest extends BaseTest {
 			assertThat(collection.getName(), is(collectionName));
 		}
 		
+		// with exluceSystem parameter.
+		int allColCount = collections.getCollections().size();
+		int sysExcludeCount = driver.getCollections(true).getCollections().size();
+		assertThat(allColCount > sysExcludeCount, is(true));
+		
 	}
 	
 	@Test

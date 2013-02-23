@@ -147,11 +147,13 @@ public class InternalCollectionDriverImpl extends BaseArangoDriverImpl {
 
 	}
 	
-	public CollectionsEntity getCollections() throws ArangoException {
+	public CollectionsEntity getCollections(Boolean excludeSystem) throws ArangoException {
 
 		HttpResponseEntity res = httpManager.doGet(
 				baseUrl + "/_api/collection",
-				null);
+				null,
+				new MapBuilder().put("excludeSystem", excludeSystem).get()
+				);
 		
 		return createEntity(res, CollectionsEntity.class);
 		

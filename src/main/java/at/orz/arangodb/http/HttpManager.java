@@ -44,7 +44,7 @@ import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +61,7 @@ public class HttpManager {
 
 	private Logger logger = LoggerFactory.getLogger(HttpManager.class);
 	
-	private ThreadSafeClientConnManager cm;
+	private PoolingClientConnectionManager cm;
 	private HttpClient client;
 	
 	private int defaultMaxPerRoute = 20;
@@ -91,7 +91,7 @@ public class HttpManager {
 	}
 	
 	public void init() {
-		cm = new ThreadSafeClientConnManager();
+		cm = new PoolingClientConnectionManager();
 		cm.setDefaultMaxPerRoute(defaultMaxPerRoute);
 		cm.setMaxTotal(maxTotal);
 		client = new DefaultHttpClient(cm);

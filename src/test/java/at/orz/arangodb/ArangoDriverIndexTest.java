@@ -337,7 +337,7 @@ public class ArangoDriverIndexTest extends BaseTest {
 		assertThat(indexes.isError(), is(false));
 		assertThat(indexes.getIndexes().size(), is(2));
 		
-		String pkHandle = col1.getId() + "/0";
+		String pkHandle = col1.getName() + "/0";
 		IndexEntity pk = indexes.getIdentifiers().get(pkHandle);
 		assertThat(pk.getType(), is(IndexType.PRIMARY));
 		assertThat(pk.getFields().size(), is(1));

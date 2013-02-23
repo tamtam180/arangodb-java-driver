@@ -29,7 +29,8 @@ public class HttpRequestEntity {
 		POST,
 		PUT,
 		DELETE,
-		HEAD
+		HEAD,
+		PATCH
 	}
 	
 	Map<String, Object> headers;

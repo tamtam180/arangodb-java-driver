@@ -28,6 +28,7 @@ import at.orz.arangodb.ArangoException;
 import at.orz.arangodb.CursorResultSet;
 import at.orz.arangodb.entity.DocumentEntity;
 import at.orz.arangodb.entity.ScalarExampleEntity;
+import at.orz.arangodb.example.Example1;
 import at.orz.arangodb.util.MapBuilder;
 
 /**
@@ -58,6 +59,41 @@ public class ArangoDriverSimpleTest extends BaseTest {
 
 	}
 
+	@Test
+	public void test_simple_all() throws ArangoException {
+		
+		CursorResultSet<TestComplexEntity01> rs = driver.executeSimpleAllWithResultSet(collectionName, 0, 0, TestComplexEntity01.class);
+		int count = 0;
+		while (rs.hasNext()) {
+			TestComplexEntity01 entity = rs.next();
+			count++;
+		}
+		rs.close();
+		
+		assertThat(count, is(100));
+		
+	}
+	
+	@Test
+	public void test_example_by() throws ArangoException {
+		
+		CursorResultSet<TestComplexEntity01> rs = driver.executeSimpleByExampleWithResusltSet(
+				collectionName, 
+				new MapBuilder().put("user", "user_6").get(),
+				0, 0, TestComplexEntity01.class);
+		int count = 0;
+		while (rs.hasNext()) {
+			TestComplexEntity01 entity = rs.next();
+			count++;
+			
+			assertThat(entity.getUser(), is("user_6"));
+		}
+		rs.close();
+		
+		assertThat(count, is(10));
+		
+	}
+	
 	@Test
 	public void test_first_example() throws ArangoException {
 		

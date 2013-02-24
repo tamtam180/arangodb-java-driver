@@ -445,6 +445,22 @@ public class ArangoDriver extends BaseArangoDriver {
 
 	// ---------------------------------------- start of simple ----------------------------------------
 	
+	public <T> CursorEntity<T> executeSimpleByExample(String collectionName, Map<String, Object> example, int skip, int limit, Class<T> clazz) throws ArangoException {
+		return simpleDriver.executeSimpleByExample(collectionName, example, skip, limit, clazz);
+	}
+
+	public <T> CursorResultSet<T> executeSimpleByExampleWithResusltSet(String collectionName, Map<String, Object> example, int skip, int limit, Class<T> clazz) throws ArangoException {
+		return simpleDriver.executeSimpleByExampleWithResultSet(collectionName, example, skip, limit, clazz);
+	}
+
+	public <T> CursorEntity<T> executeSimpleAll(String collectionName, int skip, int limit, Class<T> clazz) throws ArangoException {
+		return simpleDriver.executeSimpleAll(collectionName, skip, limit, clazz);
+	}
+
+	public <T> CursorResultSet<T> executeSimpleAllWithResultSet(String collectionName, int skip, int limit, Class<T> clazz) throws ArangoException {
+		return simpleDriver.executeSimpleAllWithResultSet(collectionName, skip, limit, clazz);
+	}
+	
 	public <T> ScalarExampleEntity<T> executeFirstExample(String collectionName, Map<String, Object> example, Class<T> clazz) throws ArangoException {
 		return simpleDriver.executeFirstExample(collectionName, example, clazz);
 	}

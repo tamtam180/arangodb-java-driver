@@ -98,7 +98,7 @@ public class InternalDocumentDriverImpl extends BaseArangoDriverImpl {
 					.put("waitForSync", waitForSync)
 					.put("keepNull", keepNull)
 					.get(),
-				EntityFactory.toJsonString(value));
+				EntityFactory.toJsonString(value, keepNull != null && !keepNull));
 		
 		DocumentEntity<T> entity = createEntity(res, DocumentEntity.class);
 		return entity;

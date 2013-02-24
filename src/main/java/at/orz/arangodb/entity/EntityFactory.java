@@ -35,8 +35,9 @@ import com.google.gson.JsonElement;
 public class EntityFactory {
 
 	private static Gson gson;
-	static {
-		gson = new GsonBuilder()
+	private static Gson gsonNull;
+	private static GsonBuilder getBuilder() {
+		return new GsonBuilder()
 			.registerTypeAdapter(CollectionStatus.class, new CollectionStatusTypeAdapter())
 			.registerTypeAdapter(CollectionEntity.class, new EntityDeserializers.CollectionEntityDeserializer())
 			.registerTypeAdapter(DocumentEntity.class, new EntityDeserializers.DocumentEntityDeserializer())
@@ -52,8 +53,11 @@ public class EntityFactory {
 			.registerTypeAdapter(EdgesEntity.class, new EntityDeserializers.EdgesEntityDeserializer())
 			.registerTypeAdapter(AdminLogEntity.class, new EntityDeserializers.AdminLogEntryEntityDeserializer())
 			.registerTypeAdapter(AdminStatusEntity.class, new EntityDeserializers.AdminStatusEntityDeserializer())
-			.registerTypeAdapter(ConnectionStatisticsEntity.class, new EntityDeserializers.ConnectionStatisticsEntityDeserializer())
-			.create();
+			.registerTypeAdapter(ConnectionStatisticsEntity.class, new EntityDeserializers.ConnectionStatisticsEntityDeserializer());
+	}
+	static {
+		gson = getBuilder().create();
+		gsonNull = getBuilder().serializeNulls().create();
 	}
 	
 	public static <T> CursorEntity<T> createResult(CursorEntity<T> entity, Class<T> clazz) {
@@ -78,8 +82,13 @@ public class EntityFactory {
 	}
 	
 	public static <T> String toJsonString(T obj) {
-		return gson.toJson(obj);
+		return toJsonString(obj, false);
 	}
+
+	public static <T> String toJsonString(T obj, boolean includeNullValue) {
+		return includeNullValue ? gsonNull.toJson(obj) : gson.toJson(obj);
+	}
+
 	
 	public static <T> EdgesEntity<T> createEdges(String jsonText, Class<T> clazz) {
 		EdgesEntity<T> edges = createEntity(jsonText, EdgesEntity.class);

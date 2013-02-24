@@ -224,9 +224,21 @@ public class ArangoDriverDocumentTest extends BaseTest {
 		DocumentEntity<TestComplexEntity01> doc3 = driver.getDocument(doc2.getDocumentHandle(), TestComplexEntity01.class);
 		assertThat(doc3.getStatusCode(), is(200));
 		assertThat(doc3.getEntity(), is(notNullValue()));
-		assertThat(doc3.getEntity().getUser(), is("test-user"));
+		assertThat(doc3.getEntity().getUser(), is("test-user")); // not update
 		assertThat(doc3.getEntity().getDesc(), is("UpdatedDescription"));
 		assertThat(doc3.getEntity().getAge(), is(15));
+		
+		// keepNull = false (NULLを渡すと削除)
+		DocumentEntity<TestComplexEntity01> doc4 = driver.partialUpdateDocument(doc.getDocumentHandle(), value, -1L, null, null, false);
+		assertThat(doc4.getStatusCode(), is(200));
+		
+		// Get
+		DocumentEntity<TestComplexEntity01> doc5 = driver.getDocument(doc2.getDocumentHandle(), TestComplexEntity01.class);
+		assertThat(doc5.getStatusCode(), is(200));
+		assertThat(doc5.getEntity(), is(notNullValue()));
+		assertThat(doc5.getEntity().getUser(), is(nullValue())); // update
+		assertThat(doc5.getEntity().getDesc(), is("UpdatedDescription"));
+		assertThat(doc5.getEntity().getAge(), is(15));
 		
 	}
 

@@ -16,12 +16,16 @@
 
 package at.orz.arangodb.entity;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
 /**
  * @author tamtam180 - kirscheless at gmail.com
  *
  */
 public class ScalarExampleEntity<T> extends BaseEntity {
 
+	transient JsonElement _documentJson;
 	DocumentEntity<T> document;
 
 	public DocumentEntity<T> getDocument() {

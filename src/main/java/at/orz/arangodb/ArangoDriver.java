@@ -40,6 +40,7 @@ import at.orz.arangodb.entity.IndexType;
 import at.orz.arangodb.entity.IndexesEntity;
 import at.orz.arangodb.entity.KeyValueEntity;
 import at.orz.arangodb.entity.Policy;
+import at.orz.arangodb.entity.ScalarExampleEntity;
 import at.orz.arangodb.http.HttpManager;
 import at.orz.arangodb.impl.ImplFactory;
 import at.orz.arangodb.impl.InternalAdminDriverImpl;
@@ -49,6 +50,7 @@ import at.orz.arangodb.impl.InternalDocumentDriverImpl;
 import at.orz.arangodb.impl.InternalEdgeDriverImpl;
 import at.orz.arangodb.impl.InternalIndexDriverImpl;
 import at.orz.arangodb.impl.InternalKVSDriverImpl;
+import at.orz.arangodb.impl.InternalSimpleDriverImpl;
 
 /**
  * @author tamtam180 - kirscheless at gmail.com
@@ -72,6 +74,7 @@ public class ArangoDriver extends BaseArangoDriver {
 	private InternalIndexDriverImpl indexDriver;
 	private InternalEdgeDriverImpl edgeDriver;
 	private InternalAdminDriverImpl adminDriver;
+	private InternalSimpleDriverImpl simpleDriver;
 	
 	public ArangoDriver(ArangoConfigure configure) {
 		this.configure = configure;
@@ -85,6 +88,8 @@ public class ArangoDriver extends BaseArangoDriver {
 		this.indexDriver = ImplFactory.createIndexDriver(configure, cursorDriver);
 		this.edgeDriver = ImplFactory.createEdgeDriver(configure);
 		this.adminDriver = ImplFactory.createAdminDriver(configure);
+		this.simpleDriver = ImplFactory.createSimpleDriver(configure, cursorDriver);
+		
 	}
 	
 	// ---------------------------------------- start of collection ----------------------------------------
@@ -436,6 +441,15 @@ public class ArangoDriver extends BaseArangoDriver {
 	}
 
 	// ---------------------------------------- end of admin ----------------------------------------
+
+
+	// ---------------------------------------- start of simple ----------------------------------------
+	
+	public <T> ScalarExampleEntity<T> firstExample(String collectionName, Map<String, Object> example, Class<T> clazz) throws ArangoException {
+		return simpleDriver.executeFirstExample(collectionName, example, clazz);
+	}
+	
+	// ---------------------------------------- end of simple ----------------------------------------
 
 
 	// ---------------------------------------- start of xxx ----------------------------------------

@@ -27,6 +27,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 /**
  * @author tamtam180 - kirscheless at gmail.com
@@ -51,6 +52,7 @@ public class EntityFactory {
 			.registerTypeAdapter(IndexesEntity.class, new EntityDeserializers.IndexesEntityDeserializer())
 			.registerTypeAdapter(EdgeEntity.class, new EntityDeserializers.EdgeEntityDeserializer())
 			.registerTypeAdapter(EdgesEntity.class, new EntityDeserializers.EdgesEntityDeserializer())
+			.registerTypeAdapter(ScalarExampleEntity.class, new EntityDeserializers.ScalarExampleEntityDeserializer())
 			.registerTypeAdapter(AdminLogEntity.class, new EntityDeserializers.AdminLogEntryEntityDeserializer())
 			.registerTypeAdapter(AdminStatusEntity.class, new EntityDeserializers.AdminStatusEntityDeserializer())
 			.registerTypeAdapter(ConnectionStatisticsEntity.class, new EntityDeserializers.ConnectionStatisticsEntityDeserializer());
@@ -112,6 +114,20 @@ public class EntityFactory {
 		}
 		
 		return edges;
+	}
+	
+	public static <T> ScalarExampleEntity<T> createScalarExampleEntity(ScalarExampleEntity<T> entity, Class<T> clazz) {
+		
+		if (entity._documentJson != null) {
+			DocumentEntity<T> document = gson.fromJson(entity._documentJson, DocumentEntity.class);
+			if (document != null) {
+				document.setEntity(gson.fromJson(entity._documentJson, clazz));
+				entity.setDocument(document);
+				entity._documentJson = null;
+			}
+		}
+		
+		return entity;
 	}
 	
 }

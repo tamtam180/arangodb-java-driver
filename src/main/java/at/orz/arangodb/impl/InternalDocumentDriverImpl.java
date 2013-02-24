@@ -159,23 +159,14 @@ public class InternalDocumentDriverImpl extends BaseArangoDriverImpl {
 		
 		// TODO Case of StatusCode=304
 		
-		try {
-			T obj = createEntityImpl(res, clazz);
-			DocumentEntity<T> entity = createEntity(res, DocumentEntity.class);
-			if (entity == null) {
-				entity = new DocumentEntity<T>();
-			}
-			entity.setEntity(obj);
-			return entity;
-		} catch (ArangoException e) {
-			// TODO 404
-//			if (HttpManager.is404Error(e)) {
-//				if (mode == null || mode == Mode.RETURN_NULL) {
-//					return null;
-//				}
-//			}
-			throw e;
+		T obj = createEntityImpl(res, clazz);
+		DocumentEntity<T> entity = createEntity(res, DocumentEntity.class);
+		if (entity == null) {
+			entity = new DocumentEntity<T>();
 		}
+		entity.setEntity(obj);
+		return entity;
+
 	}
 
 //	public DocumentEntity<?> deleteDocument(long collectionId, long documentId, long rev, Policy policy) throws ArangoException {

@@ -660,25 +660,27 @@ public class EntityDeserializers {
 		}
 	}
 
-	
-//	public static class ScalarExampleEntityDeserializer implements JsonDeserializer<DocumentEntity<?>> {
-//
-//		public ScalarExampleEntity<?> deserialize(JsonElement json, Type typeOfT,
-//				JsonDeserializationContext context) throws JsonParseException {
-//			
-//			if (json.isJsonNull()) {
-//				return null;
-//			}
-//			
-//			JsonObject obj = json.getAsJsonObject();
-//			ScalarExampleEntity<?> entity = deserializeBaseParameter(obj, new ScalarExampleEntity<Object>());
-//			
-//			// document属性は別のレイヤーで
-//			
-//			return entity;
-//		}
-//		
-//	}
+	public static class ScalarExampleEntityDeserializer implements JsonDeserializer<ScalarExampleEntity<?>> {
+
+		public ScalarExampleEntity<?> deserialize(JsonElement json, Type typeOfT,
+				JsonDeserializationContext context) throws JsonParseException {
+			
+			if (json.isJsonNull()) {
+				return null;
+			}
+			
+			JsonObject obj = json.getAsJsonObject();
+			ScalarExampleEntity<?> entity = deserializeBaseParameter(obj, new ScalarExampleEntity<Object>());
+			
+			// document属性は別のレイヤーで
+			if (obj.has("document")) {
+				entity._documentJson = obj.get("document");
+			}
+			
+			return entity;
+		}
+		
+	}
 
 	
 }

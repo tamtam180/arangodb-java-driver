@@ -22,7 +22,9 @@ import at.orz.arangodb.ArangoConfigure;
 import at.orz.arangodb.ArangoException;
 import at.orz.arangodb.CursorResultSet;
 import at.orz.arangodb.entity.CursorEntity;
+import at.orz.arangodb.entity.DocumentEntity;
 import at.orz.arangodb.entity.EntityFactory;
+import at.orz.arangodb.entity.ScalarExampleEntity;
 import at.orz.arangodb.http.HttpResponseEntity;
 import at.orz.arangodb.util.MapBuilder;
 
@@ -118,6 +120,26 @@ public class InternalSimpleDriverImpl extends BaseArangoDriverWithCursorImpl {
 		
 	}
 
-	
+	public <T> ScalarExampleEntity<T> executeFirstExample(
+			String collectionName,
+			Map<String, Object> example,
+			Class<T> clazz
+			) throws ArangoException {
+		
+		validateCollectionName(collectionName);
+		HttpResponseEntity res = httpManager.doPut(
+				baseUrl + "/_api/simple/first-example", 
+				null,
+				EntityFactory.toJsonString(
+						new MapBuilder()
+						.put("collection", collectionName)
+						.put("example", example)
+						.get())
+				);
+		
+		ScalarExampleEntity<T> entity = createEntity(res, ScalarExampleEntity.class);
+		return EntityFactory.createScalarExampleEntity(entity, clazz);
+		
+	}
 	
 }

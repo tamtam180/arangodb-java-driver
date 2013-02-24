@@ -37,7 +37,7 @@ public class InternalSimpleDriverImpl extends BaseArangoDriverWithCursorImpl {
 		super(configure, cursorDriver);
 	}
 
-	public <T> CursorResultSet<T> eexecuteSimpleAllWithResultSet(
+	public <T> CursorResultSet<T> executeSimpleAllWithResultSet(
 			String collectionName, int skip, int limit,
 			Class<T> clazz) throws ArangoException {
 		

@@ -461,8 +461,8 @@ public class ArangoDriver extends BaseArangoDriver {
 		return simpleDriver.executeSimpleAllWithResultSet(collectionName, skip, limit, clazz);
 	}
 	
-	public <T> ScalarExampleEntity<T> executeFirstExample(String collectionName, Map<String, Object> example, Class<T> clazz) throws ArangoException {
-		return simpleDriver.executeFirstExample(collectionName, example, clazz);
+	public <T> ScalarExampleEntity<T> executeSimpleFirstExample(String collectionName, Map<String, Object> example, Class<T> clazz) throws ArangoException {
+		return simpleDriver.executeSimpleFirstExample(collectionName, example, clazz);
 	}
 	
 	// ---------------------------------------- end of simple ----------------------------------------

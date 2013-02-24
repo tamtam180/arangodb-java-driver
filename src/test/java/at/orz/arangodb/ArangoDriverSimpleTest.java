@@ -97,7 +97,7 @@ public class ArangoDriverSimpleTest extends BaseTest {
 	@Test
 	public void test_first_example() throws ArangoException {
 		
-		ScalarExampleEntity<TestComplexEntity01> entity = driver.executeFirstExample(
+		ScalarExampleEntity<TestComplexEntity01> entity = driver.executeSimpleFirstExample(
 				collectionName, 
 				new MapBuilder()
 					.put("user", "user_5")

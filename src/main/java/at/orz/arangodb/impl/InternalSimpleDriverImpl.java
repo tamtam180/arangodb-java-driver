@@ -120,7 +120,7 @@ public class InternalSimpleDriverImpl extends BaseArangoDriverWithCursorImpl {
 		
 	}
 
-	public <T> ScalarExampleEntity<T> executeFirstExample(
+	public <T> ScalarExampleEntity<T> executeSimpleFirstExample(
 			String collectionName,
 			Map<String, Object> example,
 			Class<T> clazz

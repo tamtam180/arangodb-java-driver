@@ -111,6 +111,7 @@ Example1.javaを参照してください。
 * **/_admin/echo は実装する予定はいまのところありません。**
 * KVS/Blueprintsはドキュメントが整ったら対応します。
 
+* POST /_api/explain
 * PUT /_api/simple/near
 * PUT /_api/simple/within
 * PUT /_api/simple/fulltext

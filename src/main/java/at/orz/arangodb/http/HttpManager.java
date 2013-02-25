@@ -43,6 +43,7 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.conn.params.ConnRoutePNames;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
@@ -60,6 +61,8 @@ import at.orz.arangodb.util.IOUtils;
  */
 public class HttpManager {
 
+	private static final ContentType APPLICATION_JSON_UTF8 = ContentType.create("application/json", "utf-8");
+	
 	private Logger logger = LoggerFactory.getLogger(HttpManager.class);
 	
 	private PoolingClientConnectionManager cm;
@@ -301,12 +304,8 @@ public class HttpManager {
 	
 	private static void configureBodyParams(HttpRequestEntity requestEntity, HttpEntityEnclosingRequestBase request) {
 		
-		try {
-			if (requestEntity.bodyText != null) {
-				request.setEntity(new StringEntity(requestEntity.bodyText, "application/json", "utf-8"));
-			}
-		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
+		if (requestEntity.bodyText != null) {
+			request.setEntity(new StringEntity(requestEntity.bodyText, APPLICATION_JSON_UTF8));
 		}
 		
 	}

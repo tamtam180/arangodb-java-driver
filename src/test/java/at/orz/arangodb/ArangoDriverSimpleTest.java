@@ -30,6 +30,7 @@ import at.orz.arangodb.CursorResultSet;
 import at.orz.arangodb.entity.DocumentEntity;
 import at.orz.arangodb.entity.IndexType;
 import at.orz.arangodb.entity.ScalarExampleEntity;
+import at.orz.arangodb.entity.SimpleByResultEntity;
 import at.orz.arangodb.example.Example1;
 import at.orz.arangodb.util.MapBuilder;
 
@@ -193,6 +194,38 @@ public class ArangoDriverSimpleTest extends BaseTest {
 			assertThat(count, is(26));
 		}
 		
+		
+	}
+	
+	@Test
+	public void test_remove_by_example() throws ArangoException {
+		
+		SimpleByResultEntity entity = driver.executeSimpleRemoveByExample(
+				collectionName, 
+				new MapBuilder().put("user", "user_3").get(), 
+				null, null);
+		
+		assertThat(entity.getCode(), is(200));
+		assertThat(entity.getCount(), is(10));
+		assertThat(entity.getDeleted(), is(10));
+		assertThat(entity.getReplaced(), is(0));
+		assertThat(entity.getUpdated(), is(0));
+		
+	}
+
+	@Test
+	public void test_remove_by_example_with_limit() throws ArangoException {
+		
+		SimpleByResultEntity entity = driver.executeSimpleRemoveByExample(
+				collectionName, 
+				new MapBuilder().put("user", "user_3").get(), 
+				null, 5);
+		
+		assertThat(entity.getCode(), is(200));
+		assertThat(entity.getCount(), is(5));
+		assertThat(entity.getDeleted(), is(5));
+		assertThat(entity.getReplaced(), is(0));
+		assertThat(entity.getUpdated(), is(0));
 		
 	}
 

@@ -682,5 +682,33 @@ public class EntityDeserializers {
 		
 	}
 
+	public static class SimpleByResultEntityDeserializer implements JsonDeserializer<SimpleByResultEntity> {
+		
+		public SimpleByResultEntity deserialize(JsonElement json, Type typeOfT,
+				JsonDeserializationContext context) throws JsonParseException {
+			
+			if (json.isJsonNull()) {
+				return null;
+			}
+			
+			JsonObject obj = json.getAsJsonObject();
+			SimpleByResultEntity entity = deserializeBaseParameter(obj, new SimpleByResultEntity());
+			
+			if (obj.has("deleted")) {
+				entity.count = entity.deleted = obj.getAsJsonPrimitive("deleted").getAsInt();
+			}
+			
+			if (obj.has("replaced")) {
+				entity.count = entity.replaced = obj.getAsJsonPrimitive("replaced").getAsInt();
+			}
+			
+			if (obj.has("updated")) {
+				entity.count = entity.updated = obj.getAsJsonPrimitive("updated").getAsInt();
+			}
+			
+			return entity;
+		}
+		
+	}
 	
 }

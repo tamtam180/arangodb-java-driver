@@ -41,6 +41,7 @@ import at.orz.arangodb.entity.IndexesEntity;
 import at.orz.arangodb.entity.KeyValueEntity;
 import at.orz.arangodb.entity.Policy;
 import at.orz.arangodb.entity.ScalarExampleEntity;
+import at.orz.arangodb.entity.SimpleByResultEntity;
 import at.orz.arangodb.http.HttpManager;
 import at.orz.arangodb.impl.ImplFactory;
 import at.orz.arangodb.impl.InternalAdminDriverImpl;
@@ -487,6 +488,14 @@ public class ArangoDriver extends BaseArangoDriver {
 			Class<T> clazz
 			) throws ArangoException {
 		return simpleDriver.executeSimpleRangeWithResultSet(collectionName, attribute, left, right, closed, skip, limit, clazz);
+	}
+	
+	public SimpleByResultEntity executeSimpleRemoveByExample(
+			String collectionName,
+			Map<String, Object> example,
+			Boolean waitForSync,
+			Integer limit) throws ArangoException {
+		return simpleDriver.executeSimpleRemoveByExample(collectionName, example, waitForSync, limit);
 	}
 	
 	// ---------------------------------------- end of simple ----------------------------------------

@@ -469,6 +469,26 @@ public class ArangoDriver extends BaseArangoDriver {
 		return simpleDriver.executeSimpleAny(collectionName, clazz);
 	}
 	
+	public <T> CursorEntity<T> executeSimpleRange(
+			String collectionName,
+			String attribute,
+			Object left, Object right, Boolean closed,
+			int skip, int limit,
+			Class<T> clazz
+			) throws ArangoException {
+		return simpleDriver.executeSimpleRange(collectionName, attribute, left, right, closed, skip, limit, clazz);
+	}
+	
+	public <T> CursorResultSet<T> executeSimpleRangeWithResultSet(
+			String collectionName,
+			String attribute,
+			Object left, Object right, Boolean closed,
+			int skip, int limit,
+			Class<T> clazz
+			) throws ArangoException {
+		return simpleDriver.executeSimpleRangeWithResultSet(collectionName, attribute, left, right, closed, skip, limit, clazz);
+	}
+	
 	// ---------------------------------------- end of simple ----------------------------------------
 
 

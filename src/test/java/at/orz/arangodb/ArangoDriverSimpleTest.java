@@ -17,16 +17,18 @@
 package at.orz.arangodb;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 import java.util.Map;
 
+import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 
 import at.orz.arangodb.ArangoException;
 import at.orz.arangodb.CursorResultSet;
 import at.orz.arangodb.entity.DocumentEntity;
+import at.orz.arangodb.entity.IndexType;
 import at.orz.arangodb.entity.ScalarExampleEntity;
 import at.orz.arangodb.example.Example1;
 import at.orz.arangodb.util.MapBuilder;
@@ -42,6 +44,10 @@ public class ArangoDriverSimpleTest extends BaseTest {
 	@Before
 	public void setup() throws ArangoException {
 
+		// index破棄のために一度削除する
+		try {
+			driver.deleteCollection(collectionName);
+		} catch (ArangoException e) {}
 		// Collectionを作る
 		try {
 			driver.createCollection(collectionName);
@@ -138,4 +144,57 @@ public class ArangoDriverSimpleTest extends BaseTest {
 		}
 	}
 
+	@Test
+	public void test_range_no_skiplist() throws ArangoException {
+		
+		// skip listが無いのでエラーになる
+		try {
+			CursorResultSet<TestComplexEntity01> rs = driver.executeSimpleRangeWithResultSet(
+					collectionName, "age", 5, 30, null, 0, 0, TestComplexEntity01.class);
+			fail("例外が発生しないとだめ");
+		} catch (ArangoException e) {
+			assertThat(e.getErrorNumber(), is(500));
+			assertThat(e.getCode(), is(500));
+		}
+		
+	}
+
+	@Test
+	public void test_range() throws ArangoException {
+		
+		// create skip-list
+		driver.createIndex(collectionName, IndexType.SKIPLIST, false, "age");
+		
+		{
+			CursorResultSet<TestComplexEntity01> rs = driver.executeSimpleRangeWithResultSet(
+					collectionName, "age", 5, 30, null, 0, 0, TestComplexEntity01.class);
+			
+			int count = 0;
+			while (rs.hasNext()) {
+				TestComplexEntity01 entity = rs.next();
+				count++;
+				assertThat(entity, is(notNullValue()));
+			}
+			rs.close();
+			assertThat(count, is(25));
+		}
+		
+		{
+			CursorResultSet<TestComplexEntity01> rs = driver.executeSimpleRangeWithResultSet(
+					collectionName, "age", 5, 30, true, 0, 0, TestComplexEntity01.class);
+			
+			int count = 0;
+			while (rs.hasNext()) {
+				TestComplexEntity01 entity = rs.next();
+				count++;
+				assertThat(entity, is(notNullValue()));
+			}
+			rs.close();
+			assertThat(count, is(26));
+		}
+		
+		
+	}
+
+	
 }

@@ -22,7 +22,6 @@ import at.orz.arangodb.ArangoConfigure;
 import at.orz.arangodb.ArangoException;
 import at.orz.arangodb.CursorResultSet;
 import at.orz.arangodb.entity.CursorEntity;
-import at.orz.arangodb.entity.DocumentEntity;
 import at.orz.arangodb.entity.EntityFactory;
 import at.orz.arangodb.entity.ScalarExampleEntity;
 import at.orz.arangodb.http.HttpResponseEntity;
@@ -162,4 +161,49 @@ public class InternalSimpleDriverImpl extends BaseArangoDriverWithCursorImpl {
 		
 	}
 
+	public <T> CursorEntity<T> executeSimpleRange(
+			String collectionName,
+			String attribute,
+			Object left, Object right, Boolean closed,
+			int skip, int limit,
+			Class<T> clazz
+			) throws ArangoException {
+		
+		validateCollectionName(collectionName);
+		HttpResponseEntity res = httpManager.doPut(
+				baseUrl + "/_api/simple/range", 
+				null,
+				EntityFactory.toJsonString(
+						new MapBuilder()
+						.put("collection", collectionName)
+						.put("attribute", attribute)
+						.put("left", left)
+						.put("right", right)
+						.put("closed", closed)
+						.put("skip", skip > 0 ? skip : null)
+						.put("limit", limit > 0 ? limit : null)
+						.get())
+				);
+		
+		CursorEntity<T> entity = createEntity(res, CursorEntity.class);
+		return EntityFactory.createResult(entity, clazz);
+		
+	}
+
+	public <T> CursorResultSet<T> executeSimpleRangeWithResultSet(
+			String collectionName,
+			String attribute,
+			Object left, Object right, Boolean closed,
+			int skip, int limit,
+			Class<T> clazz
+			) throws ArangoException {
+		
+		CursorEntity<T> entity = executeSimpleRange(collectionName, attribute, left, right, closed, skip, limit, clazz);
+		CursorResultSet<T> rs = new CursorResultSet<T>(cursorDriver, clazz, entity);
+		return rs;
+		
+	}
+
+	
+	
 }

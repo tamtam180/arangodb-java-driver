@@ -101,7 +101,6 @@ Example1.javaを参照してください。
 # TODO
 * etagのサポート
 * パーシャルアップデート
-* /_api/simple/の新しい命令
 * バッチ処理
 * バルクインポート
 * 認証処理
@@ -112,6 +111,9 @@ Example1.javaを参照してください。
 * **/_admin/echo は実装する予定はいまのところありません。**
 * KVS/Blueprintsはドキュメントが整ったら対応します。
 
+* PUT /_api/simple/near
+* PUT /_api/simple/within
+* PUT /_api/simple/fulltext
 
 # ライセンス
 

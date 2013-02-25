@@ -465,6 +465,10 @@ public class ArangoDriver extends BaseArangoDriver {
 		return simpleDriver.executeSimpleFirstExample(collectionName, example, clazz);
 	}
 	
+	public <T> ScalarExampleEntity<T> executeSimpleAny(String collectionName, Class<T> clazz) throws ArangoException {
+		return simpleDriver.executeSimpleAny(collectionName, clazz);
+	}
+	
 	// ---------------------------------------- end of simple ----------------------------------------
 
 

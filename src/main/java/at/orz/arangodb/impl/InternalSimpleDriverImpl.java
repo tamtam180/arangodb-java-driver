@@ -141,5 +141,25 @@ public class InternalSimpleDriverImpl extends BaseArangoDriverWithCursorImpl {
 		return EntityFactory.createScalarExampleEntity(entity, clazz);
 		
 	}
-	
+
+	public <T> ScalarExampleEntity<T> executeSimpleAny(
+			String collectionName,
+			Class<T> clazz
+			) throws ArangoException {
+		
+		validateCollectionName(collectionName);
+		HttpResponseEntity res = httpManager.doPut(
+				baseUrl + "/_api/simple/any", 
+				null,
+				EntityFactory.toJsonString(
+						new MapBuilder()
+						.put("collection", collectionName)
+						.get())
+				);
+		
+		ScalarExampleEntity<T> entity = createEntity(res, ScalarExampleEntity.class);
+		return EntityFactory.createScalarExampleEntity(entity, clazz);
+		
+	}
+
 }

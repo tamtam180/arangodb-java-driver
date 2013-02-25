@@ -117,5 +117,25 @@ public class ArangoDriverSimpleTest extends BaseTest {
 		
 	}
 
+	@Test
+	public void test_any() throws ArangoException {
+		
+		ScalarExampleEntity<TestComplexEntity01> entity = driver.executeSimpleAny(
+				collectionName, 
+				TestComplexEntity01.class);
+		
+		for (int i = 0; i < 30; i++) {
+			DocumentEntity<TestComplexEntity01> doc = entity.getDocument();
+			
+			assertThat(entity.getStatusCode(), is(200));
+			assertThat(doc.getDocumentRevision(), is(not(0L)));
+			assertThat(doc.getDocumentHandle(), is(collectionName + "/" + doc.getDocumentKey()));
+			assertThat(doc.getDocumentKey(), is(notNullValue()));
+			assertThat(doc.getEntity(), is(notNullValue()));
+			assertThat(doc.getEntity().getUser(), is(notNullValue()));
+			assertThat(doc.getEntity().getDesc(), is(notNullValue()));
+			assertThat(doc.getEntity().getAge(), is(notNullValue()));
+		}
+	}
 
 }

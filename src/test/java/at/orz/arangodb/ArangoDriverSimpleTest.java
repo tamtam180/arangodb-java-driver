@@ -259,5 +259,33 @@ public class ArangoDriverSimpleTest extends BaseTest {
 		
 	}
 
+	@Test
+	public void test_replace_by_example_with_limit() throws ArangoException {
+		
+		SimpleByResultEntity entity = driver.executeSimpleReplaceByExample(
+				collectionName, 
+				new MapBuilder().put("user", "user_3").get(), 
+				new MapBuilder().put("abc", "xxx").get(),
+				null, 3);
+		
+		assertThat(entity.getCode(), is(200));
+		assertThat(entity.getCount(), is(3));
+		assertThat(entity.getDeleted(), is(0));
+		assertThat(entity.getReplaced(), is(3));
+		assertThat(entity.getUpdated(), is(0));
+		
+		// Get Replaced Document
+		CursorResultSet<Map> rs = driver.executeSimpleByExampleWithResusltSet(collectionName, 
+				new MapBuilder().put("abc", "xxx").get(), 0, 0, Map.class);
+		List<Map> list = ResultSetUtils.toList(rs);
+		
+		assertThat(list.size(), is(3));
+		for (Map<String, ?> map: list) {
+			assertThat(map.size(), is(4)); // _id, _rev, _key and "abc"
+			assertThat((String)map.get("abc"), is("xxx"));
+		}
+		
+	}
+
 	
 }

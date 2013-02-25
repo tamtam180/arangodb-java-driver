@@ -228,6 +228,32 @@ public class InternalSimpleDriverImpl extends BaseArangoDriverWithCursorImpl {
 		return entity;
 		
 	}
-	
+
+	public SimpleByResultEntity executeSimpleReplaceByExample(
+			String collectionName,
+			Map<String, Object> example,
+			Map<String, Object> newValue,
+			Boolean waitForSync,
+			Integer limit) throws ArangoException {
+		
+		validateCollectionName(collectionName);
+		HttpResponseEntity res = httpManager.doPut(
+				baseUrl + "/_api/simple/replace-by-example", 
+				null,
+				EntityFactory.toJsonString(
+						new MapBuilder()
+						.put("collection", collectionName)
+						.put("example", example)
+						.put("newValue", newValue)
+						.put("waitForSync", waitForSync)
+						.put("limit", limit != null && limit.intValue() > 0 ? limit : null)
+						.get())
+				);
+		
+		SimpleByResultEntity entity = createEntity(res, SimpleByResultEntity.class);
+		return entity;
+		
+	}
+
 	
 }

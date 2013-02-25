@@ -498,6 +498,15 @@ public class ArangoDriver extends BaseArangoDriver {
 		return simpleDriver.executeSimpleRemoveByExample(collectionName, example, waitForSync, limit);
 	}
 	
+	public SimpleByResultEntity executeSimpleReplaceByExample(
+			String collectionName,
+			Map<String, Object> example,
+			Map<String, Object> newValue,
+			Boolean waitForSync,
+			Integer limit) throws ArangoException {
+		return simpleDriver.executeSimpleReplaceByExample(collectionName, example, newValue, waitForSync, limit);
+	}
+	
 	// ---------------------------------------- end of simple ----------------------------------------
 
 

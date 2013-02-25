@@ -19,6 +19,7 @@ package at.orz.arangodb;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
+import java.util.List;
 import java.util.Map;
 
 import org.hamcrest.CoreMatchers;
@@ -33,6 +34,7 @@ import at.orz.arangodb.entity.ScalarExampleEntity;
 import at.orz.arangodb.entity.SimpleByResultEntity;
 import at.orz.arangodb.example.Example1;
 import at.orz.arangodb.util.MapBuilder;
+import at.orz.arangodb.util.ResultSetUtils;
 
 /**
  * @author tamtam180 - kirscheless at gmail.com
@@ -226,6 +228,34 @@ public class ArangoDriverSimpleTest extends BaseTest {
 		assertThat(entity.getDeleted(), is(5));
 		assertThat(entity.getReplaced(), is(0));
 		assertThat(entity.getUpdated(), is(0));
+		
+	}
+
+	@Test
+	public void test_replace_by_example() throws ArangoException {
+		
+		SimpleByResultEntity entity = driver.executeSimpleReplaceByExample(
+				collectionName, 
+				new MapBuilder().put("user", "user_3").get(), 
+				new MapBuilder().put("abc", "xxx").get(),
+				null, null);
+		
+		assertThat(entity.getCode(), is(200));
+		assertThat(entity.getCount(), is(10));
+		assertThat(entity.getDeleted(), is(0));
+		assertThat(entity.getReplaced(), is(10));
+		assertThat(entity.getUpdated(), is(0));
+		
+		// Get Replaced Document
+		CursorResultSet<Map> rs = driver.executeSimpleByExampleWithResusltSet(collectionName, 
+				new MapBuilder().put("abc", "xxx").get(), 0, 0, Map.class);
+		List<Map> list = ResultSetUtils.toList(rs);
+		
+		assertThat(list.size(), is(10));
+		for (Map<String, ?> map: list) {
+			assertThat(map.size(), is(4)); // _id, _rev, _key and "abc"
+			assertThat((String)map.get("abc"), is("xxx"));
+		}
 		
 	}
 

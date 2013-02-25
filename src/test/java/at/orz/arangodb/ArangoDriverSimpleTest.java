@@ -287,5 +287,101 @@ public class ArangoDriverSimpleTest extends BaseTest {
 		
 	}
 
+	@Test
+	public void test_update_by_example() throws ArangoException {
+		
+		SimpleByResultEntity entity = driver.executeSimpleUpdateByExample(
+				collectionName, 
+				new MapBuilder().put("user", "user_3").get(), 
+				new MapBuilder().put("abc", "xxx").put("age", 999).get(),
+				null,
+				null, null);
+		
+		assertThat(entity.getCode(), is(200));
+		assertThat(entity.getCount(), is(10));
+		assertThat(entity.getDeleted(), is(0));
+		assertThat(entity.getReplaced(), is(0));
+		assertThat(entity.getUpdated(), is(10));
+		
+		// Get Replaced Document
+		CursorResultSet<Map> rs = driver.executeSimpleByExampleWithResusltSet(collectionName, 
+				new MapBuilder().put("abc", "xxx").get(), 0, 0, Map.class);
+		List<Map> list = ResultSetUtils.toList(rs);
+		
+		assertThat(list.size(), is(10));
+		for (Map<String, ?> map: list) {
+			assertThat(map.size(), is(7)); // _id, _rev, _key and "user", "desc", "age", "abc"
+			assertThat((String)map.get("user"), is("user_3"));
+			assertThat((String)map.get("desc"), is("desc3"));
+			assertThat(((Number)map.get("age")).intValue(), is(999));
+			assertThat((String)map.get("abc"), is("xxx"));
+		}
+		
+	}
+
+	@Test
+	public void test_update_by_example_with_limit() throws ArangoException {
+		
+		SimpleByResultEntity entity = driver.executeSimpleUpdateByExample(
+				collectionName, 
+				new MapBuilder().put("user", "user_3").get(), 
+				new MapBuilder().put("abc", "xxx").put("age", 999).get(),
+				null,
+				null, 3);
+		
+		assertThat(entity.getCode(), is(200));
+		assertThat(entity.getCount(), is(3));
+		assertThat(entity.getDeleted(), is(0));
+		assertThat(entity.getReplaced(), is(0));
+		assertThat(entity.getUpdated(), is(3));
+		
+		// Get Replaced Document
+		CursorResultSet<Map> rs = driver.executeSimpleByExampleWithResusltSet(collectionName, 
+				new MapBuilder().put("age", 999).get(), 0, 0, Map.class);
+		List<Map> list = ResultSetUtils.toList(rs);
+		
+		assertThat(list.size(), is(3));
+		for (Map<String, ?> map: list) {
+			assertThat(map.size(), is(7)); // _id, _rev, _key and "user", "desc", "age", "abc"
+			assertThat((String)map.get("user"), is("user_3"));
+			assertThat((String)map.get("desc"), is("desc3"));
+			assertThat(((Number)map.get("age")).intValue(), is(999));
+			assertThat((String)map.get("abc"), is("xxx"));
+		}
+		
+	}
+
+	@Test
+	public void test_update_by_example_with_keepnull() throws ArangoException {
+		
+		SimpleByResultEntity entity = driver.executeSimpleUpdateByExample(
+				collectionName, 
+				new MapBuilder().put("user", "user_3").get(), 
+				new MapBuilder(false).put("abc", "xxx").put("age", 999).put("user", null).get(),
+				false,
+				null, null);
+		
+		assertThat(entity.getCode(), is(200));
+		assertThat(entity.getCount(), is(10));
+		assertThat(entity.getDeleted(), is(0));
+		assertThat(entity.getReplaced(), is(0));
+		assertThat(entity.getUpdated(), is(10));
+		
+		// Get Replaced Document
+		CursorResultSet<Map> rs = driver.executeSimpleByExampleWithResusltSet(collectionName, 
+				new MapBuilder().put("abc", "xxx").get(), 0, 0, Map.class);
+		List<Map> list = ResultSetUtils.toList(rs);
+		
+		assertThat(list.size(), is(10));
+		for (Map<String, ?> map: list) {
+			assertThat(map.size(), is(6)); // _id, _rev, _key and "desc", "age", "abc"
+			assertThat((String)map.get("user"), is(nullValue()));
+			assertThat((String)map.get("desc"), is("desc3"));
+			assertThat(((Number)map.get("age")).intValue(), is(999));
+			assertThat((String)map.get("abc"), is("xxx"));
+		}
+		
+	}
+
 	
 }

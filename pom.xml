@@ -98,6 +98,7 @@
                 <configuration>
                     <charset>UTF-8</charset>
                     <show>public</show>
+                    <locale>en_US</locale>
                 </configuration>
             </plugin>
 

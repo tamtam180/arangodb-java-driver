@@ -27,6 +27,15 @@
 			<url>http://mt.orz.at/</url>
 		</developer>
 	</developers>
+	
+	<!-- For Deploy -->
+	<distributionManagement>
+		<repository>
+			<id>at.orz</id>
+			<name>tamtam180 Repository</name>
+			<url>ftp://maven.orz.at/public_html/maven.orz.at/</url>
+		</repository>
+	</distributionManagement>
 
 	<build>
 		<plugins>
@@ -93,6 +102,16 @@
             </plugin>
 
 		</plugins>
+		
+		<!-- Deply with FTP -->
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ftp</artifactId>
+				<version>2.4</version>
+			</extension>
+		</extensions>
+		
 	</build>
 
 

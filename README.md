@@ -9,10 +9,29 @@ Support version: ArangoDB-1.2.x
 
 # Maven
 
-```
+```XML
+<repositories>
+  <repository>
+    <id>at.orz</id>
+    <name>tamtam180 Repository</name>
+    <url>http://maven.orz.at/</url>
+  </repository>
+</repositories>
+
+<dependencies>
+  <dependency>
+    <groupId>at.orz</groupId>
+    <artifactId>arangodb-java-driver</artifactId>
+    <version>[1.2,)</version>
+  </dependency>
+</dependencies>
 ```
 
+Central Repository in preparation. Please wait.
+
 # JavaDoc
+
+Not Ready. Please wait.
 
 # Library Structure
 

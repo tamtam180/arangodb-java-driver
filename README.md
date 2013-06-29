@@ -22,7 +22,7 @@ Support version: ArangoDB-1.2.x
   <dependency>
     <groupId>at.orz</groupId>
     <artifactId>arangodb-java-driver</artifactId>
-    <version>[1.2,)</version>
+    <version>[1.2,1.3)</version>
   </dependency>
 </dependencies>
 ```

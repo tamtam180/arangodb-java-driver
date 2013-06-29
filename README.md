@@ -1,11 +1,7 @@
-# at first
 
-ひとまず私がArangoDBをテストするために書いているものです。
+This library ia a Java driver for ArangoDB.
 
-一見作業中に見えますが、ほとんどのAPIはコールできます。
-クライアント側で複数のサーバを選択する機能やArangoDBサーバがまだ正式リリースしていないAPI等がWORKINGになっています。
-
-!! This is a prototype version. production not ready. !!
+Support version: ArangoDB-1.2.x
 
 # Required
 
@@ -16,50 +12,39 @@
 ```
 ```
 
-# Arango-Java-Driver
+# JavaDoc
 
-Dukeがアボカド食べてる画像が欲しいです。
+# Library Structure
 
-このプログラムはArangoDBをJavaから操作するためのライブラリです。
-主に4つのインターフェースがあります。
+This library has 4 layers.
 
-* 低レイヤー
+* Low layer
     * ArangoDriver
-    * Rest-APIとほぼ1:1に対応するレイヤーです。
-    * 正常処理以外は全て例外が発生します。
-    * **Multithread-safety**です。
-* 中レイヤー
+    * Corresponding to 1:1 and Rest-API.
+    * All exception is raised other than normal processing.
+    * **Multithread-safety**
+* Middle layer **(Not yet implemented)**
     * ArangoClient
-    * ArangoDriverを使いやすくしたラッパークラスです。
-    * 例えば削除処理で存在しないものを削除してもエラーにならなかったり、
-    Collectionを重複生成してもエラーにならなかったりと、一般的な用途に使いやすいインターフェースを提供します。
-* 高レイヤー
-    * オブジェクト指向のレイヤーです。
-    * 各クラスがCRUDになっています。
-* JDBC Driver
-    * JDBCドライバとして動作します。
+    * It is a wrapper class that easy to use ArangoDriver.
+    * For example, you can not be an error to delete the ones that do not exist in the delete command,
+    That it may not be an error to generate a duplicate Collection,
+    it is provide you with an easy to use interface for general use.
+* High layer **(Not yet implemented)**
+    * object-oriented programming layer.
+    * Each class is CRUD.
+* JDBC layer **(Not yet implemented)**
+    * AQL for JDBC driver
 
-ArangoDriverはAPIと1:1に対応する機能を提供し、正常処理以外は全て例外が発生します。
-サーバからのレスポンスは戻り値か例外クラスに全て格納されます。
-そのため、ArangoDriverは使いやすいとは言えません。
+# How to use.
 
-一般的な用途で使いやすいようにしたラッパークラスとしてArangoClientを提供します。
-通常はこちらを使ってアプリケーションを書きます。
+## Basic usage ArangoDriver
 
-また、AQLを発行するインターフェースを提供しておりJDBCドライバのような振る舞いを提供します。
-ただし、こちらはJDBCDriverとしては **まだ** 動きません。
-そのうち対応します。
-
-
-## 簡単な使い方
-
-クエリを発行して複数のDocumentをとるサンプルは
-Example1.javaを参照してください。
-
-## ArangoDriver
 ``` Java
+  // Initialize configure
   ArangoConfigure configure = new ArangoConfigure();
   configure.init();
+
+  // Create Driver (this instance is thread-safe)
   ArangoDriver client = new ArangoDriver(configure);
   
   String collectionName = "mytest";
@@ -67,6 +52,7 @@ Example1.javaを参照してください。
 
   // Create Collection
   CollectionEntity collection = client.createCollection(collectionName);
+
   // Create Document
   DocumentEntity<TestComplexEntity01> ret1 = client.createDocument(collectionName, value, null, null);
   String documentHandle = ret1.getDocumentHandle();
@@ -78,51 +64,158 @@ Example1.javaを参照してください。
   // Delete Document
   driver.deleteDocument(documentHandle, -1, DeletePolicy.LAST);  
 
+  // finalize library
   configure.shutdown();
 ```
 
-グラフデータを作る。
-**ArangoDB-1.1からCollectonに格納する種類がDocumentかGraphかを厳密に判断するようになりました。**
+## Create Graph data.
+
+Since ArangoDB-1.1, If you put a graph document to collection, you need create a collection of graph type.
 
 
 ```Java
 
+public class Example2 {
+	
+	public static class TestEdgeAttribute {
+		public String a;
+		public int b;
+		public TestEdgeAttribute(){}
+		public TestEdgeAttribute(String a, int b) {
+			this.a = a;
+			this.b = b;
+		}
+	}
+	public static class TestVertex {
+		public String name;
+	}
+	
+	public static void main(String[] args) {
+
+		// Initialize configure
+		ArangoConfigure configure = new ArangoConfigure();
+		configure.init();
+		
+		// Create Driver
+		ArangoDriver driver = new ArangoDriver(configure);
+		
+		final String collectionName = "example";
+		try {
+			
+			// Create Collection for *Graph*
+			driver.createCollection(collectionName, false, null, null, null, CollectionType.EDGE);
+			
+			// Create 10 Vertex
+			ArrayList<DocumentEntity<TestVertex>> docs = new ArrayList<DocumentEntity<TestVertex>>();
+			for (int i = 0; i < 10; i++) {
+				TestVertex value = new TestVertex();
+				value.name = "vvv" + i;
+				DocumentEntity<TestVertex> doc = driver.createDocument(collectionName, value, true, false);
+				docs.add(doc);
+			}
+			
+			// Create Edge
+			// 0 -> 1
+			// 0 -> 2
+			// 2 -> 3
+			
+			EdgeEntity<TestEdgeAttribute> edge1 = driver.createEdge(
+					collectionName, docs.get(0).getDocumentHandle(), docs.get(1).getDocumentHandle(), 
+					new TestEdgeAttribute("edge1", 100));
+
+			EdgeEntity<TestEdgeAttribute> edge2 = driver.createEdge(
+					collectionName, docs.get(0).getDocumentHandle(), docs.get(2).getDocumentHandle(), 
+					new TestEdgeAttribute("edge2", 200));
+
+			EdgeEntity<TestEdgeAttribute> edge3 = driver.createEdge(
+					collectionName, docs.get(2).getDocumentHandle(), docs.get(3).getDocumentHandle(), 
+					new TestEdgeAttribute("edge3", 300));
+			
+			EdgesEntity<TestEdgeAttribute> edges = driver.getEdges(collectionName, docs.get(0).getDocumentHandle(), Direction.ANY, TestEdgeAttribute.class);
+			System.out.println(edges.size());
+			System.out.println(edges.get(0).getAttributes().a);
+			System.out.println(edges.get(1).getAttributes().a);
+			
+		} catch (ArangoException e) {
+			e.printStackTrace();
+		} finally {
+			// Finalize library
+			configure.shutdown();
+		}
+		
+	}
+
+}
+
 ```
 
-クエリを発行し、JDBCのカーソル操作のようなことをする。
+## Use AQL
+
+Use ForEach
 
 ```Java
+// Query
+String query = "FOR t IN unit_test_query_test FILTER t.age >= @age SORT t.age RETURN t";
+// Bind Variables
+Map<String, Object> bindVars = new MapBuilder().put("age", 90).get();
+
+// Execute Query
+CursorResultSet<TestComplexEntity01> rs = driver.executeQueryWithResultSet(
+		query, bindVars, TestComplexEntity01.class, true, 20);
+
+for (TestComplexEntity01 obj: rs) {
+	System.out.println(obj);
+}
+
 ```
 
+Not use ForEach
 
-## ArangoClient
-## ArangoJDBCDriver
+```Java
+String query = "FOR t IN unit_test_query_test FILTER t.age >= @age SORT t.age RETURN t";
+Map<String, Object> bindVars = new MapBuilder().put("age", 90).get();
+
+CursorResultSet<TestComplexEntity01> rs = driver.executeQueryWithResultSet(
+		query, bindVars, TestComplexEntity01.class, true, 20);
+
+while (rs.hasNext()) {
+	TestComplexEntity01 obj = rs.next();
+	System.out.println(obj);
+}
+rs.close();
+```
+
+## More example
+
+
 
 # TODO
-* etagのサポート
-* パーシャルアップデート
-* バッチ処理
-* バルクインポート
-* 認証処理
-* 特定のHTTPメソッドの再実行処理
-* Mavenレポジトリの用意
-* ダウンロード用パッケージの用意
-* 複数サーバの対応(例: ConsistentHashとか)
-* **/_admin/echo は実装する予定はいまのところありません。**
-* KVS/Blueprintsはドキュメントが整ったら対応します。
+
+* Exact ETAG support 
+* Batch process
+* Bulk import.
+* Support authorize.
+* Retry http method.
+* Maven Repo and download packages.
+* Online JavaDoc.
+* Multi Server connection (ex. Consistent Hash)
+* exclude logback dependency
 
 * POST /_api/explain
 * PUT /_api/simple/near
 * PUT /_api/simple/within
 * PUT /_api/simple/fulltext
+* KVS
+* Blueprints
 
-# ライセンス
+This library does not support admin/_echo
+
+# License
 
 Apache License 2.0
 
-# 作者
+# Author
 
 Twitter: @tamtam180
-
 
 

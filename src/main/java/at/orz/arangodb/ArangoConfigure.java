@@ -26,13 +26,12 @@ import at.orz.arangodb.http.HttpManager;
 public class ArangoConfigure {
 
 	private static final String DEFAULT_HOST = "127.0.0.1";
-	private static final int DEFAULT_CLIENT_PORT = 8529;
-	private static final int DEFAULT_ADMIN_PORT = 8529;
+	private static final int DEFAULT_PORT = 8529;
 	
 	private static final int DEFAULT_MAX_PER_CONNECTION = 20; // 2;
 	private static final int DEFAULT_MAX_CONNECTION = 20;
 	
-	int clinetPort;
+	int port;
 	String host;
 	int connectionTimeout;
 	int timeout;
@@ -47,7 +46,7 @@ public class ArangoConfigure {
 	HttpManager httpManager;
 	
 	public ArangoConfigure() {
-		this.clinetPort = DEFAULT_CLIENT_PORT;
+		this.port = DEFAULT_PORT;
 		this.maxPerConnection = DEFAULT_MAX_PER_CONNECTION;
 		this.maxTotalConnection = DEFAULT_MAX_CONNECTION;
 		this.host = DEFAULT_HOST;
@@ -74,20 +73,11 @@ public class ArangoConfigure {
 	// TODO 複数ホスト接続対応までの一時的な対応。
 	// 複数ホスト対応の際は、セレクタのクラスを保持するようにする。
 	public String getBaseUrl() {
-		return "http://" + this.host + ":" + this.clinetPort;
+		return "http://" + this.host + ":" + this.port;
 	}
-	
 	
 	public static String getDefaultHost() {
 		return DEFAULT_HOST;
-	}
-
-	public static int getDefaultClientPort() {
-		return DEFAULT_CLIENT_PORT;
-	}
-
-	public static int getDefaultAdminPort() {
-		return DEFAULT_ADMIN_PORT;
 	}
 
 	public static int getDefaultMaxPerConnection() {
@@ -97,9 +87,20 @@ public class ArangoConfigure {
 	public static int getDefaultMaxConnection() {
 		return DEFAULT_MAX_CONNECTION;
 	}
-
+	
+	/**
+	 * Don't use method.
+	 * Please use {@link getPort}
+	 * @deprecated
+	 * @see getPort
+	 */
+	@Deprecated
 	public int getClinetPort() {
-		return clinetPort;
+		return port;
+	}
+
+	public int getPort() {
+		return port;
 	}
 
 	public String getHost() {
@@ -133,9 +134,20 @@ public class ArangoConfigure {
 	public int getProxyPort() {
 		return proxyPort;
 	}
-
+	
+	/**
+	 * Don't use this method.
+	 * Please use {@link setPort}
+	 * @deprecated 
+	 * @see setPort
+	 */
+	@Deprecated
 	public void setClinetPort(int clinetPort) {
-		this.clinetPort = clinetPort;
+		this.port = clinetPort;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
 	}
 
 	public void setHost(String host) {

@@ -56,6 +56,10 @@ This library has 4 layers.
 
 # How to use.
 
+## ArangoConfigure
+
+
+
 ## Basic usage ArangoDriver
 
 ``` Java
@@ -205,8 +209,6 @@ rs.close();
 ```
 
 ## More example
-
-
 
 # TODO
 

@@ -33,7 +33,6 @@ public class ArangoConfigure {
 	private static final int DEFAULT_MAX_CONNECTION = 20;
 	
 	int clinetPort;
-	int adminPort;
 	String host;
 	int connectionTimeout;
 	int timeout;
@@ -49,7 +48,6 @@ public class ArangoConfigure {
 	
 	public ArangoConfigure() {
 		this.clinetPort = DEFAULT_CLIENT_PORT;
-		this.adminPort = DEFAULT_ADMIN_PORT;
 		this.maxPerConnection = DEFAULT_MAX_PER_CONNECTION;
 		this.maxTotalConnection = DEFAULT_MAX_CONNECTION;
 		this.host = DEFAULT_HOST;
@@ -104,10 +102,6 @@ public class ArangoConfigure {
 		return clinetPort;
 	}
 
-	public int getAdminPort() {
-		return adminPort;
-	}
-
 	public String getHost() {
 		return host;
 	}
@@ -142,10 +136,6 @@ public class ArangoConfigure {
 
 	public void setClinetPort(int clinetPort) {
 		this.clinetPort = clinetPort;
-	}
-
-	public void setAdminPort(int adminPort) {
-		this.adminPort = adminPort;
 	}
 
 	public void setHost(String host) {

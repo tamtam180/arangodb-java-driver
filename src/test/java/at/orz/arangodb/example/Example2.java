@@ -49,8 +49,11 @@ public class Example2 {
 	
 	public static void main(String[] args) {
 
+		// Initialize configure
 		ArangoConfigure configure = new ArangoConfigure();
 		configure.init();
+		
+		// Create Driver (this instance is thread-safe)
 		ArangoDriver driver = new ArangoDriver(configure);
 		
 		final String collectionName = "example";

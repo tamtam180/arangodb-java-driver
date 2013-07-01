@@ -24,6 +24,7 @@ import at.orz.arangodb.ArangoException;
 import at.orz.arangodb.CursorResultSet;
 
 /**
+ * AQL example.
  * @author tamtam180 - kirscheless at gmail.com
  *
  */
@@ -37,9 +38,11 @@ public class Example1 {
 	
 	public static void main(String[] args) {
 
+		// Initialize configure
 		ArangoConfigure configure = new ArangoConfigure();
 		configure.init();
 		
+		// Create Driver (this instance is thread-safe)
 		ArangoDriver driver = new ArangoDriver(configure);
 		
 		try {
@@ -59,7 +62,6 @@ public class Example1 {
 			bindVars.put("gender", "WOMAN");
 			
 			CursorResultSet<ExampleEntity> rs = driver.executeQueryWithResultSet(
-					//"select t from example_collection1 t where t.age >= 20 && t.age < 30 && t.gender == @gender@", 
 					"FOR t IN example_collection1 FILTER t.age >= 20 && t.age < 30 && t.gender == @gender RETURN t", 
 					bindVars, ExampleEntity.class, true, 10);
 			

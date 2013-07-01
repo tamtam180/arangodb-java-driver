@@ -131,7 +131,7 @@
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 			<version>2.1</version>
-			<scope>test</scope>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
@@ -155,6 +155,7 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+	
 	<scm>
 		<url>https://github.com/tamtam180/arangodb-java-driver</url>
 		<connection>scm:git:git://github.com/tamtam180/arangodb-java-driver.git</connection>

@@ -56,15 +56,25 @@ This library has 4 layers.
 
 # How to use.
 
-## ArangoConfigure
+## ArangoConfigure (/arangodb.properties)
 
-
+<table>
+<tr><th>property-key</th><th>description</th><th>default value</th></tr>
+<tr><th>host</th><td>ArangoDB host</td><td>127.0.0.1</td></tr>
+<tr><th>port</th><td>ArangoDB port</td><td>8159</td></tr>
+<tr><th>maxPerConnection</th><td>Max http connection per host.</td><td>20</td></tr>
+<tr><th>maxTotalConnection</th><td>Max http connection per configure.</td><td>20</td></tr>
+<tr><th>proxy.host</th><td>proxy host</td><td></td></tr>
+<tr><th>proxy.port</th><td>proxy port</td><td></td></tr>
+</table>
 
 ## Basic usage ArangoDriver
 
 ``` Java
   // Initialize configure
   ArangoConfigure configure = new ArangoConfigure();
+  configure.setHost("127.0.0.1");
+  configure.setPort(8159);
   configure.init();
 
   // Create Driver (this instance is thread-safe)

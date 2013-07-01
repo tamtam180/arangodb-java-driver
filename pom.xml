@@ -152,7 +152,7 @@
 			<artifactId>logback-classic</artifactId>
 			<version>1.0.1</version>
 			<type>jar</type>
-			<scope>test</scope>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 	

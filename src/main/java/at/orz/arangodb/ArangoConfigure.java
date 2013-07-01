@@ -16,20 +16,32 @@
 
 package at.orz.arangodb;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import at.orz.arangodb.http.HttpManager;
+import at.orz.arangodb.util.IOUtils;
 
 /**
- * Configure of ArangoDB
+ * Configure of ArangoDB.
  * @author tamtam180 - kirscheless at gmail.com
  *
  */
 public class ArangoConfigure {
+	
+	private static Logger logger = LoggerFactory.getLogger(ArangoConfigure.class);
 
 	private static final String DEFAULT_HOST = "127.0.0.1";
 	private static final int DEFAULT_PORT = 8529;
 	
 	private static final int DEFAULT_MAX_PER_CONNECTION = 20; // 2;
 	private static final int DEFAULT_MAX_CONNECTION = 20;
+	
+	private static final String DEFAULT_PROPERTY_FILE = "/arangodb.properties";
 	
 	int port;
 	String host;
@@ -50,6 +62,79 @@ public class ArangoConfigure {
 		this.maxPerConnection = DEFAULT_MAX_PER_CONNECTION;
 		this.maxTotalConnection = DEFAULT_MAX_CONNECTION;
 		this.host = DEFAULT_HOST;
+		// Load from Property file
+		loadProperties();
+	}
+	
+	/**
+	 * Load configure from arangodb.properties in classpath, if exists.
+	 */
+	public void loadProperties() {
+		loadProperties(DEFAULT_PROPERTY_FILE);
+	}
+	
+	/**
+	 * Load configure from "propertyPath" in classpath, if exists.
+	 * @param propertyPath
+	 */
+	public void loadProperties(String propertyPath) {
+		InputStream in = null;
+		try {
+			in = getClass().getResourceAsStream(propertyPath);
+			if (in != null) {
+				
+				logger.info("load property: file={}", propertyPath);
+				
+				Properties prop = new Properties();
+				prop.load(in);
+				
+				// 
+				String port = prop.getProperty("port");
+				if (port != null) {
+					setPort(Integer.parseInt(port));
+				}
+				
+				String host = prop.getProperty("host");
+				if (host != null) {
+					setHost(host);
+				}
+				
+				String timeout = prop.getProperty("timeout");
+				if (timeout != null) {
+					setTimeout(Integer.parseInt(timeout));
+				}
+				
+				String connectionTimeout = prop.getProperty("connectionTimeout");
+				if (connectionTimeout != null) {
+					setConnectionTimeout(Integer.parseInt(connectionTimeout));
+				}
+				
+				String proxyHost = prop.getProperty("proxy.host");
+				if (proxyHost != null) {
+					setProxyHost(proxyHost);
+				}
+				
+				String proxyPort = prop.getProperty("proxy.port");
+				if (proxyPort != null) {
+					setProxyPort(Integer.parseInt(proxyPort));
+				}
+				
+				String maxPerConnection = prop.getProperty("maxPerConnection");
+				if (maxPerConnection != null) {
+					setMaxPerConnection(Integer.parseInt(maxPerConnection));
+				}
+				
+				String maxTotalConnection = prop.getProperty("maxTotalConnection");
+				if (maxTotalConnection != null) {
+					setMaxTotalConnection(Integer.parseInt(maxTotalConnection));
+				}
+				
+			}
+		} catch (IOException e) {
+			logger.warn("load property error", e);
+		} finally {
+			IOUtils.close(in);
+		}
 	}
 
 	public void init() {
@@ -95,7 +180,7 @@ public class ArangoConfigure {
 	 * @see getPort
 	 */
 	@Deprecated
-	public int getClinetPort() {
+	public int getClientPort() {
 		return port;
 	}
 

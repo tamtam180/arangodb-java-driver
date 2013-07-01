@@ -177,10 +177,11 @@ public class ArangoDriverCollectionTest extends BaseTest {
 		//// TODO 現状では戻ってこないことを確認する
 		assertThat(res.getCreateOptions(), is(nullValue()));
 		
-		CollectionEntity ent = driver.getCollectionProperties(collectionName);
-		Map<String, Object> map = ent.getCreateOptions();
-		assertThat(map.size(), is(3));
-		assertThat(map, is(createOptions));
+		// TODO このAPIでもとれなくなっていた。
+//		CollectionEntity ent = driver.getCollectionProperties(collectionName);
+//		Map<String, Object> map = ent.getCreateOptions();
+//		assertThat(map.size(), is(3));
+//		assertThat(map, is(createOptions));
 		
 	}
 	
@@ -206,7 +207,7 @@ public class ArangoDriverCollectionTest extends BaseTest {
 				CollectionEntity res = driver.createCollection(collectionName);
 				fail("ここに来てはダメー！");
 			} catch (ArangoException e) {
-				assertThat(e.getCode(), is(400));
+				assertThat(e.getCode(), is(409));
 				assertThat(e.getErrorNumber(), is(1207));
 			}
 		}
@@ -367,7 +368,7 @@ public class ArangoDriverCollectionTest extends BaseTest {
 		assertThat(collection.getFigures().getDeadCount(), is(1L));
 		assertThat(collection.getFigures().getDeadSize(), is(not(0L)));
 		// TODO deletion
-		assertThat(collection.getFigures().getDatafileCount(), is(not(0L)));
+		// assertThat(collection.getFigures().getDatafileCount(), is(not(0L)));
 		// TODO journals
 		
 	}
@@ -628,7 +629,7 @@ public class ArangoDriverCollectionTest extends BaseTest {
 			driver.renameCollection(collectionName, collectionName2);
 			fail("ここに来てはダメー！");
 		} catch (ArangoException e) {
-			assertThat(e.getCode(), is(400));
+			assertThat(e.getCode(), is(409));
 			assertThat(e.getErrorNumber(), is(1207));
 		}
 		

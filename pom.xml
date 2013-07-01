@@ -102,7 +102,16 @@
 					<locale>en_US</locale>
 				</configuration>
 			</plugin>
-		
+
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<includes>
+						<include>at/orz/arangodb/ArangoTestSuite.java</include>
+					</includes>
+				</configuration>
+			</plugin>
+
 			<plugin>
 				<artifactId>maven-deploy-plugin</artifactId>
 				<version>2.7</version>

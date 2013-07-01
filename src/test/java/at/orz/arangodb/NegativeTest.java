@@ -49,12 +49,14 @@ public class NegativeTest extends BaseTest {
 	@Test
 	public void test_collections() throws ArangoException {
 		
+		ArangoConfigure configure = new ArangoConfigure();
+		
 		HttpManager httpManager = new HttpManager();
 		httpManager.init();
 		
 		// TODO Create configure of common test.
 		HttpResponseEntity res = httpManager.doGet(
-				"http://localhost:8529/_api/collections",
+				"http://" + configure.getHost() + ":" + configure.getPort() + "/_api/collections",
 				null);
 		
 		DefaultEntity entity = EntityFactory.createEntity(res.getText(), DefaultEntity.class);

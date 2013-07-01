@@ -27,7 +27,7 @@ import org.junit.runners.Suite.SuiteClasses;
  */
 @RunWith(Suite.class)
 @SuiteClasses({
-	MyTDD.class,
+	ArangoConfigureTest.class,
 	NegativeTest.class,
 	PrimitiveDocumentTest.class,
 	ArangoDriverDocumentTest.class,
@@ -37,7 +37,7 @@ import org.junit.runners.Suite.SuiteClasses;
 	ArangoDriverIndexTest.class,
 	ArangoDriverEdgeTest.class,
 	ArangoDriverAdminTest.class,
-	ArangoDriverKeyValueTest.class,
+	//ArangoDriverKeyValueTest.class,
 	ArangoDriverStoryTest.class
 })
 public class ArangoTestSuite {

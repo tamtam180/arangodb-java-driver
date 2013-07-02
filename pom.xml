@@ -33,7 +33,7 @@
 		<repository>
 			<id>at.orz</id>
 			<name>tamtam180 Repository</name>
-			<url>ftp://maven.orz.at/public_html/maven.orz.at/</url>
+			<url>scp://maven.orz.at/virtual/orz/public_html/maven.orz.at/</url>
 		</repository>
 	</distributionManagement>
 
@@ -123,11 +123,11 @@
 
 		</plugins>
 		
-		<!-- Deply with FTP -->
+		<!-- Deply with SSH -->
 		<extensions>
 			<extension>
 				<groupId>org.apache.maven.wagon</groupId>
-				<artifactId>wagon-ftp</artifactId>
+				<artifactId>wagon-ssh</artifactId>
 				<version>2.4</version>
 			</extension>
 		</extensions>

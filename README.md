@@ -68,6 +68,7 @@ This library has 4 layers.
 <tr><th>proxy.port</th><td>proxy port</td><td></td></tr>
 <tr><th>connectionTimeout</th><td>socket connect timeout(millisecond)</td><td>-1</td></tr>
 <tr><th>timeout</th><td>socket read timeout(millisecond)</td><td>-1</td></tr>
+<tr><th>retryCount</th><td>http retry count</td><td>3</td></tr>
 </table>
 
 ## Basic usage ArangoDriver

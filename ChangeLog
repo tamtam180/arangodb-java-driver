@@ -3,11 +3,11 @@ v1.2.1-SNAPSHOT(2013-xx-xx)
 ---------------------------
 
 * Add support: load configure from property-file in classpath.
-* Add configure: timeout, connectionTimeout.
+* Add configure: timeout, connectionTimeout, retryCount.
+* Remove configure: autoUnknownCollections.
 * Change google-gson scope in pom.xml
 * Change logback-classic in pom.xml
 * Remove README.JA
-
 
 v1.2.0(2013-06-30)
 ------------------

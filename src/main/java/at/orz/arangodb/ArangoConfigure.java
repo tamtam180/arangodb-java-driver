@@ -51,7 +51,6 @@ public class ArangoConfigure {
 	int connectionTimeout = -1;
 	/** socket read timeout(ms) */
 	int timeout = -1;
-	boolean autoUnknownCollections = false;
 	
 	/** max connection per configure */
 	int maxTotalConnection;
@@ -219,10 +218,6 @@ public class ArangoConfigure {
 		return timeout;
 	}
 
-	public boolean isAutoUnknownCollections() {
-		return autoUnknownCollections;
-	}
-
 	public int getMaxTotalConnection() {
 		return maxTotalConnection;
 	}
@@ -264,10 +259,6 @@ public class ArangoConfigure {
 
 	public void setTimeout(int timeout) {
 		this.timeout = timeout;
-	}
-
-	public void setAutoUnknownCollections(boolean autoUnknownCollections) {
-		this.autoUnknownCollections = autoUnknownCollections;
 	}
 
 	public void setMaxTotalConnection(int maxTotalConnection) {

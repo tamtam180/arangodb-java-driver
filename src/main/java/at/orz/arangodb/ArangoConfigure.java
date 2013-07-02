@@ -43,25 +43,33 @@ public class ArangoConfigure {
 	
 	private static final String DEFAULT_PROPERTY_FILE = "/arangodb.properties";
 	
+	/** server port */
 	int port;
+	/** server host */
 	String host;
-	int connectionTimeout;
-	int timeout;
+	/** connection timeout(ms) */
+	int connectionTimeout = -1;
+	/** socket read timeout(ms) */
+	int timeout = -1;
 	boolean autoUnknownCollections = false;
 	
+	/** max connection per configure */
 	int maxTotalConnection;
+	/** max connection per host */
 	int maxPerConnection;
 	
+	/** proxy-host */
 	String proxyHost;
+	/** proxy-port */
 	int proxyPort;
 	
 	HttpManager httpManager;
 	
 	public ArangoConfigure() {
+		this.host = DEFAULT_HOST;
 		this.port = DEFAULT_PORT;
 		this.maxPerConnection = DEFAULT_MAX_PER_CONNECTION;
 		this.maxTotalConnection = DEFAULT_MAX_CONNECTION;
-		this.host = DEFAULT_HOST;
 		// Load from Property file
 		loadProperties();
 	}
@@ -144,6 +152,8 @@ public class ArangoConfigure {
 		this.httpManager.setMaxTotal(this.maxTotalConnection);
 		this.httpManager.setProxyHost(this.proxyHost);
 		this.httpManager.setProxyPort(this.proxyPort);
+		this.httpManager.setConTimeout(this.connectionTimeout);
+		this.httpManager.setSoTimeout(this.timeout);
 		
 		this.httpManager.init();
 	}

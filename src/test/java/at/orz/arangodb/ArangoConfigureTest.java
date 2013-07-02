@@ -19,6 +19,9 @@ package at.orz.arangodb;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
+import java.net.SocketTimeoutException;
+
+import org.apache.http.conn.ConnectTimeoutException;
 import org.junit.Test;
 
 /**
@@ -40,4 +43,45 @@ public class ArangoConfigureTest {
 
 	}
 	
+	@Test
+	public void connect_timeout() throws ArangoException {
+		
+		ArangoConfigure configure = new ArangoConfigure();
+		configure.setConnectionTimeout(1); // 1ms
+		configure.init();
+		
+		ArangoDriver driver = new ArangoDriver(configure);
+		
+		try {
+			driver.getVersion();
+			fail("did no timeout");
+		} catch (ArangoException e) {
+			assertThat(e.getCause(), instanceOf(ConnectTimeoutException.class));
+		}
+		
+		configure.shutdown();
+		
+	}
+
+	@Test
+	public void so_connect_timeout() throws ArangoException {
+		
+		ArangoConfigure configure = new ArangoConfigure();
+		configure.setConnectionTimeout(5000);
+		configure.setTimeout(1); // 1ms
+		configure.init();
+		
+		ArangoDriver driver = new ArangoDriver(configure);
+		
+		try {
+			driver.getCollections();
+			fail("did no timeout");
+		} catch (ArangoException e) {
+			assertThat(e.getCause(), instanceOf(SocketTimeoutException.class));
+		}
+		
+		configure.shutdown();
+		
+	}
+
 }

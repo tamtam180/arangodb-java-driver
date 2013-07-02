@@ -17,7 +17,6 @@
 package at.orz.arangodb.http;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +47,9 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,6 +74,10 @@ public class HttpManager {
 	private int maxTotal = 20;
 	private String proxyHost;
 	private int proxyPort;
+	/** connection-timeout */
+	private int conTimeout = -1;
+	/** socket-read-timeout */
+	private int soTimeout = -1;
 
 	public HttpManager() {
 	}
@@ -94,17 +100,38 @@ public class HttpManager {
 		return this;
 	}
 	
+	public HttpManager setConTimeout(int timeoutMs) {
+		this.conTimeout = timeoutMs;
+		return this;
+	}
+	public HttpManager setSoTimeout(int timeoutMs) {
+		this.soTimeout = timeoutMs;
+		return this;
+	}
+	
 	public void init() {
+		// ConnectionManager
 		cm = new PoolingClientConnectionManager();
 		cm.setDefaultMaxPerRoute(defaultMaxPerRoute);
 		cm.setMaxTotal(maxTotal);
-		client = new DefaultHttpClient(cm);
+		// Params
+		HttpParams params = new BasicHttpParams();
+		if (conTimeout >= 0) {
+			HttpConnectionParams.setConnectionTimeout(params, conTimeout);
+		}
+		if (soTimeout >= 0) {
+			HttpConnectionParams.setSoTimeout(params, soTimeout);
+		}
+		// Client
+		client = new DefaultHttpClient(cm, params);
 		// TODO KeepAlive Strategy
-		// TODO Proxy
+
+		// Proxy
 		if (proxyHost != null && proxyPort != 0) {
 			HttpHost proxy = new HttpHost(proxyHost, proxyPort, "http");
 			client.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
 		}
+		
 	}
 	
 	public void destroy() {

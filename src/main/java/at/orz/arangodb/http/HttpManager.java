@@ -31,7 +31,6 @@ import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
@@ -45,6 +44,7 @@ import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
@@ -68,7 +68,7 @@ public class HttpManager {
 	private Logger logger = LoggerFactory.getLogger(HttpManager.class);
 	
 	private PoolingClientConnectionManager cm;
-	private HttpClient client;
+	private DefaultHttpClient client;
 	
 	private int defaultMaxPerRoute = 20;
 	private int maxTotal = 20;
@@ -78,6 +78,8 @@ public class HttpManager {
 	private int conTimeout = -1;
 	/** socket-read-timeout */
 	private int soTimeout = -1;
+	/** retry count */
+	private int retryCount = 3;
 
 	public HttpManager() {
 	}
@@ -108,6 +110,10 @@ public class HttpManager {
 		this.soTimeout = timeoutMs;
 		return this;
 	}
+	public HttpManager setRetryCount(int retryCount) {
+		this.retryCount = retryCount;
+		return this;
+	}
 	
 	public void init() {
 		// ConnectionManager
@@ -131,6 +137,9 @@ public class HttpManager {
 			HttpHost proxy = new HttpHost(proxyHost, proxyPort, "http");
 			client.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
 		}
+		
+		// Retry Handler
+		client.setHttpRequestRetryHandler(new DefaultHttpRequestRetryHandler(retryCount, false));
 		
 	}
 	

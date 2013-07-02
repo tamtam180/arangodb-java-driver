@@ -44,6 +44,16 @@ public class ArangoConfigureTest {
 	}
 	
 	@Test
+	public void load_from_proerty_file2() {
+		
+		ArangoConfigure configure = new ArangoConfigure();
+		configure.loadProperties("/arangodb-test.properties");
+		
+		assertThat(configure.getRetryCount(), is(10));
+		
+	}
+	
+	@Test
 	public void connect_timeout() throws ArangoException {
 		
 		ArangoConfigure configure = new ArangoConfigure();

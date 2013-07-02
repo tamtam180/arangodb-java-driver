@@ -63,6 +63,9 @@ public class ArangoConfigure {
 	/** proxy-port */
 	int proxyPort;
 	
+	/** http retry count */
+	int retryCount = 3;
+	
 	HttpManager httpManager;
 	
 	public ArangoConfigure() {
@@ -137,6 +140,11 @@ public class ArangoConfigure {
 					setMaxTotalConnection(Integer.parseInt(maxTotalConnection));
 				}
 				
+				String retryCount = prop.getProperty("retryCount");
+				if (retryCount != null) {
+					setRetryCount(Integer.parseInt(retryCount));
+				}
+				
 			}
 		} catch (IOException e) {
 			logger.warn("load property error", e);
@@ -154,6 +162,7 @@ public class ArangoConfigure {
 		this.httpManager.setProxyPort(this.proxyPort);
 		this.httpManager.setConTimeout(this.connectionTimeout);
 		this.httpManager.setSoTimeout(this.timeout);
+		this.httpManager.setRetryCount(this.retryCount);
 		
 		this.httpManager.init();
 	}
@@ -277,6 +286,14 @@ public class ArangoConfigure {
 		this.proxyPort = proxyPort;
 	}
 
+	public int getRetryCount() {
+		return retryCount;
+	}
+
+	public void setRetryCount(int retryCount) {
+		this.retryCount = retryCount;
+	}
+
 	public HttpManager getHttpManager() {
 		return httpManager;
 	}
@@ -284,7 +301,5 @@ public class ArangoConfigure {
 	public void setHttpManager(HttpManager httpManager) {
 		this.httpManager = httpManager;
 	}
-	
-	
 	
 }

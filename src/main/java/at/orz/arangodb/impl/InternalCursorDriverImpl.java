@@ -25,7 +25,7 @@ import at.orz.arangodb.CursorResultSet;
 import at.orz.arangodb.entity.CursorEntity;
 import at.orz.arangodb.entity.DefaultEntity;
 import at.orz.arangodb.entity.EntityFactory;
-import at.orz.arangodb.http.HttpManager;
+import at.orz.arangodb.entity.ExplainEntity;
 import at.orz.arangodb.http.HttpResponseEntity;
 import at.orz.arangodb.util.MapBuilder;
 
@@ -53,6 +53,26 @@ public class InternalCursorDriverImpl extends BaseArangoDriverImpl {
 			return (CursorEntity<?>) e.getEntity();
 		}
 		
+	}
+	
+	public ExplainEntity explainQuery(String query, Map<String, Object> bindVars) throws ArangoException {
+
+		HttpResponseEntity res = httpManager.doPost(
+				baseUrl + "/_api/explain", 
+				null,
+				EntityFactory.toJsonString(
+						new MapBuilder()
+						.put("query", query)
+						.put("bindVars", bindVars == null ? Collections.emptyMap() : bindVars)
+						.get())
+				);
+		try {
+			ExplainEntity entity = createEntity(res, ExplainEntity.class);
+			return entity;
+		} catch (ArangoException e) {
+			throw e;
+		}
+
 	}
 	
 	// ※Iteratorで綺麗に何回もRoundtripもしてくれる処理はClientのレイヤーで行う。

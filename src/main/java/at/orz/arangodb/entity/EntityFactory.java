@@ -27,7 +27,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
 /**
  * @author tamtam180 - kirscheless at gmail.com
@@ -56,7 +55,9 @@ public class EntityFactory {
 			.registerTypeAdapter(SimpleByResultEntity.class, new EntityDeserializers.SimpleByResultEntityDeserializer())
 			.registerTypeAdapter(AdminLogEntity.class, new EntityDeserializers.AdminLogEntryEntityDeserializer())
 			.registerTypeAdapter(AdminStatusEntity.class, new EntityDeserializers.AdminStatusEntityDeserializer())
-			.registerTypeAdapter(ConnectionStatisticsEntity.class, new EntityDeserializers.ConnectionStatisticsEntityDeserializer());
+			.registerTypeAdapter(ConnectionStatisticsEntity.class, new EntityDeserializers.ConnectionStatisticsEntityDeserializer())
+			.registerTypeAdapter(ExplainEntity.class, new EntityDeserializers.ExplainEntityDeserializer())
+			;
 	}
 	static {
 		gson = getBuilder().create();

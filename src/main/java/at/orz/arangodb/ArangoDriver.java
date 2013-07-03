@@ -34,6 +34,7 @@ import at.orz.arangodb.entity.Direction;
 import at.orz.arangodb.entity.DocumentEntity;
 import at.orz.arangodb.entity.EdgeEntity;
 import at.orz.arangodb.entity.EdgesEntity;
+import at.orz.arangodb.entity.ExplainEntity;
 import at.orz.arangodb.entity.Granularity;
 import at.orz.arangodb.entity.IndexEntity;
 import at.orz.arangodb.entity.IndexType;
@@ -269,6 +270,10 @@ public class ArangoDriver extends BaseArangoDriver {
 
 	public CursorEntity<?> validateQuery(String query) throws ArangoException {
 		return cursorDriver.validateQuery(query);
+	}
+	
+	public ExplainEntity explainQuery(String query, Map<String, Object> bindVars) throws ArangoException {
+		return cursorDriver.explainQuery(query, bindVars);
 	}
 	
 	public <T> CursorEntity<T> executeQuery(

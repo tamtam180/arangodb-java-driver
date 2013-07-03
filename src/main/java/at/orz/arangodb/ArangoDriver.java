@@ -123,7 +123,15 @@ public class ArangoDriver extends BaseArangoDriver {
 	public CollectionEntity getCollectionProperties(String name) throws ArangoException {
 		return collectionDriver.getCollectionProperties(name);
 	}
-	
+
+	public CollectionEntity getCollectionRevision(long id) throws ArangoException {
+		return getCollectionRevision(String.valueOf(id));
+	}
+
+	public CollectionEntity getCollectionRevision(String name) throws ArangoException {
+		return collectionDriver.getCollectionRevision(name);
+	}
+
 	public CollectionEntity getCollectionCount(long id) throws ArangoException {
 		return getCollectionCount(String.valueOf(id));
 	}

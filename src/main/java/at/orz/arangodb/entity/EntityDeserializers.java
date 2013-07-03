@@ -200,6 +200,10 @@ public class EntityDeserializers {
 				entity.count = obj.getAsJsonPrimitive("count").getAsLong();
 			}
 			
+			if (obj.has("revision")) {
+				entity.revision = obj.getAsJsonPrimitive("revision").getAsLong();
+			}
+			
 			if (obj.has("figures")) {
 				entity.figures = context.deserialize(obj.get("figures"), Figures.class);
 			}

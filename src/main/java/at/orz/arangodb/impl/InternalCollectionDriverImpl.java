@@ -83,6 +83,19 @@ public class InternalCollectionDriverImpl extends BaseArangoDriverImpl {
 		}
 	}
 	
+	public CollectionEntity getCollectionRevision(String name) throws ArangoException {
+		validateCollectionName(name);
+		HttpResponseEntity res = httpManager.doGet(
+				baseUrl + "/_api/collection/" + name + "/revision",
+				null);
+		try {
+			return createEntity(res, CollectionEntity.class);
+		} catch (ArangoException e) {
+			throw e;
+		}
+	}
+	
+	
 //	public CollectionEntity getCollectionProperties(long id) throws ArangoException {
 //		return getCollectionProperties(String.valueOf(id));
 //	}

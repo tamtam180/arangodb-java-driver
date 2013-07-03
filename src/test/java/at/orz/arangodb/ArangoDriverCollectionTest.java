@@ -16,7 +16,7 @@
 
 package at.orz.arangodb;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
 import java.util.LinkedHashMap;
@@ -269,6 +269,7 @@ public class ArangoDriverCollectionTest extends BaseTest {
 		// TODO Countがないこと
 		// TODO status
 		// TODO type
+		// TODO Revisionがないこと
 		
 	}
 
@@ -289,7 +290,50 @@ public class ArangoDriverCollectionTest extends BaseTest {
 		
 	}
 
-	
+	@Test
+	public void test_getCollectionRevision() throws ArangoException {
+		
+		CollectionEntity res1 = driver.createCollection(collectionName);
+		assertThat(res1.getCode(), is(200));
+		
+		// Get Revision
+		CollectionEntity collection = driver.getCollectionRevision(collectionName);
+		assertThat(collection.getRevision(), is(0L));
+		
+		// Create Document
+		driver.createDocument(collectionName, new TestComplexEntity01("test_user1", "テストユーザー:1" , 20), false, true);
+
+		// Get Revision again
+		collection = driver.getCollectionRevision(collectionName);
+		// Check to updated revision
+		long rev2 = collection.getRevision();
+		assertThat(rev2, is(not(0L)));
+
+		// Create Document
+		driver.createDocument(collectionName, new TestComplexEntity01("test_user2", "テストユーザー:2" , 21), false, true);
+
+		// Get Revision again
+		collection = driver.getCollectionRevision(collectionName);
+		// Check to updated revision
+		long rev3 = collection.getRevision();
+		assertThat(rev3, greaterThan(rev2));
+		
+		
+	}
+
+	@Test
+	public void test_getCollectionRevision_404() throws ArangoException {
+		
+		try {
+			driver.getCollectionRevision(collectionName404);
+			fail("Because did not raise Exception.");
+		} catch (ArangoException e) {
+			assertThat(e.getCode(), is(404));
+			assertThat(e.getErrorNumber(), is(1203));
+		}		
+		
+	}
+
 	@Test
 	public void test_getCollectionCount_01() throws ArangoException {
 

@@ -44,6 +44,8 @@ public class CollectionEntity extends BaseEntity {
 	
 	long count;
 	
+	long revision;
+	
 	Figures figures;
 
 	Map<String, Object> createOptions;
@@ -203,6 +205,14 @@ public class CollectionEntity extends BaseEntity {
 			this.journalsFileSize = journalsFileSize;
 		}
 		
+	}
+
+	public long getRevision() {
+		return revision;
+	}
+
+	public void setRevision(long revision) {
+		this.revision = revision;
 	}
 
 }

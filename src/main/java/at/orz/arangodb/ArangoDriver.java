@@ -515,6 +515,46 @@ public class ArangoDriver extends BaseArangoDriver {
 			) throws ArangoException {
 		return simpleDriver.executeSimpleRangeWithResultSet(collectionName, attribute, left, right, closed, skip, limit, clazz);
 	}
+
+	public <T> CursorEntity<T> executeSimpleFulltext(
+			String collectionName,
+			String attribute, String query, 
+			int skip, int limit,
+			String index,
+			Class<T> clazz
+			) throws ArangoException {
+		return simpleDriver.executeSimpleFulltext(collectionName, attribute, query, skip, limit, index, clazz);
+	}
+	
+	public <T> CursorResultSet<T> executeSimpleFulltextWithResultSet(
+			String collectionName,
+			String attribute, String query, 
+			int skip, int limit,
+			String index,
+			Class<T> clazz
+			) throws ArangoException {
+		return simpleDriver.executeSimpleFulltextWithResultSet(collectionName, attribute, query, skip, limit, index, clazz);
+	}
+
+	public <T> CursorEntity<DocumentEntity<T>> executeSimpleFulltextWithDocument(
+			String collectionName,
+			String attribute, String query, 
+			int skip, int limit,
+			String index,
+			Class<T> clazz
+			) throws ArangoException {
+		return simpleDriver.executeSimpleFulltextWithDocument(collectionName, attribute, query, skip, limit, index, clazz);
+	}
+	
+	public <T> CursorResultSet<DocumentEntity<T>> executeSimpleFulltextWithDocumentWithResultSet(
+			String collectionName,
+			String attribute, String query, 
+			int skip, int limit,
+			String index,
+			Class<T> clazz
+			) throws ArangoException {
+		return simpleDriver.executeSimpleFulltextWithDocumentWithResultSet(collectionName, attribute, query, skip, limit, index, clazz);
+	}
 	
 	public SimpleByResultEntity executeSimpleRemoveByExample(
 			String collectionName,

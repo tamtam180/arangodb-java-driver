@@ -22,6 +22,7 @@ import at.orz.arangodb.ArangoConfigure;
 import at.orz.arangodb.ArangoException;
 import at.orz.arangodb.CursorResultSet;
 import at.orz.arangodb.entity.CursorEntity;
+import at.orz.arangodb.entity.DocumentEntity;
 import at.orz.arangodb.entity.EntityFactory;
 import at.orz.arangodb.entity.ScalarExampleEntity;
 import at.orz.arangodb.entity.SimpleByResultEntity;
@@ -228,7 +229,7 @@ public class InternalSimpleDriverImpl extends BaseArangoDriverWithCursorImpl {
 		return entity;
 		
 	}
-
+	
 	public SimpleByResultEntity executeSimpleReplaceByExample(
 			String collectionName,
 			Map<String, Object> example,
@@ -285,5 +286,90 @@ public class InternalSimpleDriverImpl extends BaseArangoDriverWithCursorImpl {
 		
 	}
 
+	
+	public <T> CursorEntity<T> executeSimpleFulltext(
+			String collectionName,
+			String attribute, String query, 
+			int skip, int limit,
+			String index,
+			Class<T> clazz
+			) throws ArangoException {
+		
+		validateCollectionName(collectionName);
+		HttpResponseEntity res = httpManager.doPut(
+				baseUrl + "/_api/simple/fulltext", 
+				null,
+				EntityFactory.toJsonString(
+						new MapBuilder()
+						.put("collection", collectionName)
+						.put("attribute", attribute)
+						.put("query", query)
+						.put("skip", skip > 0 ? skip : null)
+						.put("limit", limit > 0 ? limit : null)
+						.put("index", index)
+						.get())
+				);
+		
+		CursorEntity<T> entity = createEntity(res, CursorEntity.class);
+		return EntityFactory.createResult(entity, clazz);
+		
+	}
+
+	public <T> CursorResultSet<T> executeSimpleFulltextWithResultSet(
+			String collectionName,
+			String attribute, String query, 
+			int skip, int limit,
+			String index,
+			Class<T> clazz
+			) throws ArangoException {
+		
+		CursorEntity<T> entity = executeSimpleFulltext(collectionName, attribute, query, skip, limit, index, clazz);
+		CursorResultSet<T> rs = new CursorResultSet<T>(cursorDriver, clazz, entity);
+		return rs;
+		
+	}
+
+	
+	public <T> CursorEntity<DocumentEntity<T>> executeSimpleFulltextWithDocument(
+			String collectionName,
+			String attribute, String query, 
+			int skip, int limit,
+			String index,
+			Class<T> clazz
+			) throws ArangoException {
+		
+		validateCollectionName(collectionName);
+		HttpResponseEntity res = httpManager.doPut(
+				baseUrl + "/_api/simple/fulltext", 
+				null,
+				EntityFactory.toJsonString(
+						new MapBuilder()
+						.put("collection", collectionName)
+						.put("attribute", attribute)
+						.put("query", query)
+						.put("skip", skip > 0 ? skip : null)
+						.put("limit", limit > 0 ? limit : null)
+						.put("index", index)
+						.get())
+				);
+		
+		CursorEntity<DocumentEntity<T>> entity = createEntity(res, CursorEntity.class);
+		return EntityFactory.createDocumentResult(entity, clazz);
+		
+	}
+
+	public <T> CursorResultSet<DocumentEntity<T>> executeSimpleFulltextWithDocumentWithResultSet(
+			String collectionName,
+			String attribute, String query, 
+			int skip, int limit,
+			String index,
+			Class<T> clazz
+			) throws ArangoException {
+		
+		CursorEntity<DocumentEntity<T>> entity = executeSimpleFulltextWithDocument(collectionName, attribute, query, skip, limit, index, clazz);
+		CursorResultSet<DocumentEntity<T>> rs = new CursorResultSet<DocumentEntity<T>>(cursorDriver, (Class<DocumentEntity<T>>)clazz, entity);
+		return rs;
+		
+	}
 	
 }

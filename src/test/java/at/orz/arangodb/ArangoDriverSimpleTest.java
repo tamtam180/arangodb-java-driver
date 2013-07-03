@@ -16,23 +16,24 @@
 
 package at.orz.arangodb;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.startsWith;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 import java.util.List;
 import java.util.Map;
 
-import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 
-import at.orz.arangodb.ArangoException;
-import at.orz.arangodb.CursorResultSet;
 import at.orz.arangodb.entity.DocumentEntity;
 import at.orz.arangodb.entity.IndexType;
 import at.orz.arangodb.entity.ScalarExampleEntity;
 import at.orz.arangodb.entity.SimpleByResultEntity;
-import at.orz.arangodb.example.Example1;
 import at.orz.arangodb.util.MapBuilder;
 import at.orz.arangodb.util.ResultSetUtils;
 
@@ -381,6 +382,64 @@ public class ArangoDriverSimpleTest extends BaseTest {
 			assertThat((String)map.get("abc"), is("xxx"));
 		}
 		
+	}
+	
+	// TODO fulltext Japanese Text
+
+	@Test
+	public void test_fulltext() throws ArangoException {
+		
+		// MEMO: INDEX作成前のドキュメントはヒットしない・・。仕様？
+		
+		// create fulltext index
+		driver.createFulltextIndex(collectionName, 2, "desc");
+		
+		driver.createDocument(collectionName, new TestComplexEntity01("xxx1", "this text contains a word", 10), null, null);
+		driver.createDocument(collectionName, new TestComplexEntity01("xxx2", "this text also contains a word", 10), null, null);
+		
+		CursorResultSet<TestComplexEntity01> rs = driver.executeSimpleFulltextWithResultSet(collectionName, "desc", "word", 0, 0, null, TestComplexEntity01.class);
+		List<TestComplexEntity01> list = ResultSetUtils.toList(rs);
+
+		assertThat(list.size(), is(2));
+		assertThat(list.get(0).getUser(), is("xxx1"));
+		assertThat(list.get(0).getDesc(), is("this text contains a word"));
+		assertThat(list.get(0).getAge(), is(10));
+
+		assertThat(list.get(1).getUser(), is("xxx2"));
+		assertThat(list.get(1).getDesc(), is("this text also contains a word"));
+		assertThat(list.get(1).getAge(), is(10));
+
+	}
+
+	@Test
+	public void test_fulltext_with_doc() throws ArangoException {
+		
+		// MEMO: INDEX作成前のドキュメントはヒットしない・・。仕様？
+		
+		// create fulltext index
+		driver.createFulltextIndex(collectionName, 2, "desc");
+		
+		driver.createDocument(collectionName, new TestComplexEntity01("xxx1", "this text contains a word", 10), null, null);
+		driver.createDocument(collectionName, new TestComplexEntity01("xxx2", "this text also contains a word", 10), null, null);
+		
+		CursorResultSet<DocumentEntity<TestComplexEntity01>> rs = driver.executeSimpleFulltextWithDocumentWithResultSet(collectionName, "desc", "word", 0, 0, null, TestComplexEntity01.class);
+		List<DocumentEntity<TestComplexEntity01>> list = ResultSetUtils.toList(rs);
+
+		assertThat(list.size(), is(2));
+		assertThat(list.get(0).getDocumentHandle(), startsWith(collectionName));
+		assertThat(list.get(0).getDocumentKey(), is(notNullValue()));
+		assertThat(list.get(0).getDocumentRevision(), is(not(0L)));
+		assertThat(list.get(0).getEntity().getUser(), is("xxx1"));
+		assertThat(list.get(0).getEntity().getDesc(), is("this text contains a word"));
+		assertThat(list.get(0).getEntity().getAge(), is(10));
+
+		assertThat(list.get(1).getDocumentHandle(), startsWith(collectionName));
+		assertThat(list.get(1).getDocumentKey(), is(notNullValue()));
+		assertThat(list.get(1).getDocumentRevision(), is(not(0L)));
+		assertThat(list.get(1).getEntity().getUser(), is("xxx2"));
+		assertThat(list.get(1).getEntity().getDesc(), is("this text also contains a word"));
+		assertThat(list.get(1).getEntity().getAge(), is(10));
+
 	}
 
 	

@@ -17,15 +17,21 @@
 package at.orz.arangodb.entity;
 
 /**
+ * Index Type.
  * @author tamtam180 - kirscheless at gmail.com
- *
+ * @see http://www.arangodb.org/manuals/current/HttpIndex.html#HttpIndexIntro
  */
 public enum IndexType {
-	
+	/** Primary Index */
 	PRIMARY,
+	/** Cap Index */
 	CAP,
+	/** Geo Index */
 	GEO,
+	/** Hash Index */
 	HASH,
-	SKIPLIST
-	
+	/** Skiplist Index */
+	SKIPLIST,
+	/** Fulltext Inex */
+	FULLTEXT
 }

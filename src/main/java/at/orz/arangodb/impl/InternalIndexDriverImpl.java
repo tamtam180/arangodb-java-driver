@@ -92,6 +92,28 @@ public class InternalIndexDriverImpl extends BaseArangoDriverWithCursorImpl {
 		
 	}
 	
+	public IndexEntity createFulltextIndex(String collectionName, Integer minLength, String... fields) throws ArangoException {
+
+		validateCollectionName(collectionName);
+		HttpResponseEntity res = httpManager.doPost(
+				baseUrl + "/_api/index", 
+				new MapBuilder("collection", collectionName).get(),
+				EntityFactory.toJsonString(
+						new MapBuilder()
+						.put("type", IndexType.FULLTEXT.name().toLowerCase(Locale.US))
+						.put("minLength", minLength)
+						.put("fields", fields)
+						.get()));
+		
+		try {
+			IndexEntity entity = createEntity(res, IndexEntity.class);
+			return entity;
+		} catch (ArangoException e) {
+			throw e;
+		}
+		
+	}
+	
 	public IndexEntity deleteIndex(String indexHandle) throws ArangoException {
 		
 		validateDocumentHandle(indexHandle); // 書式同じなので

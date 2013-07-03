@@ -31,6 +31,7 @@ public class IndexEntity extends BaseEntity {
 	boolean isNewlyCreated;
 	boolean unique;
 	int size;
+	int minLength;
 	
 	public String getId() {
 		return id;
@@ -73,6 +74,12 @@ public class IndexEntity extends BaseEntity {
 	}
 	public void setSize(int size) {
 		this.size = size;
+	}
+	public int getMinLength() {
+		return minLength;
+	}
+	public void setMinLength(int minLength) {
+		this.minLength = minLength;
 	}
 	
 }

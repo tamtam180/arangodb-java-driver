@@ -19,6 +19,8 @@ package at.orz.arangodb;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
+import java.util.Arrays;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -240,6 +242,31 @@ public class ArangoDriverIndexTest extends BaseTest {
 		
 	}
 
+	@Test
+	public void test_create_fulltext_index() throws ArangoException {
+		
+		// create test data 100 count.
+		for (int i = 0; i < 100; i++) {
+			String desc = i % 2 == 0 ? "寿司" : "天ぷら";
+			TestComplexEntity01 value = new TestComplexEntity01("user_" + i, desc, i);
+			assertThat(driver.createDocument(collectionName, value, false, false), is(notNullValue()));
+		}
+		
+		// create fulltext index
+		IndexEntity index = driver.createFulltextIndex(collectionName, 1, "desc");
+		
+		// {"id":"unit_test_arango_index/6420761720","unique":false,"type":"fulltext","minLength":1,"fields":["desc"],"isNewlyCreated":true,"error":false,"code":201}
+		assertThat(index.getCode(), is(201));
+		assertThat(index.isError(), is(false));
+		assertThat(index.getId(), is(not(nullValue())));
+		assertThat(index.isUnique(), is(false));
+		assertThat(index.getType(), is(IndexType.FULLTEXT));
+		assertThat(index.getMinLength(), is(1));
+		assertThat(index.getFields(), is(Arrays.asList("desc")));
+		assertThat(index.isNewlyCreated(), is(true));
+		
+	}
+	
 	@Test
 	public void test_delete_index() throws ArangoException {
 		

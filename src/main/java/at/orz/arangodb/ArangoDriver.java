@@ -347,6 +347,19 @@ public class ArangoDriver extends BaseArangoDriver {
 	public IndexEntity createCappedIndex(String collectionName, int size) throws ArangoException {
 		return indexDriver.createCappedIndex(collectionName, size);
 	}
+
+	public IndexEntity createFulltextIndex(long collectionId, String... fields) throws ArangoException {
+		return createFulltextIndex(String.valueOf(collectionId), null, fields);
+	}
+	public IndexEntity createFulltextIndex(String collectionName, String... fields) throws ArangoException {
+		return createFulltextIndex(collectionName, null, fields);
+	}
+	public IndexEntity createFulltextIndex(long collectionId, Integer minLength, String... fields) throws ArangoException {
+		return createFulltextIndex(String.valueOf(collectionId), minLength, fields);
+	}
+	public IndexEntity createFulltextIndex(String collectionName, Integer minLength, String... fields) throws ArangoException {
+		return indexDriver.createFulltextIndex(collectionName, minLength, fields);
+	}
 	
 	public IndexEntity deleteIndex(String indexHandle) throws ArangoException {
 		return indexDriver.deleteIndex(indexHandle);

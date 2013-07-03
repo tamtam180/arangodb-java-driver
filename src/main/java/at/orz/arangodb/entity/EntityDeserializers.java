@@ -388,6 +388,10 @@ public class EntityDeserializers {
 				entity.size = obj.getAsJsonPrimitive("size").getAsInt();
 			}
 			
+			if (obj.has("minLength")) {
+				entity.minLength = obj.getAsJsonPrimitive("minLength").getAsInt();
+			}
+			
 			return entity;
 		}
 	}

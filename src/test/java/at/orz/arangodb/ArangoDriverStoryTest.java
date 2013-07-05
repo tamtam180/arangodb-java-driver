@@ -69,7 +69,7 @@ public class ArangoDriverStoryTest {
 				svc.execute(new Runnable() {
 					public void run() {
 						try {
-							for (int i = 0; i < 500; i++) {
+							for (int i = 0; i < 100; i++) {
 								TestComplexEntity01 value = new TestComplexEntity01(
 										"user" + threadNo + "_" + i, 
 										"テスト☆ユーザー:" + threadNo + "_" + i, 

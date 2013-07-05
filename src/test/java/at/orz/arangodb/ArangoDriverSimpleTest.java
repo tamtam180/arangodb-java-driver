@@ -77,13 +77,41 @@ public class ArangoDriverSimpleTest extends BaseTest {
 		while (rs.hasNext()) {
 			TestComplexEntity01 entity = rs.next();
 			count++;
+			
+			assertThat(entity, is(notNullValue()));
 		}
 		rs.close();
 		
 		assertThat(count, is(100));
 		
 	}
-	
+
+	@Test
+	public void test_simple_all_with_doc() throws ArangoException {
+		
+		CursorResultSet<DocumentEntity<TestComplexEntity01>> rs = driver.executeSimpleAllWithDocumentResultSet(collectionName, 0, 0, TestComplexEntity01.class);
+		int count = 0;
+		int ageCount = 0;
+		while (rs.hasNext()) {
+			DocumentEntity<TestComplexEntity01> doc = rs.next();
+			count++;
+			
+			assertThat(doc, is(notNullValue()));
+			assertThat(doc.getDocumentHandle(), startsWith(collectionName));
+			assertThat(doc.getDocumentKey(), is(notNullValue()));
+			assertThat(doc.getDocumentRevision(), is(not(0L)));
+			
+			if (doc.getEntity().getAge() != 0) {
+				ageCount++;
+			}
+		}
+		rs.close();
+		
+		assertThat(count, is(100));
+		assertThat(ageCount, is(99));
+		
+	}
+
 	@Test
 	public void test_example_by() throws ArangoException {
 		
@@ -103,7 +131,31 @@ public class ArangoDriverSimpleTest extends BaseTest {
 		assertThat(count, is(10));
 		
 	}
-	
+
+	@Test
+	public void test_example_by_with_doc() throws ArangoException {
+		
+		CursorResultSet<DocumentEntity<TestComplexEntity01>> rs = driver.executeSimpleByExampleWithDocumentResusltSet(
+				collectionName, 
+				new MapBuilder().put("user", "user_6").get(),
+				0, 0, TestComplexEntity01.class);
+		int count = 0;
+		while (rs.hasNext()) {
+			DocumentEntity<TestComplexEntity01> doc = rs.next();
+			count++;
+			
+			assertThat(doc.getDocumentHandle(), startsWith(collectionName));
+			assertThat(doc.getDocumentKey(), is(notNullValue()));
+			assertThat(doc.getDocumentRevision(), is(not(0L)));
+
+			assertThat(doc.getEntity().getUser(), is("user_6"));
+		}
+		rs.close();
+		
+		assertThat(count, is(10));
+		
+	}
+
 	@Test
 	public void test_first_example() throws ArangoException {
 		
@@ -199,6 +251,54 @@ public class ArangoDriverSimpleTest extends BaseTest {
 		
 		
 	}
+
+	@Test
+	public void test_range_with_doc() throws ArangoException {
+		
+		// create skip-list
+		driver.createIndex(collectionName, IndexType.SKIPLIST, false, "age");
+		
+		{
+			CursorResultSet<DocumentEntity<TestComplexEntity01>> rs = driver.executeSimpleRangeWithDocumentResultSet(
+					collectionName, "age", 5, 30, null, 0, 0, TestComplexEntity01.class);
+			
+			int count = 0;
+			while (rs.hasNext()) {
+				DocumentEntity<TestComplexEntity01> doc = rs.next();
+				count++;
+				assertThat(doc, is(notNullValue()));
+				assertThat(doc.getDocumentHandle(), startsWith(collectionName));
+				assertThat(doc.getDocumentKey(), is(notNullValue()));
+				assertThat(doc.getDocumentRevision(), is(not(0L)));
+				assertThat(doc.getEntity(), is(notNullValue()));
+				assertThat(doc.getEntity().getAge(), is(not(0)));
+			}
+			rs.close();
+			assertThat(count, is(25));
+		}
+		
+		{
+			CursorResultSet<DocumentEntity<TestComplexEntity01>> rs = driver.executeSimpleRangeWithDocumentResultSet(
+					collectionName, "age", 5, 30, true, 0, 0, TestComplexEntity01.class);
+			
+			int count = 0;
+			while (rs.hasNext()) {
+				DocumentEntity<TestComplexEntity01> doc = rs.next();
+				count++;
+				assertThat(doc, is(notNullValue()));
+				assertThat(doc.getDocumentHandle(), startsWith(collectionName));
+				assertThat(doc.getDocumentKey(), is(notNullValue()));
+				assertThat(doc.getDocumentRevision(), is(not(0L)));
+				assertThat(doc.getEntity(), is(notNullValue()));
+				assertThat(doc.getEntity().getAge(), is(not(0)));
+			}
+			rs.close();
+			assertThat(count, is(26));
+		}
+		
+		
+	}
+
 	
 	@Test
 	public void test_remove_by_example() throws ArangoException {
@@ -422,7 +522,7 @@ public class ArangoDriverSimpleTest extends BaseTest {
 		driver.createDocument(collectionName, new TestComplexEntity01("xxx1", "this text contains a word", 10), null, null);
 		driver.createDocument(collectionName, new TestComplexEntity01("xxx2", "this text also contains a word", 10), null, null);
 		
-		CursorResultSet<DocumentEntity<TestComplexEntity01>> rs = driver.executeSimpleFulltextWithDocumentWithResultSet(collectionName, "desc", "word", 0, 0, null, TestComplexEntity01.class);
+		CursorResultSet<DocumentEntity<TestComplexEntity01>> rs = driver.executeSimpleFulltextWithDocumentResultSet(collectionName, "desc", "word", 0, 0, null, TestComplexEntity01.class);
 		List<DocumentEntity<TestComplexEntity01>> list = ResultSetUtils.toList(rs);
 
 		assertThat(list.size(), is(2));

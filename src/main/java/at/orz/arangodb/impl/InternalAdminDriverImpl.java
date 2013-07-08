@@ -135,12 +135,12 @@ public class InternalAdminDriverImpl extends BaseArangoDriverImpl {
 	 */
 	public ArangoVersion getVersion() throws ArangoException {
 		HttpResponseEntity res = httpManager.doGet(baseUrl + "/_admin/version");
-		return createEntityImpl(res, ArangoVersion.class);
+		return createEntity(res, ArangoVersion.class);
 	}
 
 	public ArangoUnixTime getTime() throws ArangoException {
 		HttpResponseEntity res = httpManager.doGet(baseUrl + "/_admin/time");
-		return createEntityImpl(res, ArangoUnixTime.class);
+		return createEntity(res, ArangoUnixTime.class);
 	}
 	
 	public DefaultEntity flushModules() throws ArangoException {

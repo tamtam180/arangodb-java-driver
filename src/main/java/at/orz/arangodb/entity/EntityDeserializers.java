@@ -778,6 +778,39 @@ public class EntityDeserializers {
 		}
 		
 	}
+
 	
+	public static class UserEntityDeserializer implements JsonDeserializer<UserEntity> {
+
+		public UserEntity deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			
+			if (json.isJsonNull()) {
+				return null;
+			}
+			
+			JsonObject obj = json.getAsJsonObject();
+			UserEntity entity = deserializeBaseParameter(obj, new UserEntity());
+			
+			if (obj.has("user")) {
+				entity.user = obj.getAsJsonPrimitive("user").getAsString();
+			}
+			
+			if (obj.has("password")) {
+				entity.password = obj.getAsJsonPrimitive("password").getAsString();
+			}
+			
+			if (obj.has("active")) {
+				entity.active = obj.getAsJsonPrimitive("active").getAsBoolean();
+			}
+			
+			if (obj.has("extra")) {
+				entity.extra = context.deserialize(obj.getAsJsonObject("extra"), Map.class);
+			}
+			
+			return entity;
+		}
+		
+	}
+
 	
 }

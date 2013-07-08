@@ -47,4 +47,7 @@ public class ImplFactory {
 	public static InternalAdminDriverImpl createAdminDriver(ArangoConfigure configure) {
 		return new InternalAdminDriverImpl(configure);
 	}
+	public static InternalUsersDriverImpl createUsersDriver(ArangoConfigure configure) {
+		return new InternalUsersDriverImpl(configure);
+	}
 }

@@ -43,6 +43,7 @@ import at.orz.arangodb.entity.KeyValueEntity;
 import at.orz.arangodb.entity.Policy;
 import at.orz.arangodb.entity.ScalarExampleEntity;
 import at.orz.arangodb.entity.SimpleByResultEntity;
+import at.orz.arangodb.entity.UserEntity;
 import at.orz.arangodb.http.HttpManager;
 import at.orz.arangodb.impl.ImplFactory;
 import at.orz.arangodb.impl.InternalAdminDriverImpl;
@@ -53,6 +54,8 @@ import at.orz.arangodb.impl.InternalEdgeDriverImpl;
 import at.orz.arangodb.impl.InternalIndexDriverImpl;
 import at.orz.arangodb.impl.InternalKVSDriverImpl;
 import at.orz.arangodb.impl.InternalSimpleDriverImpl;
+import at.orz.arangodb.impl.InternalUsersDriverImpl;
+import at.orz.arangodb.util.ResultSetUtils;
 
 /**
  * @author tamtam180 - kirscheless at gmail.com
@@ -77,6 +80,7 @@ public class ArangoDriver extends BaseArangoDriver {
 	private InternalEdgeDriverImpl edgeDriver;
 	private InternalAdminDriverImpl adminDriver;
 	private InternalSimpleDriverImpl simpleDriver;
+	private InternalUsersDriverImpl usersDriver;
 	
 	public ArangoDriver(ArangoConfigure configure) {
 		this.configure = configure;
@@ -91,7 +95,7 @@ public class ArangoDriver extends BaseArangoDriver {
 		this.edgeDriver = ImplFactory.createEdgeDriver(configure);
 		this.adminDriver = ImplFactory.createAdminDriver(configure);
 		this.simpleDriver = ImplFactory.createSimpleDriver(configure, cursorDriver);
-		
+		this.usersDriver = ImplFactory.createUsersDriver(configure);
 	}
 	
 	// ---------------------------------------- start of collection ----------------------------------------
@@ -629,7 +633,47 @@ public class ArangoDriver extends BaseArangoDriver {
 	
 	// ---------------------------------------- end of simple ----------------------------------------
 
+	// ---------------------------------------- start of users ----------------------------------------
+	
+	public DefaultEntity createUser(String username, String passwd, Boolean active, Map<String, Object> extra) throws ArangoException {
+		return usersDriver.createUser(username, passwd, active, extra);
+	}
+	
+	public DefaultEntity replaceUser(String username, String passwd, Boolean active, Map<String, Object> extra) throws ArangoException {
+		return usersDriver.replaceUser(username, passwd, active, extra);
+	}
+	
+	public DefaultEntity updateUser(String username, String passwd, Boolean active, Map<String, Object> extra) throws ArangoException {
+		return usersDriver.updateUser(username, passwd, active, extra);
+	}
+	
+	public DefaultEntity deleteUser(String username) throws ArangoException {
+		return usersDriver.deleteUser(username);
+	}
+	
+	public UserEntity getUser(String username) throws ArangoException {
+		return usersDriver.getUser(username);
+	}
+	
+	// Original (ArangoDB does not implements this API)
+	public List<DocumentEntity<UserEntity>> getUsersDocument() throws ArangoException {
+		
+		CursorResultSet<DocumentEntity<UserEntity>> rs = executeSimpleAllWithDocumentResultSet("_users", 0, 0, UserEntity.class);
+		return ResultSetUtils.toList(rs);
+		
+	}
+	
+	// Original (ArangoDB does not implements this API)
+	public List<UserEntity> getUsers() throws ArangoException {
+		
+		CursorResultSet<UserEntity> rs = executeSimpleAllWithResultSet("_users", 0, 0, UserEntity.class);
+		return ResultSetUtils.toList(rs);
+		
+	}
 
+	// ---------------------------------------- end of users ----------------------------------------
+
+	
 	// ---------------------------------------- start of xxx ----------------------------------------
 
 	// ---------------------------------------- end of xxx ----------------------------------------

@@ -16,12 +16,25 @@
 
 package at.orz.arangodb.util;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 /**
  * @author tamtam180 - kirscheless at gmail.com
  *
  */
 public class StringUtils {
 
+	public static String encodeUrl(String text) {
+		if (text != null) {
+			try {
+				return URLEncoder.encode(text, "UTF-8");
+			} catch (UnsupportedEncodingException e) {
+			}
+		}
+		return null;
+	}
+	
 	public static boolean isCurlyBracketStart(String text) {
 		
 		if (text == null || "".equals(text)) {

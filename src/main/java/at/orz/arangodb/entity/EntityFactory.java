@@ -57,6 +57,7 @@ public class EntityFactory {
 			.registerTypeAdapter(AdminStatusEntity.class, new EntityDeserializers.AdminStatusEntityDeserializer())
 			.registerTypeAdapter(ConnectionStatisticsEntity.class, new EntityDeserializers.ConnectionStatisticsEntityDeserializer())
 			.registerTypeAdapter(ExplainEntity.class, new EntityDeserializers.ExplainEntityDeserializer())
+			.registerTypeAdapter(UserEntity.class, new EntityDeserializers.UserEntityDeserializer())
 			;
 	}
 	static {

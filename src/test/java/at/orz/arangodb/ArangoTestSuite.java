@@ -37,6 +37,8 @@ import org.junit.runners.Suite.SuiteClasses;
 	ArangoDriverIndexTest.class,
 	ArangoDriverEdgeTest.class,
 	ArangoDriverAdminTest.class,
+	ArangoDriverSimpleTest.class,
+	//ArangoDriverSimpleGeoTest.class,
 	//ArangoDriverKeyValueTest.class,
 	ArangoDriverStoryTest.class
 })

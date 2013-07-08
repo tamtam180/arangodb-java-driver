@@ -24,6 +24,7 @@ import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -36,6 +37,7 @@ import at.orz.arangodb.entity.ScalarExampleEntity;
 import at.orz.arangodb.entity.SimpleByResultEntity;
 import at.orz.arangodb.util.MapBuilder;
 import at.orz.arangodb.util.ResultSetUtils;
+import at.orz.arangodb.util.TestUtils;
 
 /**
  * @author tamtam180 - kirscheless at gmail.com
@@ -68,7 +70,7 @@ public class ArangoDriverSimpleTest extends BaseTest {
 		}
 
 	}
-
+	
 	@Test
 	public void test_simple_all() throws ArangoException {
 		
@@ -542,5 +544,13 @@ public class ArangoDriverSimpleTest extends BaseTest {
 
 	}
 
+	@Test
+	public void test_geo() throws ArangoException, IOException {
+		
+		// Load Station data
+		List<Station> stations = TestUtils.readStations();
+		System.out.println(stations);
+		
+	}
 	
 }

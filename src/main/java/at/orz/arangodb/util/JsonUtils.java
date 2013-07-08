@@ -35,7 +35,7 @@ public class JsonUtils {
 		return iarray;
 	}
 	
-	public static double[] toeArray(JsonArray array) {
+	public static double[] toDoubleArray(JsonArray array) {
 		int len = array.size();
 		double[] darray = new double[len];
 		for (int i = 0; i < len; i++) {

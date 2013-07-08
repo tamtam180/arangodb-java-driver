@@ -134,5 +134,14 @@ public class ArangoDriverAdminTest extends BaseTest {
 		assertThat(entity.isError(), is(false));
 		
 	}
-	
+
+	@Test
+	public void test_reload_routing() throws ArangoException {
+		
+		DefaultEntity entity = driver.reloadRouting();
+		assertThat(entity.getStatusCode(), is(200));
+		assertThat(entity.isError(), is(false));
+		
+	}
+
 }

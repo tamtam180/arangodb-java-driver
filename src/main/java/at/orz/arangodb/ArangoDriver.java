@@ -471,6 +471,10 @@ public class ArangoDriver extends BaseArangoDriver {
 		return adminDriver.flushModules();
 	}
 
+	public DefaultEntity reloadRouting() throws ArangoException {
+		return adminDriver.reloadRouting();
+	}
+	
 	// ---------------------------------------- end of admin ----------------------------------------
 
 

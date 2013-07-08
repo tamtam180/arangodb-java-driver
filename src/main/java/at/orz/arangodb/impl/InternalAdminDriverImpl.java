@@ -23,6 +23,7 @@ import at.orz.arangodb.entity.AdminStatusEntity;
 import at.orz.arangodb.entity.ArangoUnixTime;
 import at.orz.arangodb.entity.ArangoVersion;
 import at.orz.arangodb.entity.ConnectionStatisticsEntity;
+import at.orz.arangodb.entity.DefaultEntity;
 import at.orz.arangodb.entity.Granularity;
 import at.orz.arangodb.http.HttpResponseEntity;
 import at.orz.arangodb.util.CollectionUtils;
@@ -140,6 +141,11 @@ public class InternalAdminDriverImpl extends BaseArangoDriverImpl {
 	public ArangoUnixTime getTime() throws ArangoException {
 		HttpResponseEntity res = httpManager.doGet(baseUrl + "/_admin/time");
 		return createEntityImpl(res, ArangoUnixTime.class);
+	}
+	
+	public DefaultEntity flushModules() throws ArangoException {
+		HttpResponseEntity res = httpManager.doPost(baseUrl + "/_admin/modules/flush", null, null);
+		return createEntity(res, DefaultEntity.class, false);
 	}
 	
 }

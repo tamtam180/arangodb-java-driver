@@ -466,6 +466,10 @@ public class ArangoDriver extends BaseArangoDriver {
 	public ArangoUnixTime getTime() throws ArangoException {
 		return adminDriver.getTime();
 	}
+	
+	public DefaultEntity flushModules() throws ArangoException {
+		return adminDriver.flushModules();
+	}
 
 	// ---------------------------------------- end of admin ----------------------------------------
 

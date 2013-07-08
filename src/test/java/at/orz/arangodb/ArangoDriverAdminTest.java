@@ -32,6 +32,7 @@ import at.orz.arangodb.entity.AdminStatusEntity;
 import at.orz.arangodb.entity.ArangoUnixTime;
 import at.orz.arangodb.entity.ArangoVersion;
 import at.orz.arangodb.entity.ConnectionStatisticsEntity;
+import at.orz.arangodb.entity.DefaultEntity;
 import at.orz.arangodb.util.ReflectionUtils;
 
 /**
@@ -123,6 +124,15 @@ public class ArangoDriverAdminTest extends BaseTest {
 		cs = driver.getConnectionStatistics(null, 0);
 		System.out.println(new GsonBuilder() .setPrettyPrinting().serializeSpecialFloatingPointValues().create().toJson(cs));
 
+	}
+	
+	@Test
+	public void test_flush_modules() throws ArangoException {
+		
+		DefaultEntity entity = driver.flushModules();
+		assertThat(entity.getStatusCode(), is(200));
+		assertThat(entity.isError(), is(false));
+		
 	}
 	
 }

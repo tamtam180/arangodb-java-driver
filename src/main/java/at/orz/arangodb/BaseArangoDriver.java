@@ -94,24 +94,37 @@ public abstract class BaseArangoDriver {
 	 * レスポンスがエラーであるかを確認して、エラーの場合は例外を投げる。
 	 * @param res
 	 * @param type
+	 * @param validate
 	 * @return
 	 * @throws ArangoException
 	 */
-	protected <T extends BaseEntity> T createEntity(HttpResponseEntity res, Class<T> clazz) throws ArangoException {
+	protected <T extends BaseEntity> T createEntity(HttpResponseEntity res, Class<T> clazz, boolean validate) throws ArangoException {
 		T entity = createEntityImpl(res, clazz);
 		if (entity == null) {
 			entity = ReflectionUtils.newInstance(clazz);
 		}
-		validateAndSetStatusCode(res, entity);
+		setStatusCode(res, entity);
+		if (validate) {
+			validate(entity);
+		}
 		return entity;
 	}
-	
-	protected void validateAndSetStatusCode(HttpResponseEntity res, BaseEntity entity) throws ArangoException {
+
+	protected <T extends BaseEntity> T createEntity(HttpResponseEntity res, Class<T> clazz) throws ArangoException {
+		return createEntity(res, clazz, true);
+	}
+
+	protected void setStatusCode(HttpResponseEntity res, BaseEntity entity) throws ArangoException {
 		if (entity != null) {
 			if (res.getEtag() > 0) {
 				entity.setEtag(res.getEtag());
 			}
 			entity.setStatusCode(res.getStatusCode());
+		}
+	}
+	
+	protected void validate(BaseEntity entity) throws ArangoException {
+		if (entity != null) {
 			if (entity.isError()) {
 				throw new ArangoException(entity);
 			}

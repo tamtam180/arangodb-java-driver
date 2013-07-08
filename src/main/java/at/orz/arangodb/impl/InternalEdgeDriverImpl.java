@@ -142,7 +142,8 @@ public class InternalEdgeDriverImpl extends BaseArangoDriverImpl {
 		
 		try {
 			EdgesEntity<T> entity = EntityFactory.createEdges(res.getText(), edgeAttributeClass);
-			validateAndSetStatusCode(res, entity);
+			setStatusCode(res, entity);
+			validate(entity);
 			return entity;
 		} catch (ArangoException e) {
 			return null;

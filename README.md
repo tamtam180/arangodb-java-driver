@@ -64,6 +64,8 @@ This library has 4 layers.
 <tr><th>port</th><td>ArangoDB port</td><td>8159</td></tr>
 <tr><th>maxPerConnection</th><td>Max http connection per host.</td><td>20</td></tr>
 <tr><th>maxTotalConnection</th><td>Max http connection per configure.</td><td>20</td></tr>
+<tr><th>user</th><td>Basic Authentication User</td><td></td></tr>
+<tr><th>password</th><td>Basic Authentication Password</td><td></td></tr>
 <tr><th>proxy.host</th><td>proxy host</td><td></td></tr>
 <tr><th>proxy.port</th><td>proxy port</td><td></td></tr>
 <tr><th>connectionTimeout</th><td>socket connect timeout(millisecond)</td><td>-1</td></tr>
@@ -228,18 +230,12 @@ rs.close();
 * Exact ETAG support 
 * Batch process
 * Bulk import.
-* Support authorize.
-* Retry http method.
 * Maven Repo and download packages.
 * Online JavaDoc.
 * Multi Server connection (ex. Consistent Hash)
-* exclude logback dependency
 
-* POST /_api/explain
 * PUT /_api/simple/near
 * PUT /_api/simple/within
-* PUT /_api/simple/fulltext
-* KVS
 * Blueprints
 
 This library does not support admin/_echo

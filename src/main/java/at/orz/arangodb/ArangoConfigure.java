@@ -57,6 +57,11 @@ public class ArangoConfigure {
 	/** max connection per host */
 	int maxPerConnection;
 	
+	/** Basic auth user */
+	String user;
+	/** Basic auth password */
+	String password;
+	
 	/** proxy-host */
 	String proxyHost;
 	/** proxy-port */
@@ -144,6 +149,16 @@ public class ArangoConfigure {
 					setRetryCount(Integer.parseInt(retryCount));
 				}
 				
+				String user = prop.getProperty("user");
+				if (user != null) {
+					setUser(user);
+				}
+				
+				String password = prop.getProperty("password");
+				if (password != null) {
+					setPassword(password);
+				}
+				
 			}
 		} catch (IOException e) {
 			logger.warn("load property error", e);
@@ -155,6 +170,7 @@ public class ArangoConfigure {
 	public void init() {
 		this.httpManager = new HttpManager();
 
+		// FIXME: change to "new HttpManager(configure)"
 		this.httpManager.setDefaultMaxPerRoute(this.maxPerConnection);
 		this.httpManager.setMaxTotal(this.maxTotalConnection);
 		this.httpManager.setProxyHost(this.proxyHost);
@@ -162,6 +178,8 @@ public class ArangoConfigure {
 		this.httpManager.setConTimeout(this.connectionTimeout);
 		this.httpManager.setSoTimeout(this.timeout);
 		this.httpManager.setRetryCount(this.retryCount);
+		this.httpManager.setUser(this.user);
+		this.httpManager.setPassword(this.password);
 		
 		this.httpManager.init();
 	}
@@ -291,6 +309,22 @@ public class ArangoConfigure {
 
 	public void setHttpManager(HttpManager httpManager) {
 		this.httpManager = httpManager;
+	}
+
+	public String getUser() {
+		return user;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setUser(String user) {
+		this.user = user;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 	
 }

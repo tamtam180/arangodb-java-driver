@@ -22,6 +22,7 @@ import static org.junit.Assert.*;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.google.gson.Gson;
@@ -46,6 +47,7 @@ public class NegativeTest extends BaseTest {
 	 * きとんとエラーになること。
 	 * @throws ArangoException
 	 */
+	@Ignore
 	@Test
 	public void test_collections() throws ArangoException {
 		

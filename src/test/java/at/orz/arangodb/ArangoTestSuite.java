@@ -28,6 +28,7 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({
 	ArangoConfigureTest.class,
+	ArangoDriverAuthTest.class,
 	NegativeTest.class,
 	PrimitiveDocumentTest.class,
 	ArangoDriverDocumentTest.class,

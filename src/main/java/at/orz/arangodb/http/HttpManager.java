@@ -30,6 +30,8 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.StatusLine;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
@@ -80,6 +82,11 @@ public class HttpManager {
 	private int soTimeout = -1;
 	/** retry count */
 	private int retryCount = 3;
+	
+	/** Basic auth user */
+	private String user;
+	/** Basic auth password */
+	private String password;
 
 	public HttpManager() {
 	}
@@ -115,6 +122,15 @@ public class HttpManager {
 		return this;
 	}
 	
+	public HttpManager setUser(String user) {
+		this.user = user;
+		return this;
+	}
+	public HttpManager setPassword(String password) {
+		this.password = password;
+		return this;
+	}
+	
 	public void init() {
 		// ConnectionManager
 		cm = new PoolingClientConnectionManager();
@@ -136,6 +152,13 @@ public class HttpManager {
 		if (proxyHost != null && proxyPort != 0) {
 			HttpHost proxy = new HttpHost(proxyHost, proxyPort, "http");
 			client.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
+		}
+		
+		// Basic Auth
+		if (user != null && password != null) {
+			AuthScope scope = AuthScope.ANY; // TODO
+			UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(user, password);
+			client.getCredentialsProvider().setCredentials(scope, credentials);
 		}
 		
 		// Retry Handler

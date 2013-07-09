@@ -19,9 +19,12 @@ package at.orz.arangodb;
 import java.text.ParseException;
 import java.util.Map;
 
+import org.apache.http.client.HttpClient;
+
 import at.orz.arangodb.entity.BaseEntity;
 import at.orz.arangodb.entity.EntityFactory;
 import at.orz.arangodb.entity.KeyValueEntity;
+import at.orz.arangodb.http.HttpManager;
 import at.orz.arangodb.http.HttpResponseEntity;
 import at.orz.arangodb.util.DateUtils;
 import at.orz.arangodb.util.ReflectionUtils;
@@ -105,7 +108,8 @@ public abstract class BaseArangoDriver {
 		}
 		setStatusCode(res, entity);
 		if (validate) {
-			validate(entity);
+			validate(res, entity);
+			
 		}
 		return entity;
 	}
@@ -123,11 +127,25 @@ public abstract class BaseArangoDriver {
 		}
 	}
 	
-	protected void validate(BaseEntity entity) throws ArangoException {
+	protected void validate(HttpResponseEntity res, BaseEntity entity) throws ArangoException {
 		if (entity != null) {
 			if (entity.isError()) {
 				throw new ArangoException(entity);
 			}
+		}
+		
+		// Custom Error
+		if (res.getStatusCode() >= 400) {
+			entity.setErrorNumber(res.getStatusCode());
+			switch (res.getStatusCode()) {
+			case 401:
+				entity.setErrorMessage("Unauthorized");
+				break;
+			case 403:
+				entity.setErrorMessage("Forbidden");
+				break;
+			}
+			throw new ArangoException(entity);
 		}
 	}
 	

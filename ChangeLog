@@ -2,6 +2,16 @@
 v1.2.2-SNAPSHOT(2013-xx-xx)
 ---------------------------
 
+* add support API: /_api/explain
+* add support API: /_api/collection/collection-name/revision
+* add support API: /_api/index of fulltext
+* add support API: /_api/simple/fulltext
+* add support API: /_admin/modules/flush
+* add support API: /_admin/routing/reload
+* add support API: User Management
+* add support: Basic Authentication
+* /_api/simple/all and /_api/simple/by-example returns DocumentEntity
+
 v1.2.1(2013-07-02)
 ------------------
 

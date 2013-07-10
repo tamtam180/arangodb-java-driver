@@ -16,6 +16,7 @@
 
 package at.orz.arangodb;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,7 @@ import at.orz.arangodb.entity.EdgeEntity;
 import at.orz.arangodb.entity.EdgesEntity;
 import at.orz.arangodb.entity.ExplainEntity;
 import at.orz.arangodb.entity.Granularity;
+import at.orz.arangodb.entity.ImportResultEntity;
 import at.orz.arangodb.entity.IndexEntity;
 import at.orz.arangodb.entity.IndexType;
 import at.orz.arangodb.entity.IndexesEntity;
@@ -51,6 +53,7 @@ import at.orz.arangodb.impl.InternalCollectionDriverImpl;
 import at.orz.arangodb.impl.InternalCursorDriverImpl;
 import at.orz.arangodb.impl.InternalDocumentDriverImpl;
 import at.orz.arangodb.impl.InternalEdgeDriverImpl;
+import at.orz.arangodb.impl.InternalImportDriverImpl;
 import at.orz.arangodb.impl.InternalIndexDriverImpl;
 import at.orz.arangodb.impl.InternalKVSDriverImpl;
 import at.orz.arangodb.impl.InternalSimpleDriverImpl;
@@ -81,6 +84,7 @@ public class ArangoDriver extends BaseArangoDriver {
 	private InternalAdminDriverImpl adminDriver;
 	private InternalSimpleDriverImpl simpleDriver;
 	private InternalUsersDriverImpl usersDriver;
+	private InternalImportDriverImpl importDriver;
 	
 	public ArangoDriver(ArangoConfigure configure) {
 		this.configure = configure;
@@ -96,6 +100,7 @@ public class ArangoDriver extends BaseArangoDriver {
 		this.adminDriver = ImplFactory.createAdminDriver(configure);
 		this.simpleDriver = ImplFactory.createSimpleDriver(configure, cursorDriver);
 		this.usersDriver = ImplFactory.createUsersDriver(configure);
+		this.importDriver = ImplFactory.createImportDriver(configure);
 	}
 	
 	// ---------------------------------------- start of collection ----------------------------------------
@@ -672,6 +677,22 @@ public class ArangoDriver extends BaseArangoDriver {
 	}
 
 	// ---------------------------------------- end of users ----------------------------------------
+
+	// ---------------------------------------- start of import ----------------------------------------
+	
+	public ImportResultEntity importDocuments(String collection, Boolean createCollection, Collection<?> values) throws ArangoException {
+		return importDriver.importDocuments(collection, createCollection, values);
+	}
+	
+//	public void importDocuments(String collection, Boolean createCollection, Iterator<?> itr) throws ArangoException {
+//		importDriver.importDocuments(collection, createCollection, itr);
+//	}
+
+	public ImportResultEntity importDocumentsByHeaderValues(String collection, Boolean createCollection, Collection<? extends Collection<?>> headerValues) throws ArangoException {
+		return importDriver.importDocumentsByHeaderValues(collection, createCollection, headerValues);
+	}
+
+	// ---------------------------------------- end of import ----------------------------------------
 
 	
 	// ---------------------------------------- start of xxx ----------------------------------------

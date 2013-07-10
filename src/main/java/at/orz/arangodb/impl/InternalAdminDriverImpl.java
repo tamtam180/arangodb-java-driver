@@ -144,12 +144,12 @@ public class InternalAdminDriverImpl extends BaseArangoDriverImpl {
 	}
 	
 	public DefaultEntity flushModules() throws ArangoException {
-		HttpResponseEntity res = httpManager.doPost(baseUrl + "/_admin/modules/flush", null, null);
+		HttpResponseEntity res = httpManager.doPost(baseUrl + "/_admin/modules/flush", null, (String)null);
 		return createEntity(res, DefaultEntity.class, false);
 	}
 
 	public DefaultEntity reloadRouting() throws ArangoException {
-		HttpResponseEntity res = httpManager.doPost(baseUrl + "/_admin/routing/reload", null, null);
+		HttpResponseEntity res = httpManager.doPost(baseUrl + "/_admin/routing/reload", null, (String)null);
 		return createEntity(res, DefaultEntity.class, false);
 	}
 	

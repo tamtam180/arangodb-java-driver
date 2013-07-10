@@ -50,4 +50,7 @@ public class ImplFactory {
 	public static InternalUsersDriverImpl createUsersDriver(ArangoConfigure configure) {
 		return new InternalUsersDriverImpl(configure);
 	}
+	public static InternalImportDriverImpl createImportDriver(ArangoConfigure configure) {
+		return new InternalImportDriverImpl(configure);
+	}
 }

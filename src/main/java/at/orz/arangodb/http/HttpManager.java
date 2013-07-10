@@ -198,37 +198,42 @@ public class HttpManager {
 	}
 
 	public HttpResponseEntity doPost(String url, Map<String, Object> headers, Map<String, Object> params, String bodyText) throws ArangoException {
-		return doPostPutPatch(RequestType.POST, url, headers, params, bodyText);
+		return doPostPutPatch(RequestType.POST, url, headers, params, bodyText, null);
 	}
 
 	public HttpResponseEntity doPost(String url, Map<String, Object> params, String bodyText) throws ArangoException {
-		return doPostPutPatch(RequestType.POST, url, null, params, bodyText);
+		return doPostPutPatch(RequestType.POST, url, null, params, bodyText, null);
+	}
+
+	public HttpResponseEntity doPost(String url, Map<String, Object> params, HttpEntity entity) throws ArangoException {
+		return doPostPutPatch(RequestType.POST, url, null, params, null, entity);
 	}
 
 	public HttpResponseEntity doPut(String url, Map<String, Object> headers, Map<String, Object> params, String bodyText) throws ArangoException {
-		return doPostPutPatch(RequestType.PUT, url, headers, params, bodyText);
+		return doPostPutPatch(RequestType.PUT, url, headers, params, bodyText, null);
 	}
 	
 	public HttpResponseEntity doPut(String url, Map<String, Object> params, String bodyText) throws ArangoException {
-		return doPostPutPatch(RequestType.PUT, url, null, params, bodyText);
+		return doPostPutPatch(RequestType.PUT, url, null, params, bodyText, null);
 	}
 
 	public HttpResponseEntity doPatch(String url, Map<String, Object> headers, Map<String, Object> params, String bodyText) throws ArangoException {
-		return doPostPutPatch(RequestType.PATCH, url, headers, params, bodyText);
+		return doPostPutPatch(RequestType.PATCH, url, headers, params, bodyText, null);
 	}
 	
 	public HttpResponseEntity doPatch(String url, Map<String, Object> params, String bodyText) throws ArangoException {
-		return doPostPutPatch(RequestType.PATCH, url, null, params, bodyText);
+		return doPostPutPatch(RequestType.PATCH, url, null, params, bodyText, null);
 	}
 
 	
-	private HttpResponseEntity doPostPutPatch(RequestType type, String url, Map<String, Object> headers, Map<String, Object> params, String bodyText) throws ArangoException {
+	private HttpResponseEntity doPostPutPatch(RequestType type, String url, Map<String, Object> headers, Map<String, Object> params, String bodyText, HttpEntity entity) throws ArangoException {
 		HttpRequestEntity requestEntity = new HttpRequestEntity();
 		requestEntity.type = type;
 		requestEntity.url = url;
 		requestEntity.headers = headers;
 		requestEntity.parameters = params;
 		requestEntity.bodyText = bodyText;
+		requestEntity.entity = entity;
 		return execute(requestEntity);
 	}
 	
@@ -280,6 +285,7 @@ public class HttpManager {
 		
 		// common-header
 		request.setHeader("User-Agent", "Mozilla/5.0 (compatible; AdovadoDB-JavaDriver/1.0; +http://mt.orz.at/)"); // TODO: 定数化
+		//request.setHeader("Content-Type", "binary/octet-stream");
 		
 		// optinal-headers
 		if (requestEntity.headers != null) {
@@ -363,7 +369,9 @@ public class HttpManager {
 	
 	private static void configureBodyParams(HttpRequestEntity requestEntity, HttpEntityEnclosingRequestBase request) {
 		
-		if (requestEntity.bodyText != null) {
+		if (requestEntity.entity != null) {
+			request.setEntity(requestEntity.entity);
+		} else if (requestEntity.bodyText != null) {
 			request.setEntity(new StringEntity(requestEntity.bodyText, APPLICATION_JSON_UTF8));
 		}
 		

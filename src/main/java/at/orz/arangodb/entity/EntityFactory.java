@@ -16,12 +16,16 @@
 
 package at.orz.arangodb.entity;
 
+import java.io.StringWriter;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import at.orz.arangodb.entity.CollectionEntity.Figures;
+import at.orz.arangodb.http.JsonSequenceEntity;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -58,6 +62,7 @@ public class EntityFactory {
 			.registerTypeAdapter(ConnectionStatisticsEntity.class, new EntityDeserializers.ConnectionStatisticsEntityDeserializer())
 			.registerTypeAdapter(ExplainEntity.class, new EntityDeserializers.ExplainEntityDeserializer())
 			.registerTypeAdapter(UserEntity.class, new EntityDeserializers.UserEntityDeserializer())
+			.registerTypeAdapter(ImportResultEntity.class, new EntityDeserializers.ImportResultEntityDeserializer())
 			;
 	}
 	static {
@@ -110,12 +115,25 @@ public class EntityFactory {
 	public static <T> String toJsonString(T obj) {
 		return toJsonString(obj, false);
 	}
+	
+	public static <T> JsonSequenceEntity toJsonSequenceEntity(Iterator<T> itr) {
+		return new JsonSequenceEntity(itr, gson);
+	}
+	
+	public static <T> String toImportHeaderValues(Collection<? extends Collection<?>> headerValues) {
+		StringWriter writer = new StringWriter();
+		for (Collection<?> array : headerValues) {
+			gson.toJson(array, writer);
+			writer.write('\n');
+		}
+		writer.flush();
+		return writer.toString();
+	}
 
 	public static <T> String toJsonString(T obj, boolean includeNullValue) {
 		return includeNullValue ? gsonNull.toJson(obj) : gson.toJson(obj);
 	}
 
-	
 	public static <T> EdgesEntity<T> createEdges(String jsonText, Class<T> clazz) {
 		EdgesEntity<T> edges = createEntity(jsonText, EdgesEntity.class);
 		edges.edges = createEdges(edges._edges, clazz);

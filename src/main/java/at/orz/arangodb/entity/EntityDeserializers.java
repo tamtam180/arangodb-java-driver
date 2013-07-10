@@ -812,5 +812,31 @@ public class EntityDeserializers {
 		
 	}
 
+	public static class ImportResultEntityDeserializer implements JsonDeserializer<ImportResultEntity> {
+		public ImportResultEntity deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			
+			if (json.isJsonNull()) {
+				return null;
+			}
+			
+			JsonObject obj = json.getAsJsonObject();
+			ImportResultEntity entity = deserializeBaseParameter(obj, new ImportResultEntity());
+			
+			if (obj.has("created")) {
+				entity.created = obj.getAsJsonPrimitive("created").getAsInt();
+			}
+
+			if (obj.has("errors")) {
+				entity.errors = obj.getAsJsonPrimitive("errors").getAsInt();
+			}
+
+			if (obj.has("empty")) {
+				entity.empty = obj.getAsJsonPrimitive("empty").getAsInt();
+			}
+
+			return entity;
+		}
+	}
+
 	
 }

@@ -17,6 +17,7 @@
 package at.orz.arangodb.util;
 
 import java.io.BufferedInputStream;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -55,7 +56,7 @@ public class IOUtils {
 		}
 	}
 	
-	public static void close(InputStream input) {
+	public static void close(Closeable input) {
 		try {
 			input.close();
 		} catch (IOException e) {

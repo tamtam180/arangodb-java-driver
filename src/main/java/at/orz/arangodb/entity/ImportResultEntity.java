@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 tamtam180
+ * Copyright (C) 2012,2013 tamtam180
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,32 +14,35 @@
  * limitations under the License.
  */
 
-package at.orz.arangodb.http;
-
-import java.util.Map;
-
-import org.apache.http.HttpEntity;
+package at.orz.arangodb.entity;
 
 /**
  * @author tamtam180 - kirscheless at gmail.com
  *
  */
-public class HttpRequestEntity {
+public class ImportResultEntity extends BaseEntity {
+
+	int created;
+	int errors;
+	int empty;
 	
-	public static enum RequestType {
-		GET,
-		POST,
-		PUT,
-		DELETE,
-		HEAD,
-		PATCH
+	public int getCreated() {
+		return created;
 	}
-	
-	Map<String, Object> headers;
-	RequestType type;
-	String url;
-	Map<String, Object> parameters;
-	String bodyText;
-	HttpEntity entity;
+	public int getErrors() {
+		return errors;
+	}
+	public int getEmpty() {
+		return empty;
+	}
+	public void setCreated(int created) {
+		this.created = created;
+	}
+	public void setErrors(int errors) {
+		this.errors = errors;
+	}
+	public void setEmpty(int empty) {
+		this.empty = empty;
+	}
 	
 }

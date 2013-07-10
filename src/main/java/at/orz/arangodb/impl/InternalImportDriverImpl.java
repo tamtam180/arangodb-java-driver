@@ -16,12 +16,18 @@
 
 package at.orz.arangodb.impl;
 
+import java.util.Collection;
+
 import at.orz.arangodb.ArangoConfigure;
 import at.orz.arangodb.ArangoException;
+import at.orz.arangodb.entity.EntityFactory;
+import at.orz.arangodb.entity.ImportResultEntity;
+import at.orz.arangodb.http.HttpResponseEntity;
+import at.orz.arangodb.util.MapBuilder;
 
 /**
  * @author tamtam180 - kirscheless at gmail.com
- *
+ * @see http://www.arangodb.org/manuals/current/HttpImport.html
  */
 public class InternalImportDriverImpl extends BaseArangoDriverImpl {
 
@@ -29,8 +35,36 @@ public class InternalImportDriverImpl extends BaseArangoDriverImpl {
 		super(configure);
 	}
 	
-	public void importDocument() throws ArangoException {
+	public ImportResultEntity importDocuments(String collection, Boolean createCollection, Collection<?> values) throws ArangoException {
+
+		HttpResponseEntity res = httpManager.doPost(
+				baseUrl + "/_api/import", 
+				new MapBuilder().put("collection", collection).put("createCollection", createCollection).put("type", "array").get(), 
+				EntityFactory.toJsonString(values));
+		
+		return createEntity(res, ImportResultEntity.class);
 		
 	}
+
+//	public void importDocuments(String collection, Boolean createCollection, Iterator<?> itr) throws ArangoException {
+//
+//		HttpResponseEntity res = httpManager.doPost(
+//				baseUrl + "/_api/import", 
+//				new MapBuilder().put("collection", collection).put("createCollection", createCollection).put("type", "documents").get(), 
+//				EntityFactory.toJsonSequenceEntity(itr));
+//		
+//	}
 	
+	
+	public ImportResultEntity importDocumentsByHeaderValues(String collection, Boolean createCollection, Collection<? extends Collection<?>> headerValues) throws ArangoException {
+
+		HttpResponseEntity res = httpManager.doPost(
+				baseUrl + "/_api/import", 
+				new MapBuilder().put("collection", collection).put("createCollection", createCollection).get(), 
+				EntityFactory.toImportHeaderValues(headerValues));
+		
+		return createEntity(res, ImportResultEntity.class);
+		
+	}
+
 }

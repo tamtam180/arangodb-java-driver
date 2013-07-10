@@ -11,6 +11,7 @@ v1.2.2-SNAPSHOT(2013-xx-xx)
 * add support API: User Management
 * add support: Basic Authentication
 * /_api/simple/all and /_api/simple/by-example returns DocumentEntity
+* add support import API
 
 v1.2.1(2013-07-02)
 ------------------

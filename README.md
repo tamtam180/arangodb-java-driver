@@ -229,7 +229,6 @@ rs.close();
 
 * Exact ETAG support 
 * Batch process
-* Bulk import.
 * Maven Repo and download packages.
 * Online JavaDoc.
 * Multi Server connection (ex. Consistent Hash)

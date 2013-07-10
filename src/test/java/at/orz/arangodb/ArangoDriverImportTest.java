@@ -31,31 +31,32 @@ import at.orz.arangodb.util.TestUtils;
 
 /**
  * @author tamtam180 - kirscheless at gmail.com
- *
+ * 
  */
 public class ArangoDriverImportTest extends BaseTest {
-	
+
 	@Test
 	public void test_import_documents() throws ArangoException, IOException {
-		
+
 		List<Station> stations = TestUtils.readStations();
 		ImportResultEntity result = driver.importDocuments("ut-import-test", true, stations);
-		
+
 		assertThat(result.getStatusCode(), is(201));
 		assertThat(result.isError(), is(false));
 		assertThat(result.getCreated(), is(632));
 		assertThat(result.getErrors(), is(0));
 		assertThat(result.getEmpty(), is(0));
-		
+
 	}
 
 	@Test
 	public void test_import_documents_404() throws ArangoException, IOException {
-		
+
 		try {
 			driver.deleteCollection("ut-import-test");
-		} catch (ArangoException e) {}
-		
+		} catch (ArangoException e) {
+		}
+
 		List<Station> stations = TestUtils.readStations();
 		try {
 			driver.importDocuments("ut-import-test", false, stations);
@@ -64,56 +65,57 @@ public class ArangoDriverImportTest extends BaseTest {
 			assertThat(e.getCode(), is(404));
 			assertThat(e.getErrorNumber(), is(1203));
 		}
-		
+
 	}
 
 	@Test
 	public void test_import_xsv() throws ArangoException, IOException {
-		
+
 		List<List<?>> values = new ArrayList<List<?>>();
 		values.add(Arrays.asList("firstName", "lastName", "age", "gender"));
-		values.add(Arrays.asList( "Joe", "Public", 42, "male" ));
-		values.add(Arrays.asList("Jane", "Doe", 31, "female" ));
-		
+		values.add(Arrays.asList("Joe", "Public", 42, "male"));
+		values.add(Arrays.asList("Jane", "Doe", 31, "female"));
+
 		ImportResultEntity result = driver.importDocumentsByHeaderValues("ut-import-test", true, values);
-		
+
 		assertThat(result.getStatusCode(), is(201));
 		assertThat(result.isError(), is(false));
 		assertThat(result.getCreated(), is(2));
 		assertThat(result.getErrors(), is(0));
 		assertThat(result.getEmpty(), is(0));
-		
+
 	}
 
 	@Test
 	public void test_import_xsv_errors() throws ArangoException, IOException {
-		
+
 		List<List<?>> values = new ArrayList<List<?>>();
 		values.add(Arrays.asList("firstName", "lastName", "age", "gender"));
-		values.add(Arrays.asList( "Joe", "Public", 42, "male", 10 )); // error
-		values.add(Arrays.asList("Jane", "Doe", 31, "female" ));
-		
+		values.add(Arrays.asList("Joe", "Public", 42, "male", 10)); // error
+		values.add(Arrays.asList("Jane", "Doe", 31, "female"));
+
 		ImportResultEntity result = driver.importDocumentsByHeaderValues("ut-import-test", true, values);
-		
+
 		assertThat(result.getStatusCode(), is(201));
 		assertThat(result.isError(), is(false));
 		assertThat(result.getCreated(), is(1));
 		assertThat(result.getErrors(), is(1));
 		assertThat(result.getEmpty(), is(0));
-		
+
 	}
 
 	@Test
 	public void test_import_xsv_404() throws ArangoException, IOException {
-		
+
 		try {
 			driver.deleteCollection("ut-import-test");
-		} catch (ArangoException e) {}
+		} catch (ArangoException e) {
+		}
 
 		List<List<?>> values = new ArrayList<List<?>>();
 		values.add(Arrays.asList("firstName", "lastName", "age", "gender"));
-		values.add(Arrays.asList( "Joe", "Public", 42, "male", 10 )); // error
-		values.add(Arrays.asList("Jane", "Doe", 31, "female" ));
+		values.add(Arrays.asList("Joe", "Public", 42, "male", 10)); // error
+		values.add(Arrays.asList("Jane", "Doe", 31, "female"));
 
 		try {
 			driver.importDocuments("ut-import-test", false, values);
@@ -122,7 +124,7 @@ public class ArangoDriverImportTest extends BaseTest {
 			assertThat(e.getCode(), is(404));
 			assertThat(e.getErrorNumber(), is(1203));
 		}
-		
+
 	}
 
 }

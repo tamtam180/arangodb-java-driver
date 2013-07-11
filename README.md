@@ -225,6 +225,126 @@ rs.close();
 
 ## More example
 
+# Support API
+
+<table>
+<tr><td></td><td></td><td></td><td>1.2.0</td><td>1.2.1</td><td>1.2.2</td></tr>
+<tr><td>Document</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td>GET</td><td>/_api/document/document-handle</td><td>o</td><td>o</td><td>o</td></tr>
+<tr><td></td><td>POST</td><td>/_api/document?collection=collection-name</td><td>o</td><td>o</td><td>o</td></tr>
+<tr><td></td><td>PUT</td><td>/_api/document/document-handle</td><td>o</td><td>o</td><td>o</td></tr>
+<tr><td></td><td>PATCH</td><td>/_api/document/document-handle</td><td>o</td><td>o</td><td>o</td></tr>
+<tr><td></td><td>DELETE</td><td>/_api/document/document-handle</td><td>o</td><td>o</td><td>o</td></tr>
+<tr><td></td><td>HEAD</td><td>/_api/document/document-handle</td><td>o</td><td>o</td><td>o</td></tr>
+<tr><td></td><td>GET</td><td>/_api/document?collection=collection-name</td><td>o</td><td>o</td><td>o</td></tr>
+<tr><td>Edge</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td>GET</td><td>/_api/edge/document-handle</td><td>o</td><td>o</td><td>o</td></tr>
+<tr><td></td><td>POST</td><td>/_api/edge?collection=collection-name&from=from-handle&to=to-handle</td><td>o</td><td>o</td><td>o</td></tr>
+<tr><td></td><td>PUT</td><td>/_api/edge/document-handle</td><td>o</td><td>o</td><td>o</td></tr>
+<tr><td></td><td>DELETE</td><td>/_api/edge/document-handle</td><td>o</td><td>o</td><td>o</td></tr>
+<tr><td></td><td>HEAD</td><td>/_api/edge/document-handle</td><td>o</td><td>o</td><td>o</td></tr>
+<tr><td></td><td>GET</td><td>/_api/edges/collection-name?vertex=vertex-handle&directory=direction</td><td>o</td><td>o</td><td>o</td></tr>
+<tr><td>Cursor</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td>POST</td><td>/_api/cursor</td><td>o</td><td>o</td><td>o</td></tr>
+<tr><td></td><td>POST</td><td>/_api/query</td><td>o</td><td>o</td><td>o</td></tr>
+<tr><td></td><td>PUT</td><td>/_api/cursor/cursor-identifier</td><td>o</td><td>o</td><td>o</td></tr>
+<tr><td></td><td>DELETE</td><td>/_api/cursor/cursor-identifier</td><td>o</td><td>o</td><td>o</td></tr>
+<tr><td>AQL</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td>POST</td><td>/_api/explain</td><td>x</td><td>x</td><td>o</td></tr>
+<tr><td></td><td>POST</td><td>/_api/query</td><td>-</td><td>-</td><td>-</td></tr>
+<tr><td>Simple</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td>PUT</td><td>/_api/simple/all</td><td>o</td><td>o</td><td>o</td></tr>
+<tr><td></td><td>PUT</td><td>/_api/simple/by-example</td><td>o</td><td>o</td><td>o</td></tr>
+<tr><td></td><td>PUT</td><td>/_api/simple/first-example</td><td>o</td><td>o</td><td>o</td></tr>
+<tr><td></td><td>PUT</td><td>/_api/simple/any</td><td>o</td><td>o</td><td>o</td></tr>
+<tr><td></td><td>PUT</td><td>/_api/simple/range</td><td>o</td><td>o</td><td>o</td></tr>
+<tr><td></td><td>PUT</td><td>/_api/simple/near</td><td>x</td><td>x</td><td>x</td></tr>
+<tr><td></td><td>PUT</td><td>/_api/simple/within</td><td>x</td><td>x</td><td>x</td></tr>
+<tr><td></td><td>PUT</td><td>/_api/simple/fulltext</td><td>x</td><td>x</td><td>o</td></tr>
+<tr><td></td><td>PUT</td><td>/_api/simple/remove-by-example</td><td>o</td><td>o</td><td>o</td></tr>
+<tr><td></td><td>PUT</td><td>/_api/simple/replace-by-example</td><td>o</td><td>o</td><td>o</td></tr>
+<tr><td></td><td>PUT</td><td>/_api/simple/update-by-example</td><td>o</td><td>o</td><td>o</td></tr>
+<tr><td>Collections</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Creating and Deleting Collections</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td>POST</td><td>/_api/collection</td><td>o</td><td>o</td><td>o</td></tr>
+<tr><td></td><td>DELETE</td><td>/_api/collection/collection-name</td><td>o</td><td>o</td><td>o</td></tr>
+<tr><td></td><td>PUT</td><td>/_api/collection/collection-name/truncate</td><td>o</td><td>o</td><td>o</td></tr>
+<tr><td>Getting Information about a Collection</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td>GET</td><td>/_api/collection/collection-name</td><td>o</td><td>o</td><td>o</td></tr>
+<tr><td></td><td>GET</td><td>/_api/collection/collection-name/properties</td><td>o</td><td>o</td><td>o</td></tr>
+<tr><td></td><td>GET</td><td>/_api/collection/collection-name/count</td><td>o</td><td>o</td><td>o</td></tr>
+<tr><td></td><td>GET</td><td>/_api/collection/collection-name/figures</td><td>o</td><td>o</td><td>o</td></tr>
+<tr><td></td><td>GET</td><td>/_api/collection/collection-name/revision</td><td>x</td><td>x</td><td>o</td></tr>
+<tr><td></td><td>GET</td><td>/_api/collection/collection-name</td><td>-</td><td>-</td><td>-</td></tr>
+<tr><td></td><td>GET</td><td>/_api/collection/</td><td>o</td><td>o</td><td>o</td></tr>
+<tr><td>Modifying a Collection</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td>PUT</td><td>/_api/collection/collection-name/load</td><td>o</td><td>o</td><td>o</td></tr>
+<tr><td></td><td>PUT</td><td>/_api/collection/collection-name/unload</td><td>o</td><td>o</td><td>o</td></tr>
+<tr><td></td><td>PUT</td><td>/_api/collection/collection-name/properties</td><td>o</td><td>o</td><td>o</td></tr>
+<tr><td></td><td>PUT</td><td>/_api/collection/collection-name/rename</td><td>o</td><td>o</td><td>o</td></tr>
+<tr><td>Index</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td>GET</td><td>/_api/index/index-handle</td><td>o</td><td>o</td><td>o</td></tr>
+<tr><td></td><td>POST</td><td>/_api/index?collection=collection-name</td><td>o</td><td>o</td><td>o</td></tr>
+<tr><td></td><td>DELETE</td><td>/_api/index/index-handle</td><td>o</td><td>o</td><td>o</td></tr>
+<tr><td></td><td>GET</td><td>/_api/index?collection=index-handle</td><td>o</td><td>o</td><td>o</td></tr>
+<tr><td>Cap</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td>POST</td><td>/_api/index</td><td>o</td><td>o</td><td>o</td></tr>
+<tr><td>Hash Index</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td>POST</td><td>/_api/index</td><td>-</td><td>-</td><td>-</td></tr>
+<tr><td></td><td>PUT</td><td>/_api/simple/by-example</td><td>-</td><td>-</td><td>-</td></tr>
+<tr><td></td><td>PUT</td><td>/_api/simple/first-example</td><td>-</td><td>-</td><td>-</td></tr>
+<tr><td>Skip List Index</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td>POST</td><td>/_api/index</td><td>-</td><td>-</td><td>-</td></tr>
+<tr><td></td><td>PUT</td><td>/_api/simple/range</td><td>-</td><td>-</td><td>-</td></tr>
+<tr><td>Geo Index</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td>POST</td><td>/_api/index</td><td>-</td><td>-</td><td>-</td></tr>
+<tr><td></td><td>PUT</td><td>/_api/simple/near</td><td>-</td><td>-</td><td>-</td></tr>
+<tr><td></td><td>PUT</td><td>/_api/simple/within</td><td>-</td><td>-</td><td>-</td></tr>
+<tr><td>Full Text Index</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td>POST</td><td>/_api/index</td><td>x</td><td>x</td><td>o</td></tr>
+<tr><td></td><td>PUT</td><td>/_api/simple/fulltext</td><td>-</td><td>-</td><td>-</td></tr>
+<tr><td>Graph</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td>POST</td><td>/_api/graph</td><td>x</td><td>x</td><td>x</td></tr>
+<tr><td></td><td>GET</td><td>/_api/graph</td><td>x</td><td>x</td><td>x</td></tr>
+<tr><td></td><td>DELETE</td><td>/_api/graph</td><td>x</td><td>x</td><td>x</td></tr>
+<tr><td></td><td>POST</td><td>/_api/graph/graph-name/vertex</td><td>x</td><td>x</td><td>x</td></tr>
+<tr><td></td><td>GET</td><td>/_api/graph/graph-name/vertex</td><td>x</td><td>x</td><td>x</td></tr>
+<tr><td></td><td>PUT</td><td>/_api/graph/graph-name/vertex</td><td>x</td><td>x</td><td>x</td></tr>
+<tr><td></td><td>PATCH</td><td>/_api/graph/graph-name/vertex</td><td>x</td><td>x</td><td>x</td></tr>
+<tr><td></td><td>DELETE</td><td>/_api/graph/graph-name/vertex</td><td>x</td><td>x</td><td>x</td></tr>
+<tr><td></td><td>POST</td><td>/_api/graph/graph-name/vertices</td><td>x</td><td>x</td><td>x</td></tr>
+<tr><td></td><td>POST</td><td>/_api/graph/graph-name/edge</td><td>x</td><td>x</td><td>x</td></tr>
+<tr><td></td><td>GET</td><td>/_api/graph/graph-name/edge</td><td>x</td><td>x</td><td>x</td></tr>
+<tr><td></td><td>PUT</td><td>/_api/graph/graph-name/edge</td><td>x</td><td>x</td><td>x</td></tr>
+<tr><td></td><td>PATCH</td><td>/_api/graph/graph-name/edge</td><td>x</td><td>x</td><td>x</td></tr>
+<tr><td></td><td>DELETE</td><td>/_api/graph/graph-name/edge</td><td>x</td><td>x</td><td>x</td></tr>
+<tr><td></td><td>POST</td><td>/_api/graph/graph-name/edges</td><td>x</td><td>x</td><td>x</td></tr>
+<tr><td>Bulk Import</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td>Importing self-contained documents</td><td></td><td></td><td>x</td><td>x</td><td>x</td></tr>
+<tr><td>Importing self-contained documents(array)</td><td></td><td></td><td>x</td><td>x</td><td>o</td></tr>
+<tr><td>Importing headers and values</td><td></td><td></td><td>x</td><td>x</td><td>o</td></tr>
+<tr><td>Importing in edge collections</td><td></td><td></td><td>x</td><td>x</td><td>x</td></tr>
+<tr><td>Batch Requests</td><td></td><td></td><td>x</td><td>x</td><td>x</td></tr>
+<tr><td>Admin</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td>GET</td><td>/_admin/log</td><td>o</td><td>o</td><td>o</td></tr>
+<tr><td></td><td>GET</td><td>/_admin/status</td><td>o</td><td>o</td><td>o</td></tr>
+<tr><td></td><td>POST</td><td>/_admin/routing/reload</td><td>x</td><td>x</td><td>o</td></tr>
+<tr><td></td><td>POST</td><td>/_admin/modules/flush</td><td>x</td><td>x</td><td>o</td></tr>
+<tr><td></td><td>GET</td><td>/_admin/connection-statistics</td><td>o</td><td>o</td><td>o</td></tr>
+<tr><td></td><td>GET</td><td>/_admin/request-statistics</td><td>x</td><td>x</td><td>x</td></tr>
+<tr><td>User</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td>POST</td><td>/_api/user</td><td>x</td><td>x</td><td>o</td></tr>
+<tr><td></td><td>PUT</td><td>/_api/user/username</td><td>x</td><td>x</td><td>o</td></tr>
+<tr><td></td><td>PATCH</td><td>/_api/user/username</td><td>x</td><td>x</td><td>o</td></tr>
+<tr><td></td><td>DELETE</td><td>/_api/user/username</td><td>x</td><td>x</td><td>o</td></tr>
+<tr><td></td><td>GET</td><td>/_api/user/username</td><td>x</td><td>x</td><td>o</td></tr>
+<tr><td>Misc</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr><td></td><td>GET</td><td>/_admin/version</td><td>o</td><td>o</td><td>o</td></tr>
+<tr><td></td><td>GET</td><td>/_admin/time</td><td>o</td><td>o</td><td>o</td></tr>
+<tr><td></td><td>GET</td><td>/_admin/echo</td><td>x</td><td>x</td><td>x</td></tr>
+</table>
+
+
 # TODO
 
 * Exact ETAG support 

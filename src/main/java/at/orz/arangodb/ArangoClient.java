@@ -16,6 +16,12 @@
 
 package at.orz.arangodb;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import at.orz.arangodb.entity.ImportResultEntity;
+
 /**
  * @author tamtam180 - kirscheless at gmail.com
  *
@@ -27,7 +33,38 @@ public class ArangoClient {
 	public ArangoClient(ArangoConfigure configure) {
 		driver = new ArangoDriver(configure);
 	}
+
+
+	private void importDocumentsImpl(String collectionName, boolean createCollection, List<String> values, ImportResultEntity total) throws ArangoException {
+		ImportResultEntity result = driver.importDocuments(collectionName, createCollection, values);
+		total.setCreated(total.getCreated() + result.getCreated());
+		total.setErrors(total.getErrors() + result.getErrors());
+		total.setEmpty(total.getEmpty() + result.getEmpty());
+	}
 	
-	
+	public ImportResultEntity importRawJsonDocuments(String collectionName, boolean createCollection, Iterator<String> itr, int bufferCount) throws ArangoException {
+		
+		if (bufferCount <= 0) {
+			bufferCount = 1000; // FIXME MagicNumber
+		}
+		
+		ImportResultEntity total = new ImportResultEntity();
+		
+		ArrayList<String> buffers = new ArrayList<String>(bufferCount);
+		while (itr.hasNext()) {
+			buffers.add(itr.next());
+			if (buffers.size() % bufferCount == 0) {
+				System.out.println(buffers);
+				importDocumentsImpl(collectionName, createCollection, buffers, total);				
+				buffers.clear();
+			}
+		}
+		if (!buffers.isEmpty()) {
+			importDocumentsImpl(collectionName, createCollection, buffers, total);				
+		}
+		
+		return total;
+		
+	}
 	
 }

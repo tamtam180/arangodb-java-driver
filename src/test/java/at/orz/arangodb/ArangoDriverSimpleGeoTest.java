@@ -29,6 +29,7 @@ import at.orz.arangodb.util.TestUtils;
  * @author tamtam180 - kirscheless at gmail.com
  *
  */
+@Deprecated
 public class ArangoDriverSimpleGeoTest extends BaseTest {
 
 	private String collectionName = "unit_test_simple_geo_test";

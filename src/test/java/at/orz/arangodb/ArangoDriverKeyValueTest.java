@@ -34,6 +34,7 @@ import at.orz.arangodb.util.MapBuilder;
  * @author tamtam180 - kirscheless at gmail.com
  *
  */
+@Deprecated
 public class ArangoDriverKeyValueTest extends BaseTest {
 
 	private static Logger logger = LoggerFactory.getLogger(ArangoDriverKeyValueTest.class);

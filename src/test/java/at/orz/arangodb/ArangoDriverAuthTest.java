@@ -31,7 +31,7 @@ import at.orz.arangodb.entity.ArangoUnixTime;
  *
  */
 public class ArangoDriverAuthTest {
-
+	
 	@Test
 	public void test_auth() throws ArangoException {
 		

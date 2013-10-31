@@ -162,7 +162,7 @@ public class ArangoDriverDocumentTest extends BaseTest {
 		value.setDesc("UpdatedDescription");
 		value.setAge(15);
 		DocumentEntity<TestComplexEntity01> doc2 = driver.updateDocument(doc.getDocumentHandle(), value, -1L, null, null);
-		assertThat(doc2.getStatusCode(), is(200));
+		assertThat(doc2.getStatusCode(), is(202));
 		
 		// Get
 		DocumentEntity<TestComplexEntity01> doc3 = driver.getDocument(doc2.getDocumentHandle(), TestComplexEntity01.class);
@@ -218,7 +218,7 @@ public class ArangoDriverDocumentTest extends BaseTest {
 		value.setDesc("UpdatedDescription");
 		value.setAge(15);
 		DocumentEntity<TestComplexEntity01> doc2 = driver.partialUpdateDocument(doc.getDocumentHandle(), value, -1L, null, null, null);
-		assertThat(doc2.getStatusCode(), is(200));
+		assertThat(doc2.getStatusCode(), is(202));
 		
 		// Get
 		DocumentEntity<TestComplexEntity01> doc3 = driver.getDocument(doc2.getDocumentHandle(), TestComplexEntity01.class);
@@ -230,7 +230,7 @@ public class ArangoDriverDocumentTest extends BaseTest {
 		
 		// keepNull = false (NULLを渡すと削除)
 		DocumentEntity<TestComplexEntity01> doc4 = driver.partialUpdateDocument(doc.getDocumentHandle(), value, -1L, null, null, false);
-		assertThat(doc4.getStatusCode(), is(200));
+		assertThat(doc4.getStatusCode(), is(202));
 		
 		// Get
 		DocumentEntity<TestComplexEntity01> doc5 = driver.getDocument(doc2.getDocumentHandle(), TestComplexEntity01.class);

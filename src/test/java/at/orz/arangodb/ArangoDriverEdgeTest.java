@@ -69,7 +69,6 @@ public class ArangoDriverEdgeTest extends BaseTest {
 		
 	}
 
-	@Ignore("エラーが出なくなった。。また仕様が変わった？")
 	@Test
 	public void testDifferentCollectionType() throws ArangoException {
 		

@@ -174,7 +174,7 @@ public class ArangoDriverCursorTest extends BaseTest {
 					);
 			fail("not raise error.");
 		} catch (ArangoException e) {
-			assertThat(e.getCode(), is(400));
+			assertThat(e.getCode(), is(404));
 			assertThat(e.getErrorNumber(), is(1203));
 			assertThat(e.getMessage(), containsString("collection not found"));
 		}

@@ -18,13 +18,11 @@ package at.orz.arangodb;
 
 import java.text.ParseException;
 import java.util.Map;
-
-import org.apache.http.client.HttpClient;
+import java.util.regex.Pattern;
 
 import at.orz.arangodb.entity.BaseEntity;
 import at.orz.arangodb.entity.EntityFactory;
 import at.orz.arangodb.entity.KeyValueEntity;
-import at.orz.arangodb.http.HttpManager;
 import at.orz.arangodb.http.HttpResponseEntity;
 import at.orz.arangodb.util.DateUtils;
 import at.orz.arangodb.util.ReflectionUtils;
@@ -34,7 +32,9 @@ import at.orz.arangodb.util.ReflectionUtils;
  *
  */
 public abstract class BaseArangoDriver {
-	
+
+	private static final Pattern databaseNamePattern = Pattern.compile("^[a-zA-Z][a-zA-Z0-9\\-_]{0,63}$");
+
 	protected String createDocumentHandle(long collectionId, long documentId) {
 		// validateCollectionNameは不要
 		return collectionId + "/" + documentId;
@@ -63,6 +63,26 @@ public abstract class BaseArangoDriver {
 			}
 		}
 		throw new ArangoException("invalid format documentHandle:" + documentHandle);
+	}
+	
+	/**
+	 * @param database
+	 * @param allowNull
+	 * @throws ArangoException
+	 * @see http://www.arangodb.org/manuals/current/NamingConventions.html#DatabaseNames
+	 */
+	protected void validateDatabaseName(String database, boolean allowNull) throws ArangoException {
+		boolean valid = false;
+		if (database == null) {
+			if (allowNull) {
+				valid = true;
+			}
+		} else {
+			valid = databaseNamePattern.matcher(database).matches();
+		}
+		if (!valid) {
+			throw new ArangoException("invalid format database:" + database);
+		}
 	}
 	
 	protected void setKeyValueHeader(HttpResponseEntity res, KeyValueEntity entity) throws ArangoException {

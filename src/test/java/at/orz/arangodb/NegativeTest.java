@@ -102,10 +102,15 @@ public class NegativeTest extends BaseTest {
 		configure.init();
 		ArangoDriver driver = new ArangoDriver(configure);
 		
-		String value = "AAA";
-		DocumentEntity<?> doc = driver.createDocument("unit_test_issue35", value, true, true);
-		String documentHandle = doc.getDocumentHandle();
-		DocumentEntity<String> doc2 = driver.getDocument(documentHandle, String.class);
+		try {
+			String value = "AAA";
+			DocumentEntity<?> doc = driver.createDocument("unit_test_issue35", value, true, true);
+			String documentHandle = doc.getDocumentHandle();
+			DocumentEntity<String> doc2 = driver.getDocument(documentHandle, String.class);
+			fail();
+		} catch (ArangoException e) {
+			assertThat(e.getErrorNumber(), is(1227));
+		}
 		
 		configure.shutdown();
 		

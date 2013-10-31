@@ -25,11 +25,13 @@ import at.orz.arangodb.entity.AdminLogEntity;
 import at.orz.arangodb.entity.AdminStatusEntity;
 import at.orz.arangodb.entity.ArangoUnixTime;
 import at.orz.arangodb.entity.ArangoVersion;
+import at.orz.arangodb.entity.BooleanResultEntity;
 import at.orz.arangodb.entity.CollectionEntity;
 import at.orz.arangodb.entity.CollectionType;
 import at.orz.arangodb.entity.CollectionsEntity;
 import at.orz.arangodb.entity.ConnectionStatisticsEntity;
 import at.orz.arangodb.entity.CursorEntity;
+import at.orz.arangodb.entity.DatabaseEntity;
 import at.orz.arangodb.entity.DefaultEntity;
 import at.orz.arangodb.entity.Direction;
 import at.orz.arangodb.entity.DocumentEntity;
@@ -45,12 +47,14 @@ import at.orz.arangodb.entity.KeyValueEntity;
 import at.orz.arangodb.entity.Policy;
 import at.orz.arangodb.entity.ScalarExampleEntity;
 import at.orz.arangodb.entity.SimpleByResultEntity;
+import at.orz.arangodb.entity.StringsResultEntity;
 import at.orz.arangodb.entity.UserEntity;
 import at.orz.arangodb.http.HttpManager;
 import at.orz.arangodb.impl.ImplFactory;
 import at.orz.arangodb.impl.InternalAdminDriverImpl;
 import at.orz.arangodb.impl.InternalCollectionDriverImpl;
 import at.orz.arangodb.impl.InternalCursorDriverImpl;
+import at.orz.arangodb.impl.InternalDatabaseDriverImpl;
 import at.orz.arangodb.impl.InternalDocumentDriverImpl;
 import at.orz.arangodb.impl.InternalEdgeDriverImpl;
 import at.orz.arangodb.impl.InternalImportDriverImpl;
@@ -85,8 +89,18 @@ public class ArangoDriver extends BaseArangoDriver {
 	private InternalSimpleDriverImpl simpleDriver;
 	private InternalUsersDriverImpl usersDriver;
 	private InternalImportDriverImpl importDriver;
+	private InternalDatabaseDriverImpl databaseDriver;
+	
+	private String database;
 	
 	public ArangoDriver(ArangoConfigure configure) {
+		this(configure, null);
+	}
+	
+	public ArangoDriver(ArangoConfigure configure, String database) {
+		
+		this.database = database;
+		
 		this.configure = configure;
 		this.httpManager = configure.getHttpManager();
 		this.baseUrl = configure.getBaseUrl();
@@ -101,6 +115,15 @@ public class ArangoDriver extends BaseArangoDriver {
 		this.simpleDriver = ImplFactory.createSimpleDriver(configure, cursorDriver);
 		this.usersDriver = ImplFactory.createUsersDriver(configure);
 		this.importDriver = ImplFactory.createImportDriver(configure);
+		this.databaseDriver = ImplFactory.createDatabaseDriver(configure);
+	}
+	
+	public String getDatabase() {
+		return database;
+	}
+	
+	public void setDatabase(String database) {
+		this.database = database;
 	}
 	
 	// ---------------------------------------- start of collection ----------------------------------------
@@ -693,6 +716,21 @@ public class ArangoDriver extends BaseArangoDriver {
 	}
 
 	// ---------------------------------------- end of import ----------------------------------------
+
+	// ---------------------------------------- start of database ----------------------------------------
+	public DatabaseEntity getCurrentDatabase() throws ArangoException {
+		return databaseDriver.getCurrentDatabase();
+	}
+	public StringsResultEntity getDatabases() throws ArangoException {
+		return databaseDriver.getDatabases();
+	}
+	public BooleanResultEntity createDatabase(String database) throws ArangoException {
+		return databaseDriver.createDatabase(database);
+	}
+	public BooleanResultEntity deleteDatabase(String database) throws ArangoException {
+		return databaseDriver.deleteDatabase(database);
+	}
+	// ---------------------------------------- end of database ----------------------------------------
 
 	
 	// ---------------------------------------- start of xxx ----------------------------------------

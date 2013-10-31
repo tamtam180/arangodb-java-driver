@@ -838,5 +838,71 @@ public class EntityDeserializers {
 		}
 	}
 
-	
+	public static class DatabaseEntityDeserializer implements JsonDeserializer<DatabaseEntity> {
+		public DatabaseEntity deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			
+			if (json.isJsonNull()) {
+				return null;
+			}
+			
+			JsonObject obj = json.getAsJsonObject();
+			DatabaseEntity entity = deserializeBaseParameter(obj, new DatabaseEntity());
+			
+			if (obj.has("result")) {
+				JsonObject result = obj.getAsJsonObject("result");
+				if (result.has("name")) {
+					entity.name = result.getAsJsonPrimitive("name").getAsString();
+				}
+				if (result.has("id")) {
+					entity.id = result.getAsJsonPrimitive("id").getAsString();
+				}
+				if (result.has("path")) {
+					entity.path = result.getAsJsonPrimitive("path").getAsString();
+				}
+				if (result.has("isSystem")) {
+					entity.isSystem = result.getAsJsonPrimitive("isSystem").getAsBoolean();
+				}
+			}
+			
+			return entity;
+		}
+	}
+
+	public static class StringsResultEntityDeserializer implements JsonDeserializer<StringsResultEntity> {
+		Type resultType = new TypeToken<ArrayList<String>>(){}.getType();
+		public StringsResultEntity deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			
+			if (json.isJsonNull()) {
+				return null;
+			}
+			
+			JsonObject obj = json.getAsJsonObject();
+			StringsResultEntity entity = deserializeBaseParameter(obj, new StringsResultEntity());
+			
+			if (obj.has("result")) {
+				entity.result = context.deserialize(obj.get("result"), resultType);
+			}
+			
+			return entity;
+		}
+	}
+
+	public static class BooleanResultEntityDeserializer implements JsonDeserializer<BooleanResultEntity> {
+		public BooleanResultEntity deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			
+			if (json.isJsonNull()) {
+				return null;
+			}
+			
+			JsonObject obj = json.getAsJsonObject();
+			BooleanResultEntity entity = deserializeBaseParameter(obj, new BooleanResultEntity());
+			
+			if (obj.has("result")) {
+				entity.result = obj.getAsJsonPrimitive("result").getAsBoolean();
+			}
+			
+			return entity;
+		}
+	}
+
 }

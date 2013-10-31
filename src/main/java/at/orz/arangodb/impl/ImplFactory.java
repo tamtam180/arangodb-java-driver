@@ -53,4 +53,7 @@ public class ImplFactory {
 	public static InternalImportDriverImpl createImportDriver(ArangoConfigure configure) {
 		return new InternalImportDriverImpl(configure);
 	}
+	public static InternalDatabaseDriverImpl createDatabaseDriver(ArangoConfigure configure) {
+		return new InternalDatabaseDriverImpl(configure);
+	}
 }

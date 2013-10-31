@@ -63,6 +63,9 @@ public class EntityFactory {
 			.registerTypeAdapter(ExplainEntity.class, new EntityDeserializers.ExplainEntityDeserializer())
 			.registerTypeAdapter(UserEntity.class, new EntityDeserializers.UserEntityDeserializer())
 			.registerTypeAdapter(ImportResultEntity.class, new EntityDeserializers.ImportResultEntityDeserializer())
+			.registerTypeAdapter(DatabaseEntity.class, new EntityDeserializers.DatabaseEntityDeserializer())
+			.registerTypeAdapter(StringsResultEntity.class, new EntityDeserializers.StringsResultEntityDeserializer())
+			.registerTypeAdapter(BooleanResultEntity.class, new EntityDeserializers.BooleanResultEntityDeserializer())
 			;
 	}
 	static {

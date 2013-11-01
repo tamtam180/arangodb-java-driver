@@ -98,9 +98,12 @@ public class ArangoDriver extends BaseArangoDriver {
 	}
 	
 	public ArangoDriver(ArangoConfigure configure, String database) {
-		
-		this.database = database;
-		
+
+		this.database = configure.getDefaultDatabase();
+		if (database != null) {
+			this.database = database;
+		}
+
 		this.configure = configure;
 		this.httpManager = configure.getHttpManager();
 		this.baseUrl = configure.getBaseUrl();
@@ -116,6 +119,7 @@ public class ArangoDriver extends BaseArangoDriver {
 		this.usersDriver = ImplFactory.createUsersDriver(configure);
 		this.importDriver = ImplFactory.createImportDriver(configure);
 		this.databaseDriver = ImplFactory.createDatabaseDriver(configure);
+
 	}
 	
 	public String getDefaultDatabase() {

@@ -70,6 +70,9 @@ public class ArangoConfigure {
 	/** http retry count */
 	int retryCount = 3;
 	
+	/** Default Database */
+	String defaultDatabase;
+	
 	HttpManager httpManager;
 	
 	public ArangoConfigure() {
@@ -157,6 +160,11 @@ public class ArangoConfigure {
 				String password = prop.getProperty("password");
 				if (password != null) {
 					setPassword(password);
+				}
+				
+				String defaultDatabase = prop.getProperty("defaultDatabase");
+				if (defaultDatabase != null) {
+					setDefaultDatabase(defaultDatabase);
 				}
 				
 			}
@@ -325,6 +333,14 @@ public class ArangoConfigure {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public String getDefaultDatabase() {
+		return defaultDatabase;
+	}
+
+	public void setDefaultDatabase(String defaultDatabase) {
+		this.defaultDatabase = defaultDatabase;
 	}
 	
 }

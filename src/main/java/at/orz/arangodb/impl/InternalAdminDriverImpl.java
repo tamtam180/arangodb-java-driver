@@ -138,7 +138,7 @@ public class InternalAdminDriverImpl extends BaseArangoDriverImpl {
 	 * @see http://www.arangodb.org/manuals/current/HttpMisc.html#HttpMiscVersion
 	 */
 	public ArangoVersion getVersion() throws ArangoException {
-		HttpResponseEntity res = httpManager.doGet(baseUrl + "/_admin/version");
+		HttpResponseEntity res = httpManager.doGet(baseUrl + "/_api/version");
 		return createEntity(res, ArangoVersion.class);
 	}
 

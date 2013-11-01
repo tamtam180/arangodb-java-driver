@@ -111,22 +111,22 @@ public class InternalAdminDriverImpl extends BaseArangoDriverImpl {
 	 * @see http://www.arangodb.org/manuals/current/HttpMisc.html#HttpMiscVersion
 	 */
 	public ArangoVersion getVersion() throws ArangoException {
-		HttpResponseEntity res = httpManager.doGet(baseUrl + "/_api/version");
+		HttpResponseEntity res = httpManager.doGet(createEndpointUrl(baseUrl, null, "/_api/version"));
 		return createEntity(res, ArangoVersion.class);
 	}
 
 	public ArangoUnixTime getTime() throws ArangoException {
-		HttpResponseEntity res = httpManager.doGet(baseUrl + "/_admin/time");
+		HttpResponseEntity res = httpManager.doGet(createEndpointUrl(baseUrl, null, "/_admin/time"));
 		return createEntity(res, ArangoUnixTime.class);
 	}
 	
 	public DefaultEntity flushModules() throws ArangoException {
-		HttpResponseEntity res = httpManager.doPost(baseUrl + "/_admin/modules/flush", null, (String)null);
+		HttpResponseEntity res = httpManager.doPost(createEndpointUrl(baseUrl, null, "/_admin/modules/flush"), null, (String)null);
 		return createEntity(res, DefaultEntity.class, false);
 	}
 
 	public DefaultEntity reloadRouting() throws ArangoException {
-		HttpResponseEntity res = httpManager.doPost(baseUrl + "/_admin/routing/reload", null, (String)null);
+		HttpResponseEntity res = httpManager.doPost(createEndpointUrl(baseUrl, null, "/_admin/routing/reload"), null, (String)null);
 		return createEntity(res, DefaultEntity.class, false);
 	}
 	

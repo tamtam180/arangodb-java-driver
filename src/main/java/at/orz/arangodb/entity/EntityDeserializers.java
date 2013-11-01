@@ -113,10 +113,12 @@ public class EntityDeserializers {
 			ArangoUnixTime entity = deserializeBaseParameter(obj, new ArangoUnixTime());
 
 			if (obj.has("time")) {
-				String time = obj.getAsJsonPrimitive("time").getAsString(); // 実際はlongだけど精度の問題が心配なので文字列で処理する。
-                entity.microsecond = Long.parseLong(time.replace(".", ""));
-                entity.millisecond = entity.microsecond / 1000;
-				entity.second = (int) (entity.millisecond / 1000);
+				entity.time = obj.getAsJsonPrimitive("time").getAsDouble();
+				String time = obj.getAsJsonPrimitive("time").getAsString(); // 実際はdoubleだけど精度の問題が心配なので文字列で処理する。
+                entity.second = (int) entity.time;
+                
+                int pos = time.indexOf('.');
+                entity.microsecond = (pos >= 0 && pos+1 != time.length()) ? Integer.parseInt(time.substring(pos+1)) : 0;
 			}
 
 			return entity;

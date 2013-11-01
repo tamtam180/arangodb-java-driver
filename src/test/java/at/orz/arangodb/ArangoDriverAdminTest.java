@@ -54,13 +54,12 @@ public class ArangoDriverAdminTest extends BaseTest {
 		
 		ArangoUnixTime time = driver.getTime();
 		assertThat(time.getSecond(), is(not(0)));
-		assertThat(time.getMillisecond(), is(not(0L)));
-		assertThat(time.getMicrosecond(), is(not(0L)));
+		assertThat(time.getMicrosecond(), is(not(0)));
 		
 		System.out.println("unixtime=" + time.getSecond());
-		System.out.println("unixtime_millis=" + time.getMillisecond());
 		System.out.println("unixtime_micros=" + time.getMicrosecond());
-		
+		System.out.println("unixtime_millis=" + time.getTimeMillis());
+
 	}
 	
 	@Test

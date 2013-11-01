@@ -19,12 +19,12 @@ package at.orz.arangodb.impl;
 import at.orz.arangodb.ArangoConfigure;
 import at.orz.arangodb.ArangoException;
 import at.orz.arangodb.entity.AdminLogEntity;
-import at.orz.arangodb.entity.AdminStatusEntity;
 import at.orz.arangodb.entity.ArangoUnixTime;
 import at.orz.arangodb.entity.ArangoVersion;
 import at.orz.arangodb.entity.ConnectionStatisticsEntity;
 import at.orz.arangodb.entity.DefaultEntity;
 import at.orz.arangodb.entity.Granularity;
+import at.orz.arangodb.entity.StatisticsEntity;
 import at.orz.arangodb.http.HttpResponseEntity;
 import at.orz.arangodb.util.CollectionUtils;
 import at.orz.arangodb.util.MapBuilder;
@@ -68,7 +68,7 @@ public class InternalAdminDriverImpl extends BaseArangoDriverImpl {
 		param.put("search", text);
 		
 		// 実行
-		HttpResponseEntity res = httpManager.doGet(createEndpoint(baseUrl, "/_admin/log"), param.get());
+		HttpResponseEntity res = httpManager.doGet(createEndpoint(baseUrl, null, "/_admin/log"), param.get());
 		
 		// 結果変換
 		try {
@@ -81,12 +81,12 @@ public class InternalAdminDriverImpl extends BaseArangoDriverImpl {
 		
 	}
 	
-	public AdminStatusEntity getServerStatus() throws ArangoException {
+	public StatisticsEntity getStatistics() throws ArangoException {
 		
-		HttpResponseEntity res = httpManager.doGet(createEndpoint(baseUrl, "/_admin/status"));
+		HttpResponseEntity res = httpManager.doGet(createEndpoint(baseUrl, null, "/_admin/statistics"));
 		
 		try {
-			return createEntity(res, AdminStatusEntity.class);
+			return createEntity(res, StatisticsEntity.class);
 		} catch (ArangoException e) {
 			throw e;
 		}
@@ -120,7 +120,7 @@ public class InternalAdminDriverImpl extends BaseArangoDriverImpl {
 		}
 		
 		HttpResponseEntity res = httpManager.doGet(
-				createEndpoint(baseUrl, "/_admin/connection-statistics"),
+				createEndpoint(baseUrl, null, "/_admin/connection-statistics"),
 				new MapBuilder()
 				.put("granularity", granularity == null ? null : granularity.name())
 				.put("length", paramLength)

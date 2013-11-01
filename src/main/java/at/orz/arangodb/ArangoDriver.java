@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 
 import at.orz.arangodb.entity.AdminLogEntity;
-import at.orz.arangodb.entity.AdminStatusEntity;
 import at.orz.arangodb.entity.ArangoUnixTime;
 import at.orz.arangodb.entity.ArangoVersion;
 import at.orz.arangodb.entity.BooleanResultEntity;
@@ -47,6 +46,7 @@ import at.orz.arangodb.entity.KeyValueEntity;
 import at.orz.arangodb.entity.Policy;
 import at.orz.arangodb.entity.ScalarExampleEntity;
 import at.orz.arangodb.entity.SimpleByResultEntity;
+import at.orz.arangodb.entity.StatisticsEntity;
 import at.orz.arangodb.entity.StringsResultEntity;
 import at.orz.arangodb.entity.UserEntity;
 import at.orz.arangodb.http.HttpManager;
@@ -494,8 +494,8 @@ public class ArangoDriver extends BaseArangoDriver {
 		return adminDriver.getServerLog(logLevel, logLevelUpTo, start, size, offset, sortAsc, text);
 	}
 	
-	public AdminStatusEntity getServerStatus() throws ArangoException {
-		return adminDriver.getServerStatus();
+	public StatisticsEntity getStatistics() throws ArangoException {
+		return adminDriver.getStatistics();
 	}
 	
 	public ConnectionStatisticsEntity getConnectionStatistics(Granularity granularity, Integer length, String... figures) throws ArangoException {

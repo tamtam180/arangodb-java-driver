@@ -22,10 +22,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.Map.Entry;
 
 import at.orz.arangodb.entity.CollectionEntity.Figures;
 import at.orz.arangodb.entity.ExplainEntity.ExpressionEntity;
 import at.orz.arangodb.entity.ExplainEntity.PlanEntity;
+import at.orz.arangodb.entity.StatisticsEntity.Figure;
 import at.orz.arangodb.util.JsonUtils;
 
 import com.google.gson.JsonArray;
@@ -513,8 +516,9 @@ public class EntityDeserializers {
 		}
 	}
 	
-	public static class AdminStatusEntityDeserializer implements JsonDeserializer<AdminStatusEntity> {
-		public AdminStatusEntity deserialize(JsonElement json, Type typeOfT,
+	public static class StatisticsEntityDeserializer implements JsonDeserializer<StatisticsEntity> {
+		Type countsType = new TypeToken<long[]>(){}.getType();
+		public StatisticsEntity deserialize(JsonElement json, Type typeOfT,
 				JsonDeserializationContext context) throws JsonParseException {
 			
 			if (json.isJsonNull()) {
@@ -522,34 +526,68 @@ public class EntityDeserializers {
 			}
 			
 			JsonObject obj = json.getAsJsonObject();
-			AdminStatusEntity entity = deserializeBaseParameter(obj, new AdminStatusEntity());
+			StatisticsEntity entity = deserializeBaseParameter(obj, new StatisticsEntity());
 			
 			if (obj.has("system")) {
+				StatisticsEntity.System sys = new StatisticsEntity.System();
+				entity.system = sys;
+
 				JsonObject system = obj.getAsJsonObject("system");
 				if (system.has("minorPageFaults")) {
-					entity.minorPageFaults = system.getAsJsonPrimitive("minorPageFaults").getAsLong();
+					sys.minorPageFaults = system.getAsJsonPrimitive("minorPageFaults").getAsLong();
 				}
 				if (system.has("majorPageFaults")) {
-					entity.majorPageFaults = system.getAsJsonPrimitive("majorPageFaults").getAsLong();
+					sys.majorPageFaults = system.getAsJsonPrimitive("majorPageFaults").getAsLong();
 				}
 				if (system.has("userTime")) {
-					entity.userTime = system.getAsJsonPrimitive("userTime").getAsDouble();
+					sys.userTime = system.getAsJsonPrimitive("userTime").getAsDouble();
 				}
 				if (system.has("systemTime")) {
-					entity.systemTime = system.getAsJsonPrimitive("systemTime").getAsDouble();
+					sys.systemTime = system.getAsJsonPrimitive("systemTime").getAsDouble();
 				}
-				if (system.has("numberThreads")) {
-					entity.numberThreads = system.getAsJsonPrimitive("numberThreads").getAsInt();
+				if (system.has("numberOfThreads")) {
+					sys.numberOfThreads = system.getAsJsonPrimitive("numberOfThreads").getAsInt();
 				}
 				if (system.has("residentSize")) {
-					entity.residentSize = system.getAsJsonPrimitive("residentSize").getAsLong();
+					sys.residentSize = system.getAsJsonPrimitive("residentSize").getAsLong();
 				}
 				if (system.has("virtualSize")) {
-					entity.virtualSize = system.getAsJsonPrimitive("virtualSize").getAsLong();
+					sys.virtualSize = system.getAsJsonPrimitive("virtualSize").getAsLong();
+				}
+			}
+			
+			if (obj.has("client")) {
+				StatisticsEntity.Client cli = new StatisticsEntity.Client();
+				cli.figures = new TreeMap<String, StatisticsEntity.Figure>();
+				entity.client = cli;
+
+				JsonObject client = obj.getAsJsonObject("client");
+				if (client.has("httpConnections")) {
+					cli.httpConnections = client.getAsJsonPrimitive("httpConnections").getAsInt();
+				}
+				for (Entry<String, JsonElement> ent : client.entrySet()) {
+					if (!ent.getKey().equals("httpConnections")) {
+						JsonObject f = ent.getValue().getAsJsonObject();
+						Figure figure = new Figure();
+						figure.sum = f.getAsJsonPrimitive("sum").getAsDouble();
+						figure.count = f.getAsJsonPrimitive("count").getAsLong();
+						figure.counts = context.deserialize(f.getAsJsonArray("counts"), countsType);
+						cli.figures.put(ent.getKey(), figure);
+					}
+				}
+			}
+			
+			if (obj.has("server")) {
+				JsonObject svr = obj.getAsJsonObject("server");
+				entity.server = new StatisticsEntity.Server();
+				
+				if (svr.has("uptime")) {
+					entity.server.uptime = svr.getAsJsonPrimitive("uptime").getAsDouble();
 				}
 			}
 			
 			return entity;
+			
 		}
 	}
 

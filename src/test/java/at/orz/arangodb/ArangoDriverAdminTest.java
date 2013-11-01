@@ -16,24 +16,22 @@
 
 package at.orz.arangodb;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
-
-import java.util.Map.Entry;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-import at.orz.arangodb.ArangoException;
 import at.orz.arangodb.entity.AdminLogEntity;
-import at.orz.arangodb.entity.AdminStatusEntity;
 import at.orz.arangodb.entity.ArangoUnixTime;
 import at.orz.arangodb.entity.ArangoVersion;
 import at.orz.arangodb.entity.ConnectionStatisticsEntity;
 import at.orz.arangodb.entity.DefaultEntity;
-import at.orz.arangodb.util.ReflectionUtils;
+import at.orz.arangodb.entity.StatisticsEntity;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * @author tamtam180 - kirscheless at gmail.com
@@ -102,18 +100,16 @@ public class ArangoDriverAdminTest extends BaseTest {
 	// TODO テスト増やす
 	
 	@Test
-	public void test_status() throws ArangoException {
+	public void test_statistics() throws ArangoException {
 		
-		AdminStatusEntity status = driver.getServerStatus();
+		StatisticsEntity stat = driver.getStatistics();
 		
 		// debug
-		System.out.println(status.getMinorPageFaults());
-		System.out.println(status.getMajorPageFaults());
-		System.out.println(status.getUserTime());
-		System.out.println(status.getSystemTime());
-		System.out.println(status.getNumberThreads());
-		System.out.println(status.getResidentSize());
-		System.out.println(status.getVirtualSize());
+		Gson gson = new Gson();
+		System.out.println(gson.toJson(stat));
+		System.out.println(gson.toJson(stat.getSystem()));
+		System.out.println(gson.toJson(stat.getClient()));
+		System.out.println(gson.toJson(stat.getServer()));
 
 	}
 

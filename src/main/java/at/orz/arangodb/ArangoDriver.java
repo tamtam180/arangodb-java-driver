@@ -271,12 +271,19 @@ public class ArangoDriver extends BaseArangoDriver {
 	}
 	
 	public List<String> getDocuments(long collectionId) throws ArangoException {
-		return getDocuments(String.valueOf(collectionId));
+		return getDocuments(String.valueOf(collectionId), false);
 	}
 	public List<String> getDocuments(String collectionName) throws ArangoException {
-		return documentDriver.getDocuments(getDefaultDatabase(), collectionName);
+		return documentDriver.getDocuments(getDefaultDatabase(), collectionName, false);
 	}
-	
+
+	public List<String> getDocuments(long collectionId, boolean handleConvert) throws ArangoException {
+		return getDocuments(String.valueOf(collectionId), handleConvert);
+	}
+	public List<String> getDocuments(String collectionName, boolean handleConvert) throws ArangoException {
+		return documentDriver.getDocuments(getDefaultDatabase(), collectionName, handleConvert);
+	}
+
 	public long checkDocument(long collectionId, long documentId) throws ArangoException {
 		return checkDocument(createDocumentHandle(collectionId, documentId));
 	}

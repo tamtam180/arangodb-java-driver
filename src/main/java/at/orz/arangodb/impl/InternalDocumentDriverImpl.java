@@ -16,7 +16,9 @@
 
 package at.orz.arangodb.impl;
 
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Locale;
 
 import at.orz.arangodb.ArangoConfigure;
@@ -98,7 +100,8 @@ public class InternalDocumentDriverImpl extends BaseArangoDriverImpl {
 		
 	}
 
-	public List<String> getDocuments(String database, String collectionName) throws ArangoException {
+	private static final String API_DOCUMENT_PREFIX = "/_api/document/";
+	public List<String> getDocuments(String database, String collectionName, boolean handleConvert) throws ArangoException {
 		
 		HttpResponseEntity res = httpManager.doGet(
 				createEndpoint(baseUrl, database, "/_api/document"), 
@@ -106,8 +109,18 @@ public class InternalDocumentDriverImpl extends BaseArangoDriverImpl {
 				);
 		
 		DocumentsEntity entity = createEntity(res, DocumentsEntity.class);
-		return CollectionUtils.safety(entity.getDocuments());
+		List<String> documents = CollectionUtils.safety(entity.getDocuments());
 		
+		if (handleConvert && !documents.isEmpty()) {
+			ListIterator<String> lit = documents.listIterator();
+			while (lit.hasNext()) {
+				String d = lit.next();
+				if (d.startsWith(API_DOCUMENT_PREFIX)) {
+					lit.set(d.substring(API_DOCUMENT_PREFIX.length()));
+				}
+			}
+		}
+		return documents;
 	}
 	
 	public long checkDocument(String database, String documentHandle) throws ArangoException {

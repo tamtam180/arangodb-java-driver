@@ -19,6 +19,12 @@ package at.orz.arangodb;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Set;
+import java.util.TreeSet;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -245,7 +251,58 @@ public class ArangoDriverDocumentTest extends BaseTest {
 		
 	}
 
-	
+	@Test
+	public void test_getDocuments() throws ArangoException {
+		
+		// create document
+		DocumentEntity<TestComplexEntity01> doc1 = driver.createDocument(collectionName, new TestComplexEntity01("test-user1", "test-user1-desc", 21), true, false);
+		DocumentEntity<TestComplexEntity01> doc2 = driver.createDocument(collectionName, new TestComplexEntity01("test-user2", "test-user2-desc", 22), true, false);
+		DocumentEntity<TestComplexEntity01> doc3 = driver.createDocument(collectionName, new TestComplexEntity01("test-user3", "test-user3-desc", 23), true, false);
+		assertThat(doc1, is(notNullValue()));
+		assertThat(doc2, is(notNullValue()));
+		assertThat(doc3, is(notNullValue()));
+
+		//
+		Set<String> tree = new TreeSet<String>(Arrays.asList(
+				"/_api/document/" + doc1.getDocumentHandle(),
+				"/_api/document/" + doc2.getDocumentHandle(),
+				"/_api/document/" + doc3.getDocumentHandle()
+				));
+		
+		// get documents
+		Set<String> docIds = new TreeSet<String>(driver.getDocuments(collectionName));
+		assertThat(docIds.size(), is(3));
+		
+		assertThat(docIds, is(tree));
+		
+	}
+
+	@Test
+	public void test_getDocuments_handle() throws ArangoException {
+
+		// create document
+		DocumentEntity<TestComplexEntity01> doc1 = driver.createDocument(collectionName, new TestComplexEntity01("test-user1", "test-user1-desc", 21), true, false);
+		DocumentEntity<TestComplexEntity01> doc2 = driver.createDocument(collectionName, new TestComplexEntity01("test-user2", "test-user2-desc", 22), true, false);
+		DocumentEntity<TestComplexEntity01> doc3 = driver.createDocument(collectionName, new TestComplexEntity01("test-user3", "test-user3-desc", 23), true, false);
+		assertThat(doc1, is(notNullValue()));
+		assertThat(doc2, is(notNullValue()));
+		assertThat(doc3, is(notNullValue()));
+
+		//
+		Set<String> tree = new TreeSet<String>(Arrays.asList(
+				doc1.getDocumentHandle(),
+				doc2.getDocumentHandle(),
+				doc3.getDocumentHandle()
+				));
+		
+		// get documents
+		Set<String> docIds = new TreeSet<String>(driver.getDocuments(collectionName, true));
+		assertThat(docIds.size(), is(3));
+		
+		assertThat(docIds, is(tree));
+
+	}
+
 	// TODO Delete
 //	@Test
 //	public void test_checkDocument() throws ArangoException {

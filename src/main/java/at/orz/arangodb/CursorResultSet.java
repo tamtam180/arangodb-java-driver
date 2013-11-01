@@ -28,6 +28,7 @@ import at.orz.arangodb.impl.InternalCursorDriverImpl;
  */
 public class CursorResultSet<T> implements Iterable<T> {
 
+	private String database;
 	private transient InternalCursorDriverImpl cursorDriver;
 	private transient Class<T> clazz;
 	private transient CursorEntity<T> entity;
@@ -35,7 +36,8 @@ public class CursorResultSet<T> implements Iterable<T> {
 	private int totalCount;
 	private transient Iterator<T> itr;
 	
-	public CursorResultSet(InternalCursorDriverImpl cursorDriver, Class<T> clazz, CursorEntity<T> entity) {
+	public CursorResultSet(String database, InternalCursorDriverImpl cursorDriver, Class<T> clazz, CursorEntity<T> entity) {
+		this.database = database;
 		this.cursorDriver = cursorDriver;
 		this.clazz = clazz;
 		this.entity = entity;
@@ -58,7 +60,7 @@ public class CursorResultSet<T> implements Iterable<T> {
 	
 	public void close() throws ArangoException {
 		long cursorId = entity.getCursorId();
-		cursorDriver.finishQuery(cursorId);
+		cursorDriver.finishQuery(database, cursorId);
 	}
 	
 	public int getTotalCount() {
@@ -67,7 +69,7 @@ public class CursorResultSet<T> implements Iterable<T> {
 	
 	private void updateEntity() throws ArangoException {
 		long cursorId = entity.getCursorId();
-		this.entity = cursorDriver.continueQuery(cursorId, this.clazz);
+		this.entity = cursorDriver.continueQuery(database, cursorId, this.clazz);
 		this.pos = 0;
 	}
 	

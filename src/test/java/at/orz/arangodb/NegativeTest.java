@@ -44,6 +44,10 @@ import at.orz.arangodb.http.HttpResponseEntity;
  */
 public class NegativeTest extends BaseTest {
 
+	public NegativeTest(ArangoConfigure configure, ArangoDriver driver) {
+		super(configure, driver);
+	}
+
 	/**
 	 * 開発途中にあった命令だけど、今は存在しない。
 	 * きとんとエラーになること。

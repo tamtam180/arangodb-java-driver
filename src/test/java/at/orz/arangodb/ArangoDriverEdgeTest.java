@@ -38,6 +38,10 @@ import at.orz.arangodb.entity.EdgesEntity;
  */
 public class ArangoDriverEdgeTest extends BaseTest {
 
+	public ArangoDriverEdgeTest(ArangoConfigure configure, ArangoDriver driver) {
+		super(configure, driver);
+	}
+
 	public static class TestEdgeAttribute {
 		public String a;
 		public int b;

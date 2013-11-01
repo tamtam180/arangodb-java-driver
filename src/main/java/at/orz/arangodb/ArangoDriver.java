@@ -118,42 +118,42 @@ public class ArangoDriver extends BaseArangoDriver {
 		this.databaseDriver = ImplFactory.createDatabaseDriver(configure);
 	}
 	
-	public String getDatabase() {
+	public String getDefaultDatabase() {
 		return database;
 	}
 	
-	public void setDatabase(String database) {
+	public void setDefaultDatabase(String database) {
 		this.database = database;
 	}
 	
 	// ---------------------------------------- start of collection ----------------------------------------
 	
 	public CollectionEntity createCollection(String name) throws ArangoException {
-		return collectionDriver.createCollection(name, null, null, null, null, null, null);
+		return collectionDriver.createCollection(getDefaultDatabase(), name, null, null, null, null, null, null);
 	}
 
 	public CollectionEntity createCollection(String name, Boolean waitForSync,
 			Integer journalSize, Boolean isSystem, Boolean isVolatile, CollectionType type) throws ArangoException {
-		return collectionDriver.createCollection(name, waitForSync, journalSize, isSystem, isVolatile, type, null);
+		return collectionDriver.createCollection(getDefaultDatabase(), name, waitForSync, journalSize, isSystem, isVolatile, type, null);
 	}
 
 	public CollectionEntity createCollection(String name, Boolean waitForSync,
 			Integer journalSize, Boolean isSystem, Boolean isVolatile, CollectionType type, Map<String, Object> createOptions) throws ArangoException {
-		return collectionDriver.createCollection(name, waitForSync, journalSize, isSystem, isVolatile, type, createOptions);
+		return collectionDriver.createCollection(getDefaultDatabase(), name, waitForSync, journalSize, isSystem, isVolatile, type, createOptions);
 	}
 	
 	public CollectionEntity getCollection(long id) throws ArangoException {
 		return getCollection(String.valueOf(id));
 	}
 	public CollectionEntity getCollection(String name) throws ArangoException {
-		return collectionDriver.getCollection(name);
+		return collectionDriver.getCollection(getDefaultDatabase(), name);
 	}
 	
 	public CollectionEntity getCollectionProperties(long id) throws ArangoException {
 		return getCollectionProperties(String.valueOf(id));
 	}
 	public CollectionEntity getCollectionProperties(String name) throws ArangoException {
-		return collectionDriver.getCollectionProperties(name);
+		return collectionDriver.getCollectionProperties(getDefaultDatabase(), name);
 	}
 
 	public CollectionEntity getCollectionRevision(long id) throws ArangoException {
@@ -161,77 +161,77 @@ public class ArangoDriver extends BaseArangoDriver {
 	}
 
 	public CollectionEntity getCollectionRevision(String name) throws ArangoException {
-		return collectionDriver.getCollectionRevision(name);
+		return collectionDriver.getCollectionRevision(getDefaultDatabase(), name);
 	}
 
 	public CollectionEntity getCollectionCount(long id) throws ArangoException {
 		return getCollectionCount(String.valueOf(id));
 	}
 	public CollectionEntity getCollectionCount(String name) throws ArangoException {
-		return collectionDriver.getCollectionCount(name);
+		return collectionDriver.getCollectionCount(getDefaultDatabase(), name);
 	}
 	
 	public CollectionEntity getCollectionFigures(long id) throws ArangoException {
 		return getCollectionFigures(String.valueOf(id));
 	}
 	public CollectionEntity getCollectionFigures(String name) throws ArangoException {
-		return collectionDriver.getCollectionFigures(name);
+		return collectionDriver.getCollectionFigures(getDefaultDatabase(), name);
 	}
 
 	public CollectionsEntity getCollections() throws ArangoException {
-		return collectionDriver.getCollections(null);
+		return collectionDriver.getCollections(getDefaultDatabase(), null);
 	}
 
 	public CollectionsEntity getCollections(Boolean excludeSystem) throws ArangoException {
-		return collectionDriver.getCollections(excludeSystem);
+		return collectionDriver.getCollections(getDefaultDatabase(), excludeSystem);
 	}
 	
 	public CollectionEntity loadCollection(long id) throws ArangoException {
-		return collectionDriver.loadCollection(String.valueOf(id), null);
+		return collectionDriver.loadCollection(getDefaultDatabase(), String.valueOf(id), null);
 	}
 	public CollectionEntity loadCollection(String name) throws ArangoException {
-		return collectionDriver.loadCollection(name, null);
+		return collectionDriver.loadCollection(getDefaultDatabase(), name, null);
 	}
 	public CollectionEntity loadCollection(long id, Boolean count) throws ArangoException {
-		return collectionDriver.loadCollection(String.valueOf(id), count);
+		return collectionDriver.loadCollection(getDefaultDatabase(), String.valueOf(id), count);
 	}
 	public CollectionEntity loadCollection(String name, Boolean count) throws ArangoException {
-		return collectionDriver.loadCollection(name, count);
+		return collectionDriver.loadCollection(getDefaultDatabase(), name, count);
 	}
 
 	public CollectionEntity unloadCollection(long id) throws ArangoException {
 		return unloadCollection(String.valueOf(id));
 	}
 	public CollectionEntity unloadCollection(String name) throws ArangoException {
-		return collectionDriver.unloadCollection(name);
+		return collectionDriver.unloadCollection(getDefaultDatabase(), name);
 	}
 	
 	public CollectionEntity truncateCollection(long id) throws ArangoException {
 		return truncateCollection(String.valueOf(id));
 	}
 	public CollectionEntity truncateCollection(String name) throws ArangoException {
-		return collectionDriver.truncateCollection(name);
+		return collectionDriver.truncateCollection(getDefaultDatabase(), name);
 	}
 	
 	public CollectionEntity setCollectionProperties(long id, Boolean newWaitForSync, Long journalSize) throws ArangoException {
-		return collectionDriver.setCollectionProperties(String.valueOf(id), newWaitForSync, journalSize);
+		return collectionDriver.setCollectionProperties(getDefaultDatabase(), String.valueOf(id), newWaitForSync, journalSize);
 	}
 	public CollectionEntity setCollectionProperties(String name, Boolean newWaitForSync, Long journalSize) throws ArangoException {
-		return collectionDriver.setCollectionProperties(name, newWaitForSync, journalSize);
+		return collectionDriver.setCollectionProperties(getDefaultDatabase(), name, newWaitForSync, journalSize);
 	}
 	
 	public CollectionEntity renameCollection(long id, String newName) throws ArangoException {
 		return renameCollection(String.valueOf(id), newName);
 	}
 	public CollectionEntity renameCollection(String name, String newName) throws ArangoException {
-		return collectionDriver.renameCollection(name, newName);
+		return collectionDriver.renameCollection(getDefaultDatabase(), name, newName);
 	}
 	
 	public CollectionEntity deleteCollection(long id) throws ArangoException {
 		return deleteCollection(String.valueOf(id));
 	}
 	public CollectionEntity deleteCollection(String name) throws ArangoException {
-		return collectionDriver.deleteCollection(name);
+		return collectionDriver.deleteCollection(getDefaultDatabase(), name);
 	}
 	
 	// ---------------------------------------- end of collection ----------------------------------------
@@ -243,7 +243,7 @@ public class ArangoDriver extends BaseArangoDriver {
 		return createDocument(String.valueOf(collectionId), value, createCollection, waitForSync);
 	}
 	public <T> DocumentEntity<T> createDocument(String collectionName, Object value, Boolean createCollection, Boolean waitForSync) throws ArangoException {
-		return documentDriver.createDocument(collectionName, value, createCollection, waitForSync);
+		return documentDriver.createDocument(getDefaultDatabase(), collectionName, value, createCollection, waitForSync);
 	}
 	
 	public DocumentEntity<?> updateDocument(long collectionId, long documentId, Object value, long rev, Policy policy, Boolean waitForSync) throws ArangoException {
@@ -253,7 +253,7 @@ public class ArangoDriver extends BaseArangoDriver {
 		return updateDocument(createDocumentHandle(collectionName, documentId), value, rev, policy, waitForSync);
 	}
 	public <T> DocumentEntity<T> updateDocument(String documentHandle, Object value, long rev, Policy policy, Boolean waitForSync) throws ArangoException {
-		return documentDriver.updateDocument(documentHandle, value, rev, policy, waitForSync);
+		return documentDriver.updateDocument(getDefaultDatabase(), documentHandle, value, rev, policy, waitForSync);
 	}
 
 	public DocumentEntity<?> updateDocument(long collectionId, long documentId, Object value, long rev, Policy policy, Boolean waitForSync, Boolean keepNull) throws ArangoException {
@@ -263,14 +263,14 @@ public class ArangoDriver extends BaseArangoDriver {
 		return partialUpdateDocument(createDocumentHandle(collectionName, documentId), value, rev, policy, waitForSync, keepNull);
 	}
 	public <T> DocumentEntity<T> partialUpdateDocument(String documentHandle, Object value, long rev, Policy policy, Boolean waitForSync, Boolean keepNull) throws ArangoException {
-		return documentDriver.partialUpdateDocument(documentHandle, value, rev, policy, waitForSync, keepNull);
+		return documentDriver.partialUpdateDocument(getDefaultDatabase(), documentHandle, value, rev, policy, waitForSync, keepNull);
 	}
 	
 	public List<String> getDocuments(long collectionId) throws ArangoException {
 		return getDocuments(String.valueOf(collectionId));
 	}
 	public List<String> getDocuments(String collectionName) throws ArangoException {
-		return documentDriver.getDocuments(collectionName);
+		return documentDriver.getDocuments(getDefaultDatabase(), collectionName);
 	}
 	
 	public long checkDocument(long collectionId, long documentId) throws ArangoException {
@@ -280,7 +280,7 @@ public class ArangoDriver extends BaseArangoDriver {
 		return checkDocument(createDocumentHandle(collectionName, documentId));
 	}
 	public long checkDocument(String documentHandle) throws ArangoException {
-		return documentDriver.checkDocument(documentHandle);
+		return documentDriver.checkDocument(getDefaultDatabase(), documentHandle);
 	}
 
 	public <T> DocumentEntity<T> getDocument(long collectionId, long documentId, Class<T> clazz) throws ArangoException {
@@ -290,7 +290,7 @@ public class ArangoDriver extends BaseArangoDriver {
 		return getDocument(createDocumentHandle(collectionName, documentId), clazz);
 	}
 	public <T> DocumentEntity<T> getDocument(String documentHandle, Class<T> clazz) throws ArangoException {
-		return documentDriver.getDocument(documentHandle, clazz);
+		return documentDriver.getDocument(getDefaultDatabase(), documentHandle, clazz);
 	}
 
 	public DocumentEntity<?> deleteDocument(long collectionId, long documentId, long rev, Policy policy) throws ArangoException {
@@ -300,7 +300,7 @@ public class ArangoDriver extends BaseArangoDriver {
 		return deleteDocument(createDocumentHandle(collectionName, documentId), rev, policy);
 	}
 	public DocumentEntity<?> deleteDocument(String documentHandle, long rev, Policy policy) throws ArangoException {
-		return documentDriver.deleteDocument(documentHandle, rev, policy);
+		return documentDriver.deleteDocument(getDefaultDatabase(), documentHandle, rev, policy);
 	}
 	
 	// ---------------------------------------- end of document ----------------------------------------
@@ -309,11 +309,11 @@ public class ArangoDriver extends BaseArangoDriver {
 	// ---------------------------------------- start of cursor ----------------------------------------
 
 	public CursorEntity<?> validateQuery(String query) throws ArangoException {
-		return cursorDriver.validateQuery(query);
+		return cursorDriver.validateQuery(getDefaultDatabase(), query);
 	}
 	
 	public ExplainEntity explainQuery(String query, Map<String, Object> bindVars) throws ArangoException {
-		return cursorDriver.explainQuery(query, bindVars);
+		return cursorDriver.explainQuery(getDefaultDatabase(), query, bindVars);
 	}
 	
 	public <T> CursorEntity<T> executeQuery(
@@ -321,23 +321,23 @@ public class ArangoDriver extends BaseArangoDriver {
 			Class<T> clazz,
 			Boolean calcCount, Integer batchSize) throws ArangoException {
 		
-		return cursorDriver.executeQuery(query, bindVars, clazz, calcCount, batchSize);
+		return cursorDriver.executeQuery(getDefaultDatabase(), query, bindVars, clazz, calcCount, batchSize);
 		
 	}
 	
 	public <T> CursorEntity<T> continueQuery(long cursorId, Class<T> clazz) throws ArangoException {
-		return cursorDriver.continueQuery(cursorId, clazz);
+		return cursorDriver.continueQuery(getDefaultDatabase(), cursorId, clazz);
 	}
 	
 	public DefaultEntity finishQuery(long cursorId) throws ArangoException {
-		return cursorDriver.finishQuery(cursorId);
+		return cursorDriver.finishQuery(getDefaultDatabase(), cursorId);
 	}
 	
 	public <T> CursorResultSet<T> executeQueryWithResultSet(
 			String query, Map<String, Object> bindVars,
 			Class<T> clazz,
 			Boolean calcCount, Integer batchSize) throws ArangoException {
-		return cursorDriver.executeQueryWithResultSet(query, bindVars, clazz, calcCount, batchSize);
+		return cursorDriver.executeQueryWithResultSet(getDefaultDatabase(), query, bindVars, clazz, calcCount, batchSize);
 	}
 	
 	// ---------------------------------------- end of cursor ----------------------------------------
@@ -348,7 +348,7 @@ public class ArangoDriver extends BaseArangoDriver {
 			String collectionName, String key, Object value, 
 			Map<String, Object> attributes, Date expiredDate
 			) throws ArangoException {
-		return kvsDriver.createKeyValue(collectionName, key, value, attributes, expiredDate);
+		return kvsDriver.createKeyValue(getDefaultDatabase(), collectionName, key, value, attributes, expiredDate);
 	}
 	
 	public KeyValueEntity updateKeyValue(
@@ -356,7 +356,7 @@ public class ArangoDriver extends BaseArangoDriver {
 			Map<String, Object> attributes, Date expiredDate,
 			boolean create
 			) throws ArangoException {
-		return kvsDriver.updateKeyValue(collectionName, key, value, attributes, expiredDate, create);
+		return kvsDriver.updateKeyValue(getDefaultDatabase(), collectionName, key, value, attributes, expiredDate, create);
 	}
 	
 	// TODO 全部実装されていないので実装する。ただ、1.1.1の段階ではドキュメントが工事中なんだが。
@@ -370,14 +370,14 @@ public class ArangoDriver extends BaseArangoDriver {
 		return createIndex(String.valueOf(collectionId), type, unique, fields);
 	}
 	public IndexEntity createIndex(String collectionName, IndexType type, boolean unique, String... fields) throws ArangoException {
-		return indexDriver.createIndex(collectionName, type, unique, fields);
+		return indexDriver.createIndex(getDefaultDatabase(), collectionName, type, unique, fields);
 	}
 
 	public IndexEntity createCappedIndex(long collectionId, int size) throws ArangoException {
 		return createCappedIndex(String.valueOf(collectionId), size);
 	}
 	public IndexEntity createCappedIndex(String collectionName, int size) throws ArangoException {
-		return indexDriver.createCappedIndex(collectionName, size);
+		return indexDriver.createCappedIndex(getDefaultDatabase(), collectionName, size);
 	}
 
 	public IndexEntity createFulltextIndex(long collectionId, String... fields) throws ArangoException {
@@ -390,22 +390,22 @@ public class ArangoDriver extends BaseArangoDriver {
 		return createFulltextIndex(String.valueOf(collectionId), minLength, fields);
 	}
 	public IndexEntity createFulltextIndex(String collectionName, Integer minLength, String... fields) throws ArangoException {
-		return indexDriver.createFulltextIndex(collectionName, minLength, fields);
+		return indexDriver.createFulltextIndex(getDefaultDatabase(), collectionName, minLength, fields);
 	}
 	
 	public IndexEntity deleteIndex(String indexHandle) throws ArangoException {
-		return indexDriver.deleteIndex(indexHandle);
+		return indexDriver.deleteIndex(getDefaultDatabase(), indexHandle);
 	}
 
 	public IndexEntity getIndex(String indexHandle) throws ArangoException {
-		return indexDriver.getIndex(indexHandle);
+		return indexDriver.getIndex(getDefaultDatabase(), indexHandle);
 	}
 
 	public IndexesEntity getIndexes(long collectionId) throws ArangoException {
 		return getIndexes(String.valueOf(collectionId));
 	}
 	public IndexesEntity getIndexes(String collectionName) throws ArangoException {
-		return indexDriver.getIndexes(collectionName);
+		return indexDriver.getIndexes(getDefaultDatabase(), collectionName);
 	}
 	
 //	public IndexEntity deleteIndexByFields(long collectionId, String... fields) throws ArangoException {
@@ -430,7 +430,7 @@ public class ArangoDriver extends BaseArangoDriver {
 			String fromHandle, String toHandle, 
 			T attribute) throws ArangoException {
 		
-		return edgeDriver.createEdge(collectionName, fromHandle, toHandle, attribute);
+		return edgeDriver.createEdge(getDefaultDatabase(), collectionName, fromHandle, toHandle, attribute);
 	}
 
 	// TODO UpdateEdge
@@ -438,11 +438,11 @@ public class ArangoDriver extends BaseArangoDriver {
 			String collectionName, 
 			String fromHandle, String toHandle, 
 			T attribute) throws ArangoException {
-		return edgeDriver.updateEdge(collectionName, fromHandle, toHandle, attribute);
+		return edgeDriver.updateEdge(getDefaultDatabase(), collectionName, fromHandle, toHandle, attribute);
 	}
 	
 	public long checkEdge(String edgeHandle) throws ArangoException {
-		return edgeDriver.checkEdge(edgeHandle);
+		return edgeDriver.checkEdge(getDefaultDatabase(), edgeHandle);
 	}
 	
 	/**
@@ -453,18 +453,18 @@ public class ArangoDriver extends BaseArangoDriver {
 	 * @throws ArangoException
 	 */
 	public <T> EdgeEntity<T> getEdge(String edgeHandle, Class<T> attributeClass) throws ArangoException {
-		return edgeDriver.getEdge(edgeHandle, attributeClass);
+		return edgeDriver.getEdge(getDefaultDatabase(), edgeHandle, attributeClass);
 	}
 
 	public EdgeEntity<?> deleteEdge(long collectionId, String edgeHandle) throws ArangoException {
 		return deleteEdge(String.valueOf(collectionId), edgeHandle);
 	}
 	public EdgeEntity<?> deleteEdge(String collectionName, String edgeHandle) throws ArangoException {
-		return edgeDriver.deleteEdge(collectionName, edgeHandle);
+		return edgeDriver.deleteEdge(getDefaultDatabase(), collectionName, edgeHandle);
 	}
 	
 	public <T> EdgesEntity<T> getEdges(String collectionName, String vertexHandle, Direction direction, Class<T> edgeAttributeClass) throws ArangoException {
-		return edgeDriver.getEdges(collectionName, vertexHandle, direction, edgeAttributeClass);
+		return edgeDriver.getEdges(getDefaultDatabase(), collectionName, vertexHandle, direction, edgeAttributeClass);
 	}
 	
 	
@@ -513,43 +513,43 @@ public class ArangoDriver extends BaseArangoDriver {
 	// ---------------------------------------- start of simple ----------------------------------------
 	
 	public <T> CursorEntity<T> executeSimpleByExample(String collectionName, Map<String, Object> example, int skip, int limit, Class<T> clazz) throws ArangoException {
-		return simpleDriver.executeSimpleByExample(collectionName, example, skip, limit, clazz);
+		return simpleDriver.executeSimpleByExample(getDefaultDatabase(), collectionName, example, skip, limit, clazz);
 	}
 
 	public <T> CursorResultSet<T> executeSimpleByExampleWithResusltSet(String collectionName, Map<String, Object> example, int skip, int limit, Class<T> clazz) throws ArangoException {
-		return simpleDriver.executeSimpleByExampleWithResultSet(collectionName, example, skip, limit, clazz);
+		return simpleDriver.executeSimpleByExampleWithResultSet(getDefaultDatabase(), collectionName, example, skip, limit, clazz);
 	}
 
 	public <T> CursorEntity<DocumentEntity<T>> executeSimpleByExampleWithDocument(String collectionName, Map<String, Object> example, int skip, int limit, Class<T> clazz) throws ArangoException {
-		return simpleDriver.executeSimpleByExampleWithDocument(collectionName, example, skip, limit, clazz);
+		return simpleDriver.executeSimpleByExampleWithDocument(getDefaultDatabase(), collectionName, example, skip, limit, clazz);
 	}
 
 	public <T> CursorResultSet<DocumentEntity<T>> executeSimpleByExampleWithDocumentResusltSet(String collectionName, Map<String, Object> example, int skip, int limit, Class<T> clazz) throws ArangoException {
-		return simpleDriver.executeSimpleByExampleWithDocumentResultSet(collectionName, example, skip, limit, clazz);
+		return simpleDriver.executeSimpleByExampleWithDocumentResultSet(getDefaultDatabase(), collectionName, example, skip, limit, clazz);
 	}
 	
 	public <T> CursorEntity<T> executeSimpleAll(String collectionName, int skip, int limit, Class<T> clazz) throws ArangoException {
-		return simpleDriver.executeSimpleAll(collectionName, skip, limit, clazz);
+		return simpleDriver.executeSimpleAll(getDefaultDatabase(), collectionName, skip, limit, clazz);
 	}
 
 	public <T> CursorResultSet<T> executeSimpleAllWithResultSet(String collectionName, int skip, int limit, Class<T> clazz) throws ArangoException {
-		return simpleDriver.executeSimpleAllWithResultSet(collectionName, skip, limit, clazz);
+		return simpleDriver.executeSimpleAllWithResultSet(getDefaultDatabase(), collectionName, skip, limit, clazz);
 	}
 
 	public <T> CursorEntity<DocumentEntity<T>> executeSimpleAllWithDocument(String collectionName, int skip, int limit, Class<T> clazz) throws ArangoException {
-		return simpleDriver.executeSimpleAllWithDocument(collectionName, skip, limit, clazz);
+		return simpleDriver.executeSimpleAllWithDocument(getDefaultDatabase(), collectionName, skip, limit, clazz);
 	}
 
 	public <T> CursorResultSet<DocumentEntity<T>> executeSimpleAllWithDocumentResultSet(String collectionName, int skip, int limit, Class<T> clazz) throws ArangoException {
-		return simpleDriver.executeSimpleAllWithDocumentResultSet(collectionName, skip, limit, clazz);
+		return simpleDriver.executeSimpleAllWithDocumentResultSet(getDefaultDatabase(), collectionName, skip, limit, clazz);
 	}
 
 	public <T> ScalarExampleEntity<T> executeSimpleFirstExample(String collectionName, Map<String, Object> example, Class<T> clazz) throws ArangoException {
-		return simpleDriver.executeSimpleFirstExample(collectionName, example, clazz);
+		return simpleDriver.executeSimpleFirstExample(getDefaultDatabase(), collectionName, example, clazz);
 	}
 	
 	public <T> ScalarExampleEntity<T> executeSimpleAny(String collectionName, Class<T> clazz) throws ArangoException {
-		return simpleDriver.executeSimpleAny(collectionName, clazz);
+		return simpleDriver.executeSimpleAny(getDefaultDatabase(), collectionName, clazz);
 	}
 	
 	public <T> CursorEntity<T> executeSimpleRange(
@@ -559,7 +559,7 @@ public class ArangoDriver extends BaseArangoDriver {
 			int skip, int limit,
 			Class<T> clazz
 			) throws ArangoException {
-		return simpleDriver.executeSimpleRange(collectionName, attribute, left, right, closed, skip, limit, clazz);
+		return simpleDriver.executeSimpleRange(getDefaultDatabase(), collectionName, attribute, left, right, closed, skip, limit, clazz);
 	}
 	
 	public <T> CursorResultSet<T> executeSimpleRangeWithResultSet(
@@ -569,7 +569,7 @@ public class ArangoDriver extends BaseArangoDriver {
 			int skip, int limit,
 			Class<T> clazz
 			) throws ArangoException {
-		return simpleDriver.executeSimpleRangeWithResultSet(collectionName, attribute, left, right, closed, skip, limit, clazz);
+		return simpleDriver.executeSimpleRangeWithResultSet(getDefaultDatabase(), collectionName, attribute, left, right, closed, skip, limit, clazz);
 	}
 
 	public <T> CursorEntity<DocumentEntity<T>> executeSimpleRangeWithDocument(
@@ -579,7 +579,7 @@ public class ArangoDriver extends BaseArangoDriver {
 			int skip, int limit,
 			Class<T> clazz
 			) throws ArangoException {
-		return simpleDriver.executeSimpleRangeWithDocument(collectionName, attribute, left, right, closed, skip, limit, clazz);
+		return simpleDriver.executeSimpleRangeWithDocument(getDefaultDatabase(), collectionName, attribute, left, right, closed, skip, limit, clazz);
 	}
 	
 	public <T> CursorResultSet<DocumentEntity<T>> executeSimpleRangeWithDocumentResultSet(
@@ -589,7 +589,7 @@ public class ArangoDriver extends BaseArangoDriver {
 			int skip, int limit,
 			Class<T> clazz
 			) throws ArangoException {
-		return simpleDriver.executeSimpleRangeWithDocumentResultSet(collectionName, attribute, left, right, closed, skip, limit, clazz);
+		return simpleDriver.executeSimpleRangeWithDocumentResultSet(getDefaultDatabase(), collectionName, attribute, left, right, closed, skip, limit, clazz);
 	}
 	
 	public <T> CursorEntity<T> executeSimpleFulltext(
@@ -599,7 +599,7 @@ public class ArangoDriver extends BaseArangoDriver {
 			String index,
 			Class<T> clazz
 			) throws ArangoException {
-		return simpleDriver.executeSimpleFulltext(collectionName, attribute, query, skip, limit, index, clazz);
+		return simpleDriver.executeSimpleFulltext(getDefaultDatabase(), collectionName, attribute, query, skip, limit, index, clazz);
 	}
 	
 	public <T> CursorResultSet<T> executeSimpleFulltextWithResultSet(
@@ -609,7 +609,7 @@ public class ArangoDriver extends BaseArangoDriver {
 			String index,
 			Class<T> clazz
 			) throws ArangoException {
-		return simpleDriver.executeSimpleFulltextWithResultSet(collectionName, attribute, query, skip, limit, index, clazz);
+		return simpleDriver.executeSimpleFulltextWithResultSet(getDefaultDatabase(), collectionName, attribute, query, skip, limit, index, clazz);
 	}
 
 	public <T> CursorEntity<DocumentEntity<T>> executeSimpleFulltextWithDocument(
@@ -619,7 +619,7 @@ public class ArangoDriver extends BaseArangoDriver {
 			String index,
 			Class<T> clazz
 			) throws ArangoException {
-		return simpleDriver.executeSimpleFulltextWithDocument(collectionName, attribute, query, skip, limit, index, clazz);
+		return simpleDriver.executeSimpleFulltextWithDocument(getDefaultDatabase(), collectionName, attribute, query, skip, limit, index, clazz);
 	}
 	
 	public <T> CursorResultSet<DocumentEntity<T>> executeSimpleFulltextWithDocumentResultSet(
@@ -629,7 +629,7 @@ public class ArangoDriver extends BaseArangoDriver {
 			String index,
 			Class<T> clazz
 			) throws ArangoException {
-		return simpleDriver.executeSimpleFulltextWithDocumentResultSet(collectionName, attribute, query, skip, limit, index, clazz);
+		return simpleDriver.executeSimpleFulltextWithDocumentResultSet(getDefaultDatabase(), collectionName, attribute, query, skip, limit, index, clazz);
 	}
 	
 	public SimpleByResultEntity executeSimpleRemoveByExample(
@@ -637,7 +637,7 @@ public class ArangoDriver extends BaseArangoDriver {
 			Map<String, Object> example,
 			Boolean waitForSync,
 			Integer limit) throws ArangoException {
-		return simpleDriver.executeSimpleRemoveByExample(collectionName, example, waitForSync, limit);
+		return simpleDriver.executeSimpleRemoveByExample(getDefaultDatabase(), collectionName, example, waitForSync, limit);
 	}
 	
 	public SimpleByResultEntity executeSimpleReplaceByExample(
@@ -646,7 +646,7 @@ public class ArangoDriver extends BaseArangoDriver {
 			Map<String, Object> newValue,
 			Boolean waitForSync,
 			Integer limit) throws ArangoException {
-		return simpleDriver.executeSimpleReplaceByExample(collectionName, example, newValue, waitForSync, limit);
+		return simpleDriver.executeSimpleReplaceByExample(getDefaultDatabase(), collectionName, example, newValue, waitForSync, limit);
 	}
 
 	public SimpleByResultEntity executeSimpleUpdateByExample(
@@ -656,7 +656,7 @@ public class ArangoDriver extends BaseArangoDriver {
 			Boolean keepNull,
 			Boolean waitForSync,
 			Integer limit) throws ArangoException {
-		return simpleDriver.executeSimpleUpdateByExample(collectionName, example, newValue, keepNull, waitForSync, limit);
+		return simpleDriver.executeSimpleUpdateByExample(getDefaultDatabase(), collectionName, example, newValue, keepNull, waitForSync, limit);
 	}
 	
 	// ---------------------------------------- end of simple ----------------------------------------
@@ -664,23 +664,23 @@ public class ArangoDriver extends BaseArangoDriver {
 	// ---------------------------------------- start of users ----------------------------------------
 	
 	public DefaultEntity createUser(String username, String passwd, Boolean active, Map<String, Object> extra) throws ArangoException {
-		return usersDriver.createUser(username, passwd, active, extra);
+		return usersDriver.createUser(getDefaultDatabase(), username, passwd, active, extra);
 	}
 	
 	public DefaultEntity replaceUser(String username, String passwd, Boolean active, Map<String, Object> extra) throws ArangoException {
-		return usersDriver.replaceUser(username, passwd, active, extra);
+		return usersDriver.replaceUser(getDefaultDatabase(), username, passwd, active, extra);
 	}
 	
 	public DefaultEntity updateUser(String username, String passwd, Boolean active, Map<String, Object> extra) throws ArangoException {
-		return usersDriver.updateUser(username, passwd, active, extra);
+		return usersDriver.updateUser(getDefaultDatabase(), username, passwd, active, extra);
 	}
 	
 	public DefaultEntity deleteUser(String username) throws ArangoException {
-		return usersDriver.deleteUser(username);
+		return usersDriver.deleteUser(getDefaultDatabase(), username);
 	}
 	
 	public UserEntity getUser(String username) throws ArangoException {
-		return usersDriver.getUser(username);
+		return usersDriver.getUser(getDefaultDatabase(), username);
 	}
 	
 	// Original (ArangoDB does not implements this API)
@@ -704,7 +704,7 @@ public class ArangoDriver extends BaseArangoDriver {
 	// ---------------------------------------- start of import ----------------------------------------
 	
 	public ImportResultEntity importDocuments(String collection, Boolean createCollection, Collection<?> values) throws ArangoException {
-		return importDriver.importDocuments(collection, createCollection, values);
+		return importDriver.importDocuments(getDefaultDatabase(), collection, createCollection, values);
 	}
 	
 //	public void importDocuments(String collection, Boolean createCollection, Iterator<?> itr) throws ArangoException {
@@ -712,21 +712,51 @@ public class ArangoDriver extends BaseArangoDriver {
 //	}
 
 	public ImportResultEntity importDocumentsByHeaderValues(String collection, Boolean createCollection, Collection<? extends Collection<?>> headerValues) throws ArangoException {
-		return importDriver.importDocumentsByHeaderValues(collection, createCollection, headerValues);
+		return importDriver.importDocumentsByHeaderValues(getDefaultDatabase(), collection, createCollection, headerValues);
 	}
 
 	// ---------------------------------------- end of import ----------------------------------------
 
 	// ---------------------------------------- start of database ----------------------------------------
+	/**
+	 * 
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 * @see http://www.arangodb.org/manuals/current/HttpDatabase.html#HttpDatabaseCurrent
+	 */
 	public DatabaseEntity getCurrentDatabase() throws ArangoException {
 		return databaseDriver.getCurrentDatabase();
 	}
+	/**
+	 * 
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 * @see http://www.arangodb.org/manuals/current/HttpDatabase.html#HttpDatabaseList
+	 */
 	public StringsResultEntity getDatabases() throws ArangoException {
 		return databaseDriver.getDatabases();
 	}
+	/**
+	 * 
+	 * @param database
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 * @see http://www.arangodb.org/manuals/current/HttpDatabase.html#HttpDatabaseCreate
+	 */
 	public BooleanResultEntity createDatabase(String database) throws ArangoException {
 		return databaseDriver.createDatabase(database);
 	}
+	/**
+	 * 
+	 * @param database
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 * @see http://www.arangodb.org/manuals/current/HttpDatabase.html#HttpDatabaseDelete
+	 */
 	public BooleanResultEntity deleteDatabase(String database) throws ArangoException {
 		return databaseDriver.deleteDatabase(database);
 	}

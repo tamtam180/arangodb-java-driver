@@ -16,32 +16,71 @@
 
 package at.orz.arangodb;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-
-import at.orz.arangodb.ArangoConfigure;
-import at.orz.arangodb.ArangoDriver;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 /**
  * @author tamtam180 - kirscheless at gmail.com
  *
  */
+@RunWith(Parameterized.class)
 public class BaseTest {
 
 	protected static ArangoConfigure configure;
-	protected static ArangoDriver driver;
+
+	// Suite.classを使った場合、Parametersがテストクラスの数だけ最初に一気に連続で呼ばれる。
+	// そのため、単純にクラス変数にconfigureを保持すると、AfterClassの時に別のテストケースのものを終了してしまう。
+	// Suite時のライフサイクル( Suite{TestClassA, TestClassB} )
+	//   1) Parameters(TestClassA) -> Parameters(TestClassB)
+	//   2) BeforeClass
+	//   3)   A#Constructor -> A#before -> A#test1 -> A#after
+	//   4)   A#Constructor -> A#before -> A#test2 -> A#after
+	//   5) AfterClass
+	//   6) BeforeClass
+	//   7)   B#Constructor -> B#before -> B#test1 -> B#after
+	//   8)   B#Constructor -> B#before -> B#test2 -> B#after
+	//   9) AfterClass
+	// よって、ParametersとしてConfigureをコンストラクタに渡し(Parametersから渡す術がこれしかない)、
+	// コンストラクタ内でクラス変数に戻してあげる。(クラス変数でないとAfterClassから参照できない)
+	// 各テストは直列で実行されるので、この方法でとりあえず実行はできる。並列テストをすると死ぬ。
+
+	@Parameters()
+	public static Collection<Object[]> getParameterizedDrivers() {
+		
+		ArangoConfigure configure = new ArangoConfigure();
+		configure.init();
+		ArangoDriver driver = new ArangoDriver(configure);
+		ArangoDriver driverMDB = new ArangoDriver(configure, "mydb");
+		
+		return Arrays.asList(
+				new Object[]{ configure, driver },
+				new Object[]{ configure, driverMDB }
+				);
+	}
+	
+	protected ArangoDriver driver;
+	public BaseTest(ArangoConfigure configure, ArangoDriver driver) {
+		this.driver = driver;
+		BaseTest.configure = configure;
+	}
 	
 	@BeforeClass
-	public static void _setup() {
-		configure = new ArangoConfigure();
-		configure.init();
-		driver = new ArangoDriver(configure);
+	public static void __setup() {
+//		configure = new ArangoConfigure();
+//		configure.init();
+//		driver = new ArangoDriver(configure);
+//		driverMDB = new ArangoDriver(configure);
 	}
 	
 	@AfterClass
-	public static void _shutdown() {
+	public static void __shutdown() {
 		configure.shutdown();
 	}
 
-	
 }

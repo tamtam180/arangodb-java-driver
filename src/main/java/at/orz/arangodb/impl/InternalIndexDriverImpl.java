@@ -33,12 +33,12 @@ import at.orz.arangodb.util.MapBuilder;
  */
 public class InternalIndexDriverImpl extends BaseArangoDriverWithCursorImpl {
 	
-	InternalCursorDriverImpl cursorDriver;
+	InternalCursorDriverImpl cursorDriver; // FIXME: Delete
 	InternalIndexDriverImpl(ArangoConfigure configure, InternalCursorDriverImpl cursorDriver) {
 		super(configure, cursorDriver);
 	}
 
-	public IndexEntity createIndex(String collectionName, IndexType type, boolean unique, String... fields) throws ArangoException {
+	public IndexEntity createIndex(String database, String collectionName, IndexType type, boolean unique, String... fields) throws ArangoException {
 		
 		if (type == IndexType.PRIMARY) {
 			throw new IllegalArgumentException("cannot create primary index.");
@@ -49,7 +49,7 @@ public class InternalIndexDriverImpl extends BaseArangoDriverWithCursorImpl {
 		
 		validateCollectionName(collectionName);
 		HttpResponseEntity res = httpManager.doPost(
-				baseUrl + "/_api/index", 
+				createEndpoint(baseUrl, database, "/_api/index"), 
 				new MapBuilder("collection", collectionName).get(),
 				EntityFactory.toJsonString(
 						new MapBuilder()
@@ -69,11 +69,11 @@ public class InternalIndexDriverImpl extends BaseArangoDriverWithCursorImpl {
 		
 	}
 
-	public IndexEntity createCappedIndex(String collectionName, int size) throws ArangoException {
+	public IndexEntity createCappedIndex(String database, String collectionName, int size) throws ArangoException {
 		
 		validateCollectionName(collectionName);
 		HttpResponseEntity res = httpManager.doPost(
-				baseUrl + "/_api/index", 
+				createEndpoint(baseUrl, database, "/_api/index"), 
 				new MapBuilder("collection", collectionName).get(),
 				EntityFactory.toJsonString(
 						new MapBuilder()
@@ -92,11 +92,11 @@ public class InternalIndexDriverImpl extends BaseArangoDriverWithCursorImpl {
 		
 	}
 	
-	public IndexEntity createFulltextIndex(String collectionName, Integer minLength, String... fields) throws ArangoException {
+	public IndexEntity createFulltextIndex(String database, String collectionName, Integer minLength, String... fields) throws ArangoException {
 
 		validateCollectionName(collectionName);
 		HttpResponseEntity res = httpManager.doPost(
-				baseUrl + "/_api/index", 
+				createEndpoint(baseUrl, database, "/_api/index"), 
 				new MapBuilder("collection", collectionName).get(),
 				EntityFactory.toJsonString(
 						new MapBuilder()
@@ -114,11 +114,11 @@ public class InternalIndexDriverImpl extends BaseArangoDriverWithCursorImpl {
 		
 	}
 	
-	public IndexEntity deleteIndex(String indexHandle) throws ArangoException {
+	public IndexEntity deleteIndex(String database, String indexHandle) throws ArangoException {
 		
 		validateDocumentHandle(indexHandle); // 書式同じなので
 		HttpResponseEntity res = httpManager.doDelete(
-				baseUrl + "/_api/index/" + indexHandle, 
+				createEndpoint(baseUrl, database, "/_api/index", indexHandle), 
 				null);
 		
 		try {
@@ -130,11 +130,11 @@ public class InternalIndexDriverImpl extends BaseArangoDriverWithCursorImpl {
 		
 	}
 
-	public IndexEntity getIndex(String indexHandle) throws ArangoException {
+	public IndexEntity getIndex(String database, String indexHandle) throws ArangoException {
 		
 		validateDocumentHandle(indexHandle);
 		HttpResponseEntity res = httpManager.doGet(
-				baseUrl + "/_api/index/" + indexHandle);
+				createEndpoint(baseUrl, database, "/_api/index", indexHandle));
 		
 		try {
 			IndexEntity entity = createEntity(res, IndexEntity.class);
@@ -145,11 +145,11 @@ public class InternalIndexDriverImpl extends BaseArangoDriverWithCursorImpl {
 		
 	}
 
-	public IndexesEntity getIndexes(String collectionName) throws ArangoException {
+	public IndexesEntity getIndexes(String database, String collectionName) throws ArangoException {
 		
 		validateCollectionName(collectionName);
 		HttpResponseEntity res = httpManager.doGet(
-				baseUrl + "/_api/index",
+				createEndpoint(baseUrl, database, "/_api/index"),
 				new MapBuilder("collection", collectionName).get());
 		
 		try {

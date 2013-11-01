@@ -17,11 +17,8 @@
 package at.orz.arangodb.impl;
 
 import at.orz.arangodb.ArangoConfigure;
-import at.orz.arangodb.ArangoException;
 import at.orz.arangodb.BaseArangoDriver;
-import at.orz.arangodb.entity.DocumentEntity;
 import at.orz.arangodb.http.HttpManager;
-import at.orz.arangodb.http.HttpResponseEntity;
 
 /**
  * @author tamtam180 - kirscheless at gmail.com

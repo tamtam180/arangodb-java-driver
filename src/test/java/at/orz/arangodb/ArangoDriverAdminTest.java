@@ -41,6 +41,10 @@ import at.orz.arangodb.util.ReflectionUtils;
  */
 public class ArangoDriverAdminTest extends BaseTest {
 
+	public ArangoDriverAdminTest(ArangoConfigure configure, ArangoDriver driver) {
+		super(configure, driver);
+	}
+
 	@Test
 	public void test_version() throws ArangoException {
 		

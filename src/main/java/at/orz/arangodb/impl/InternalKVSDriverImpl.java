@@ -23,7 +23,6 @@ import at.orz.arangodb.ArangoConfigure;
 import at.orz.arangodb.ArangoException;
 import at.orz.arangodb.entity.EntityFactory;
 import at.orz.arangodb.entity.KeyValueEntity;
-import at.orz.arangodb.http.HttpManager;
 import at.orz.arangodb.http.HttpResponseEntity;
 import at.orz.arangodb.util.DateUtils;
 import at.orz.arangodb.util.MapBuilder;
@@ -39,6 +38,7 @@ public class InternalKVSDriverImpl extends BaseArangoDriverImpl {
 	}
 
 	public KeyValueEntity createKeyValue(
+			String database,
 			String collectionName, String key, Object value, 
 			Map<String, Object> attributes, Date expiredDate) throws ArangoException {
 		
@@ -46,7 +46,7 @@ public class InternalKVSDriverImpl extends BaseArangoDriverImpl {
 		
 		validateCollectionName(collectionName);
 		HttpResponseEntity res = httpManager.doPost(
-				baseUrl + "/_api/key/" + collectionName + "/" + key, 
+				createEndpoint(baseUrl, database, "/_api/key", collectionName, "/", key), 
 				new MapBuilder()
 					.put("x-voc-expires", expiredDate == null ? null : DateUtils.format(expiredDate, "yyyy-MM-dd'T'HH:mm:ss'Z'"))
 					.put("x-voc-extended", attributes == null ? null : EntityFactory.toJsonString(attributes))
@@ -70,6 +70,7 @@ public class InternalKVSDriverImpl extends BaseArangoDriverImpl {
 	}
 	
 	public KeyValueEntity updateKeyValue(
+			String database,
 			String collectionName, String key, Object value, 
 			Map<String, Object> attributes, Date expiredDate,
 			boolean create
@@ -79,7 +80,7 @@ public class InternalKVSDriverImpl extends BaseArangoDriverImpl {
 		
 		validateCollectionName(collectionName);
 		HttpResponseEntity res = httpManager.doPut(
-				baseUrl + "/_api/key/" + collectionName + "/" + key, 
+				createEndpoint(baseUrl, database, "/_api/key", collectionName, "/", key),
 				new MapBuilder()
 					.put("x-voc-expires", expiredDate == null ? null : DateUtils.format(expiredDate, "yyyy-MM-dd'T'HH:mm:ss'Z'"))
 					.put("x-voc-extended", attributes == null ? null : EntityFactory.toJsonString(attributes))

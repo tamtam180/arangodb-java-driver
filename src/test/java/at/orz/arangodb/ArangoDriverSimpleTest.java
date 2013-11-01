@@ -45,6 +45,10 @@ import at.orz.arangodb.util.TestUtils;
  */
 public class ArangoDriverSimpleTest extends BaseTest {
 
+	public ArangoDriverSimpleTest(ArangoConfigure configure, ArangoDriver driver) {
+		super(configure, driver);
+	}
+
 	private String collectionName = "unit_test_simple_test";
 
 	@Before

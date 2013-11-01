@@ -19,7 +19,6 @@ package at.orz.arangodb;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
-import org.hamcrest.CoreMatchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,6 +33,10 @@ import at.orz.arangodb.entity.DocumentEntity;
  *
  */
 public class ArangoDriverDocumentTest extends BaseTest {
+
+	public ArangoDriverDocumentTest(ArangoConfigure configure, ArangoDriver driver) {
+		super(configure, driver);
+	}
 
 	private static Logger logger = LoggerFactory.getLogger(ArangoDriverCollectionTest.class);
 	

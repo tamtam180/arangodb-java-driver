@@ -20,6 +20,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
+import at.orz.arangodb.util.StringJoinTest;
+
 /**
  * 全ての単体テストを実行する。
  * @author tamtam180 - kirscheless at gmail.com
@@ -27,15 +29,24 @@ import org.junit.runners.Suite.SuiteClasses;
  */
 @RunWith(Suite.class)
 @SuiteClasses({
+	
+	// Utils Test
+	StringJoinTest.class,
+
+	// Drivers Test
 	ArangoConfigureTest.class,
 	ArangoDriverAuthTest.class,
 	NegativeTest.class,
+
 	//PrimitiveDocumentTest.class,
+	
 	ArangoDriverDatabaseTest.class,
+	
 	ArangoDriverDocumentTest.class,
 	ArangoDriverCollectionTest.class,
 	ArangoDriverCursorTest.class,
 	ArangoDriverCursorResultSetTest.class,
+	
 	ArangoDriverIndexTest.class,
 	ArangoDriverEdgeTest.class,
 	ArangoDriverAdminTest.class,
@@ -46,5 +57,6 @@ import org.junit.runners.Suite.SuiteClasses;
 	ArangoDriverStoryTest.class
 })
 public class ArangoTestSuite {
-
+	
+	
 }

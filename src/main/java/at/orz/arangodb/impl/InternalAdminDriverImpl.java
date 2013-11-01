@@ -29,11 +29,14 @@ import at.orz.arangodb.http.HttpResponseEntity;
 import at.orz.arangodb.util.CollectionUtils;
 import at.orz.arangodb.util.MapBuilder;
 
+
 /**
  * @author tamtam180 - kirscheless at gmail.com
  *
  */
 public class InternalAdminDriverImpl extends BaseArangoDriverImpl {
+
+	// MEMO: ADMINはdatabase関係ない
 
 	InternalAdminDriverImpl(ArangoConfigure configure) {
 		super(configure);
@@ -65,7 +68,7 @@ public class InternalAdminDriverImpl extends BaseArangoDriverImpl {
 		param.put("search", text);
 		
 		// 実行
-		HttpResponseEntity res = httpManager.doGet(baseUrl + "/_admin/log", param.get());
+		HttpResponseEntity res = httpManager.doGet(createEndpoint(baseUrl, "/_admin/log"), param.get());
 		
 		// 結果変換
 		try {
@@ -80,7 +83,7 @@ public class InternalAdminDriverImpl extends BaseArangoDriverImpl {
 	
 	public AdminStatusEntity getServerStatus() throws ArangoException {
 		
-		HttpResponseEntity res = httpManager.doGet(baseUrl + "/_admin/status");
+		HttpResponseEntity res = httpManager.doGet(createEndpoint(baseUrl, "/_admin/status"));
 		
 		try {
 			return createEntity(res, AdminStatusEntity.class);
@@ -91,6 +94,7 @@ public class InternalAdminDriverImpl extends BaseArangoDriverImpl {
 	}
 	
 	/**
+	 * @param database
 	 * @param granularity
 	 * @param length (special values => -1=all, 0=current)
 	 * @param figures
@@ -116,7 +120,7 @@ public class InternalAdminDriverImpl extends BaseArangoDriverImpl {
 		}
 		
 		HttpResponseEntity res = httpManager.doGet(
-				baseUrl + "/_admin/connection-statistics",
+				createEndpoint(baseUrl, "/_admin/connection-statistics"),
 				new MapBuilder()
 				.put("granularity", granularity == null ? null : granularity.name())
 				.put("length", paramLength)

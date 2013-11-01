@@ -44,6 +44,11 @@ import at.orz.arangodb.util.MapBuilder;
  */
 public class ArangoDriverCollectionTest extends BaseTest {
 	
+	public ArangoDriverCollectionTest(ArangoConfigure configure, ArangoDriver driver) {
+		super(configure, driver);
+	}
+
+
 	private static Logger logger = LoggerFactory.getLogger(ArangoDriverCollectionTest.class);
 	
 	final String collectionName = "unit_test_arango_001"; // 通常ケースで使うコレクション名
@@ -76,7 +81,6 @@ public class ArangoDriverCollectionTest extends BaseTest {
 	 * @throws ArangoException
 	 */
 	@Test
-	//@Parameters
 	public void test_create_document_collection() throws ArangoException {
 		
 		// DocumentCollection

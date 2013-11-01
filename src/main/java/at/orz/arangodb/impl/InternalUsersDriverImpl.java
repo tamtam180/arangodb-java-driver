@@ -37,9 +37,9 @@ public class InternalUsersDriverImpl extends BaseArangoDriverImpl {
 		super(configure);
 	}
 
-	public DefaultEntity createUser(String username, String passwd, Boolean active, Map<String, Object> extra) throws ArangoException {
+	public DefaultEntity createUser(String database, String username, String passwd, Boolean active, Map<String, Object> extra) throws ArangoException {
 		
-		HttpResponseEntity res = httpManager.doPost(baseUrl + "/_api/user", 
+		HttpResponseEntity res = httpManager.doPost(createEndpoint(baseUrl, database, "/_api/user"), 
 				null, 
 				EntityFactory.toJsonString(
 						new MapBuilder()
@@ -54,30 +54,30 @@ public class InternalUsersDriverImpl extends BaseArangoDriverImpl {
 		
 	}
 	
-	public DefaultEntity deleteUser(String username) throws ArangoException {
+	public DefaultEntity deleteUser(String database, String username) throws ArangoException {
 		
 		HttpResponseEntity res = httpManager.doDelete(
-				baseUrl + "/_api/user/" + StringUtils.encodeUrl(username), 
+				createEndpoint(baseUrl, database, "/_api/user", StringUtils.encodeUrl(username)), 
 				null);
 		
 		return createEntity(res, DefaultEntity.class);
 		
 	}
 	
-	public UserEntity getUser(String username) throws ArangoException {
+	public UserEntity getUser(String database, String username) throws ArangoException {
 
 		HttpResponseEntity res = httpManager.doGet(
-				baseUrl + "/_api/user/" + StringUtils.encodeUrl(username), 
+				createEndpoint(baseUrl, database, "/_api/user", StringUtils.encodeUrl(username)), 
 				null);
 		
 		return createEntity(res, UserEntity.class);
 		
 	}
 	
-	public DefaultEntity replaceUser(String username, String passwd, Boolean active, Map<String, Object> extra) throws ArangoException {
+	public DefaultEntity replaceUser(String database, String username, String passwd, Boolean active, Map<String, Object> extra) throws ArangoException {
 		
 		HttpResponseEntity res = httpManager.doPut(
-				baseUrl + "/_api/user/" + StringUtils.encodeUrl(username), 
+				createEndpoint(baseUrl, database, "/_api/user", StringUtils.encodeUrl(username)), 
 				null, 
 				EntityFactory.toJsonString(
 						new MapBuilder()
@@ -91,10 +91,10 @@ public class InternalUsersDriverImpl extends BaseArangoDriverImpl {
 		
 	}
 
-	public DefaultEntity updateUser(String username, String passwd, Boolean active, Map<String, Object> extra) throws ArangoException {
+	public DefaultEntity updateUser(String database, String username, String passwd, Boolean active, Map<String, Object> extra) throws ArangoException {
 		
 		HttpResponseEntity res = httpManager.doPatch(
-				baseUrl + "/_api/user/" + StringUtils.encodeUrl(username), 
+				createEndpoint(baseUrl, database, "/_api/user", StringUtils.encodeUrl(username)), 
 				null, 
 				EntityFactory.toJsonString(
 						new MapBuilder()

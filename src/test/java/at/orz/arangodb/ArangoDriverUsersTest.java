@@ -39,6 +39,10 @@ import at.orz.arangodb.util.MapBuilder;
  */
 public class ArangoDriverUsersTest extends BaseTest {
 
+	public ArangoDriverUsersTest(ArangoConfigure configure, ArangoDriver driver) {
+		super(configure, driver);
+	}
+
 	@Before
 	public void setup() throws ArangoException {
 		// delete user

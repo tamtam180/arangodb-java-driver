@@ -18,6 +18,7 @@ public class InternalEdgeDriverImpl extends BaseArangoDriverImpl {
 	}
 	
 	public <T> EdgeEntity<T> createEdge(
+			String database,
 			String collectionName, 
 			String fromHandle, String toHandle, 
 			T attribute) throws ArangoException {
@@ -26,7 +27,7 @@ public class InternalEdgeDriverImpl extends BaseArangoDriverImpl {
 		validateDocumentHandle(fromHandle);
 		validateDocumentHandle(toHandle);
 		HttpResponseEntity res = httpManager.doPost(
-				baseUrl + "/_api/edge", 
+				createEndpoint(baseUrl, database, "/_api/edge"), 
 				new MapBuilder()
 					.put("collection", collectionName)
 					.put("from", fromHandle)
@@ -46,6 +47,7 @@ public class InternalEdgeDriverImpl extends BaseArangoDriverImpl {
 
 	// TODO UpdateEdge
 	public <T> EdgeEntity<T> updateEdge(
+			String database,
 			String collectionName, 
 			String fromHandle, String toHandle, 
 			T attribute) throws ArangoException {
@@ -54,7 +56,7 @@ public class InternalEdgeDriverImpl extends BaseArangoDriverImpl {
 		validateDocumentHandle(fromHandle);
 		validateDocumentHandle(toHandle);
 		HttpResponseEntity res = httpManager.doPut(
-				baseUrl + "/_api/edge", 
+				createEndpoint(baseUrl, database, "/_api/edge"), 
 				new MapBuilder()
 					.put("collection", collectionName)
 					.put("from", fromHandle)
@@ -72,11 +74,11 @@ public class InternalEdgeDriverImpl extends BaseArangoDriverImpl {
 		
 	}
 	
-	public long checkEdge(String edgeHandle) throws ArangoException {
+	public long checkEdge(String database, String edgeHandle) throws ArangoException {
 		
 		validateDocumentHandle(edgeHandle);
 		HttpResponseEntity res = httpManager.doHead(
-				baseUrl + "/_api/edge/" + edgeHandle,
+				createEndpoint(baseUrl, database, "/_api/edge", edgeHandle),
 				null
 				);
 		
@@ -92,11 +94,11 @@ public class InternalEdgeDriverImpl extends BaseArangoDriverImpl {
 	 * @return
 	 * @throws ArangoException
 	 */
-	public <T> EdgeEntity<T> getEdge(String edgeHandle, Class<T> attributeClass) throws ArangoException {
+	public <T> EdgeEntity<T> getEdge(String database, String edgeHandle, Class<T> attributeClass) throws ArangoException {
 		
 		validateDocumentHandle(edgeHandle);
 		HttpResponseEntity res = httpManager.doGet(
-				baseUrl + "/_api/edge/" + edgeHandle
+				createEndpoint(baseUrl, database, "/_api/edge", edgeHandle)
 				);
 		
 		try {
@@ -112,11 +114,11 @@ public class InternalEdgeDriverImpl extends BaseArangoDriverImpl {
 		
 	}
 
-	public EdgeEntity<?> deleteEdge(String collectionName, String edgeHandle) throws ArangoException {
+	public EdgeEntity<?> deleteEdge(String database, String collectionName, String edgeHandle) throws ArangoException {
 		
 		validateDocumentHandle(edgeHandle);
 		HttpResponseEntity res = httpManager.doDelete(
-				baseUrl + "/_api/edge/" + edgeHandle,
+				createEndpoint(baseUrl, database, "/_api/edge", edgeHandle),
 				null);
 		
 		try {
@@ -128,12 +130,12 @@ public class InternalEdgeDriverImpl extends BaseArangoDriverImpl {
 		
 	}
 	
-	public <T> EdgesEntity<T> getEdges(String collectionName, String vertexHandle, Direction direction, Class<T> edgeAttributeClass) throws ArangoException {
+	public <T> EdgesEntity<T> getEdges(String database, String collectionName, String vertexHandle, Direction direction, Class<T> edgeAttributeClass) throws ArangoException {
 		
 		validateCollectionName(collectionName);
 		validateDocumentHandle(vertexHandle);
 		HttpResponseEntity res = httpManager.doGet(
-				baseUrl + "/_api/edges/" + collectionName, 
+				createEndpoint(baseUrl, database, "/_api/edges", collectionName), 
 				new MapBuilder()
 					.put("vertex", vertexHandle)
 					.put("direction", direction.name().toLowerCase(Locale.US))

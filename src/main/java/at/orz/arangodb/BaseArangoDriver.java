@@ -17,6 +17,7 @@
 package at.orz.arangodb;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -26,6 +27,7 @@ import at.orz.arangodb.entity.KeyValueEntity;
 import at.orz.arangodb.http.HttpResponseEntity;
 import at.orz.arangodb.util.DateUtils;
 import at.orz.arangodb.util.ReflectionUtils;
+import at.orz.arangodb.util.StringUtils;
 
 /**
  * @author tamtam180 - kirscheless at gmail.com
@@ -172,6 +174,23 @@ public abstract class BaseArangoDriver {
 	protected <T> T createEntityImpl(HttpResponseEntity res, Class<T> clazz) throws ArangoException {
 		T entity = EntityFactory.createEntity(res.getText(), clazz);
 		return entity;
+	}
+	
+	protected String createEndpoint(String baseUrl, String database, Object...paths) throws ArangoException {
+
+		// FIXME: Very very foolish implement.
+		
+		ArrayList<String> list = new ArrayList<String>();
+		
+		if (database != null) {
+			validateDatabaseName(database, false);
+			list.add("_db");
+			list.add(database);
+		}
+		for (Object path: paths) {
+			list.add(path.toString());
+		}
+		return baseUrl + StringUtils.join(false, list);
 	}
 	
 }

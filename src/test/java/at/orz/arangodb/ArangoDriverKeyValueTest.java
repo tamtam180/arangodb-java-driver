@@ -37,6 +37,10 @@ import at.orz.arangodb.util.MapBuilder;
 @Deprecated
 public class ArangoDriverKeyValueTest extends BaseTest {
 
+	public ArangoDriverKeyValueTest(ArangoConfigure configure, ArangoDriver driver) {
+		super(configure, driver);
+	}
+
 	private static Logger logger = LoggerFactory.getLogger(ArangoDriverKeyValueTest.class);
 	
 	final String collectionName = "unit_test_arango_001"; // 通常ケースで使うコレクション名

@@ -49,7 +49,7 @@ public class InternalIndexDriverImpl extends BaseArangoDriverWithCursorImpl {
 		
 		validateCollectionName(collectionName);
 		HttpResponseEntity res = httpManager.doPost(
-				createEndpoint(baseUrl, database, "/_api/index"), 
+				createEndpointUrl(baseUrl, database, "/_api/index"), 
 				new MapBuilder("collection", collectionName).get(),
 				EntityFactory.toJsonString(
 						new MapBuilder()
@@ -73,7 +73,7 @@ public class InternalIndexDriverImpl extends BaseArangoDriverWithCursorImpl {
 		
 		validateCollectionName(collectionName);
 		HttpResponseEntity res = httpManager.doPost(
-				createEndpoint(baseUrl, database, "/_api/index"), 
+				createEndpointUrl(baseUrl, database, "/_api/index"), 
 				new MapBuilder("collection", collectionName).get(),
 				EntityFactory.toJsonString(
 						new MapBuilder()
@@ -96,7 +96,7 @@ public class InternalIndexDriverImpl extends BaseArangoDriverWithCursorImpl {
 
 		validateCollectionName(collectionName);
 		HttpResponseEntity res = httpManager.doPost(
-				createEndpoint(baseUrl, database, "/_api/index"), 
+				createEndpointUrl(baseUrl, database, "/_api/index"), 
 				new MapBuilder("collection", collectionName).get(),
 				EntityFactory.toJsonString(
 						new MapBuilder()
@@ -118,7 +118,7 @@ public class InternalIndexDriverImpl extends BaseArangoDriverWithCursorImpl {
 		
 		validateDocumentHandle(indexHandle); // 書式同じなので
 		HttpResponseEntity res = httpManager.doDelete(
-				createEndpoint(baseUrl, database, "/_api/index", indexHandle), 
+				createEndpointUrl(baseUrl, database, "/_api/index", indexHandle), 
 				null);
 		
 		try {
@@ -134,7 +134,7 @@ public class InternalIndexDriverImpl extends BaseArangoDriverWithCursorImpl {
 		
 		validateDocumentHandle(indexHandle);
 		HttpResponseEntity res = httpManager.doGet(
-				createEndpoint(baseUrl, database, "/_api/index", indexHandle));
+				createEndpointUrl(baseUrl, database, "/_api/index", indexHandle));
 		
 		try {
 			IndexEntity entity = createEntity(res, IndexEntity.class);
@@ -149,7 +149,7 @@ public class InternalIndexDriverImpl extends BaseArangoDriverWithCursorImpl {
 		
 		validateCollectionName(collectionName);
 		HttpResponseEntity res = httpManager.doGet(
-				createEndpoint(baseUrl, database, "/_api/index"),
+				createEndpointUrl(baseUrl, database, "/_api/index"),
 				new MapBuilder("collection", collectionName).get());
 		
 		try {

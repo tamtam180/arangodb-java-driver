@@ -882,4 +882,22 @@ public class EntityDeserializers {
 		}
 	}
 
+	public static class EndpointDeserializer implements JsonDeserializer<Endpoint> {
+		Type databasesType = new TypeToken<List<String>>(){}.getType();
+		public Endpoint deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			
+			if (json.isJsonNull()) {
+				return null;
+			}
+			
+			JsonObject obj = json.getAsJsonObject();
+			
+			Endpoint entity = new Endpoint();
+			entity.databases = context.deserialize(obj.getAsJsonArray("databases"), databasesType);
+			entity.endpoint = obj.getAsJsonPrimitive("endpoint").getAsString();
+			
+			return entity;
+		}
+	}
+
 }

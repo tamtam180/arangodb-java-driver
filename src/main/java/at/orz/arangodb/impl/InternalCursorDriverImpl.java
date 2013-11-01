@@ -42,7 +42,7 @@ public class InternalCursorDriverImpl extends BaseArangoDriverImpl {
 	public CursorEntity<?> validateQuery(String database, String query) throws ArangoException {
 		
 		HttpResponseEntity res = httpManager.doPost(
-				createEndpoint(baseUrl, database, "/_api/query"), 
+				createEndpointUrl(baseUrl, database, "/_api/query"), 
 				null,
 				EntityFactory.toJsonString(new MapBuilder("query", query).get())
 				);
@@ -58,7 +58,7 @@ public class InternalCursorDriverImpl extends BaseArangoDriverImpl {
 	public ExplainEntity explainQuery(String database, String query, Map<String, Object> bindVars) throws ArangoException {
 
 		HttpResponseEntity res = httpManager.doPost(
-				createEndpoint(baseUrl, database, "/_api/explain"), 
+				createEndpointUrl(baseUrl, database, "/_api/explain"), 
 				null,
 				EntityFactory.toJsonString(
 						new MapBuilder()
@@ -85,7 +85,7 @@ public class InternalCursorDriverImpl extends BaseArangoDriverImpl {
 			Boolean calcCount, Integer batchSize) throws ArangoException {
 		
 		HttpResponseEntity res = httpManager.doPost(
-				createEndpoint(baseUrl, database, "/_api/cursor"), 
+				createEndpointUrl(baseUrl, database, "/_api/cursor"), 
 				null,
 				EntityFactory.toJsonString(
 						new MapBuilder()
@@ -109,7 +109,7 @@ public class InternalCursorDriverImpl extends BaseArangoDriverImpl {
 	public <T> CursorEntity<T> continueQuery(String database, long cursorId, Class<T> clazz) throws ArangoException {
 		
 		HttpResponseEntity res = httpManager.doPut(
-				createEndpoint(baseUrl, database, "/_api/cursor", cursorId), 
+				createEndpointUrl(baseUrl, database, "/_api/cursor", cursorId), 
 				null,
 				null
 				);
@@ -127,7 +127,7 @@ public class InternalCursorDriverImpl extends BaseArangoDriverImpl {
 	
 	public DefaultEntity finishQuery(String database, long cursorId) throws ArangoException {
 		HttpResponseEntity res = httpManager.doDelete(
-				createEndpoint(baseUrl, database, "/_api/cursor/", cursorId), 
+				createEndpointUrl(baseUrl, database, "/_api/cursor/", cursorId), 
 				null
 				);
 		

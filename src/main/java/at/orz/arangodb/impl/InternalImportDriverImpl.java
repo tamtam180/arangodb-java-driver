@@ -38,7 +38,7 @@ public class InternalImportDriverImpl extends BaseArangoDriverImpl {
 	public ImportResultEntity importDocuments(String database, String collection, Boolean createCollection, Collection<?> values) throws ArangoException {
 
 		HttpResponseEntity res = httpManager.doPost(
-				createEndpoint(baseUrl, database, "/_api/import"), 
+				createEndpointUrl(baseUrl, database, "/_api/import"), 
 				new MapBuilder().put("collection", collection).put("createCollection", createCollection).put("type", "array").get(), 
 				EntityFactory.toJsonString(values));
 		
@@ -59,7 +59,7 @@ public class InternalImportDriverImpl extends BaseArangoDriverImpl {
 	public ImportResultEntity importDocumentsByHeaderValues(String database, String collection, Boolean createCollection, Collection<? extends Collection<?>> headerValues) throws ArangoException {
 
 		HttpResponseEntity res = httpManager.doPost(
-				createEndpoint(baseUrl, database,  "/_api/import"), 
+				createEndpointUrl(baseUrl, database,  "/_api/import"), 
 				new MapBuilder().put("collection", collection).put("createCollection", createCollection).get(), 
 				EntityFactory.toImportHeaderValues(headerValues));
 		

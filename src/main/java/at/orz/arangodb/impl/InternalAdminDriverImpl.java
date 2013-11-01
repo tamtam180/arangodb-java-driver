@@ -66,7 +66,7 @@ public class InternalAdminDriverImpl extends BaseArangoDriverImpl {
 		param.put("search", text);
 		
 		// 実行
-		HttpResponseEntity res = httpManager.doGet(createEndpoint(baseUrl, null, "/_admin/log"), param.get());
+		HttpResponseEntity res = httpManager.doGet(createEndpointUrl(baseUrl, null, "/_admin/log"), param.get());
 		
 		// 結果変換
 		try {
@@ -81,7 +81,7 @@ public class InternalAdminDriverImpl extends BaseArangoDriverImpl {
 	
 	public StatisticsEntity getStatistics() throws ArangoException {
 		
-		HttpResponseEntity res = httpManager.doGet(createEndpoint(baseUrl, null, "/_admin/statistics"));
+		HttpResponseEntity res = httpManager.doGet(createEndpointUrl(baseUrl, null, "/_admin/statistics"));
 		
 		try {
 			return createEntity(res, StatisticsEntity.class);
@@ -93,7 +93,7 @@ public class InternalAdminDriverImpl extends BaseArangoDriverImpl {
 
 	public StatisticsDescriptionEntity getStatisticsDescription() throws ArangoException {
 		
-		HttpResponseEntity res = httpManager.doGet(createEndpoint(baseUrl, null, "/_admin/statistics-description"));
+		HttpResponseEntity res = httpManager.doGet(createEndpointUrl(baseUrl, null, "/_admin/statistics-description"));
 		
 		try {
 			return createEntity(res, StatisticsDescriptionEntity.class);

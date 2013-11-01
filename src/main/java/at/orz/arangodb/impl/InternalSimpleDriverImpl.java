@@ -49,7 +49,7 @@ public class InternalSimpleDriverImpl extends BaseArangoDriverWithCursorImpl {
 
 		validateCollectionName(collectionName);
 		HttpResponseEntity res = httpManager.doPut(
-				createEndpoint(baseUrl, database, "/_api/simple/all"), 
+				createEndpointUrl(baseUrl, database, "/_api/simple/all"), 
 				null,
 				EntityFactory.toJsonString(
 						new MapBuilder()
@@ -116,7 +116,7 @@ public class InternalSimpleDriverImpl extends BaseArangoDriverWithCursorImpl {
 
 		validateCollectionName(collectionName);
 		HttpResponseEntity res = httpManager.doPut(
-				createEndpoint(baseUrl, database, "/_api/simple/by-example"), 
+				createEndpointUrl(baseUrl, database, "/_api/simple/by-example"), 
 				null,
 				EntityFactory.toJsonString(
 						new MapBuilder()
@@ -194,7 +194,7 @@ public class InternalSimpleDriverImpl extends BaseArangoDriverWithCursorImpl {
 		
 		validateCollectionName(collectionName);
 		HttpResponseEntity res = httpManager.doPut(
-				createEndpoint(baseUrl, database, "/_api/simple/first-example"), 
+				createEndpointUrl(baseUrl, database, "/_api/simple/first-example"), 
 				null,
 				EntityFactory.toJsonString(
 						new MapBuilder()
@@ -218,7 +218,7 @@ public class InternalSimpleDriverImpl extends BaseArangoDriverWithCursorImpl {
 		
 		validateCollectionName(collectionName);
 		HttpResponseEntity res = httpManager.doPut(
-				createEndpoint(baseUrl, database, "/_api/simple/any"), 
+				createEndpointUrl(baseUrl, database, "/_api/simple/any"), 
 				null,
 				EntityFactory.toJsonString(
 						new MapBuilder()
@@ -244,7 +244,7 @@ public class InternalSimpleDriverImpl extends BaseArangoDriverWithCursorImpl {
 		
 		validateCollectionName(collectionName);
 		HttpResponseEntity res = httpManager.doPut(
-				createEndpoint(baseUrl, database, "/_api/simple/range"), 
+				createEndpointUrl(baseUrl, database, "/_api/simple/range"), 
 				null,
 				EntityFactory.toJsonString(
 						new MapBuilder()
@@ -331,7 +331,7 @@ public class InternalSimpleDriverImpl extends BaseArangoDriverWithCursorImpl {
 		
 		validateCollectionName(collectionName);
 		HttpResponseEntity res = httpManager.doPut(
-				createEndpoint(baseUrl, database, "/_api/simple/remove-by-example"), 
+				createEndpointUrl(baseUrl, database, "/_api/simple/remove-by-example"), 
 				null,
 				EntityFactory.toJsonString(
 						new MapBuilder()
@@ -359,7 +359,7 @@ public class InternalSimpleDriverImpl extends BaseArangoDriverWithCursorImpl {
 		
 		validateCollectionName(collectionName);
 		HttpResponseEntity res = httpManager.doPut(
-				createEndpoint(baseUrl, database, "/_api/simple/replace-by-example"), 
+				createEndpointUrl(baseUrl, database, "/_api/simple/replace-by-example"), 
 				null,
 				EntityFactory.toJsonString(
 						new MapBuilder()
@@ -389,7 +389,7 @@ public class InternalSimpleDriverImpl extends BaseArangoDriverWithCursorImpl {
 		
 		validateCollectionName(collectionName);
 		HttpResponseEntity res = httpManager.doPut(
-				createEndpoint(baseUrl, database, "/_api/simple/update-by-example"), 
+				createEndpointUrl(baseUrl, database, "/_api/simple/update-by-example"), 
 				null,
 				EntityFactory.toJsonString(
 						new MapBuilder()
@@ -422,7 +422,7 @@ public class InternalSimpleDriverImpl extends BaseArangoDriverWithCursorImpl {
 
 		validateCollectionName(collectionName);
 		HttpResponseEntity res = httpManager.doPut(
-				createEndpoint(baseUrl, database, "/_api/simple/fulltext"), 
+				createEndpointUrl(baseUrl, database, "/_api/simple/fulltext"), 
 				null,
 				EntityFactory.toJsonString(
 						new MapBuilder()

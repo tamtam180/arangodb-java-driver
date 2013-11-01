@@ -46,7 +46,7 @@ public class InternalKVSDriverImpl extends BaseArangoDriverImpl {
 		
 		validateCollectionName(collectionName);
 		HttpResponseEntity res = httpManager.doPost(
-				createEndpoint(baseUrl, database, "/_api/key", collectionName, "/", key), 
+				createEndpointUrl(baseUrl, database, "/_api/key", collectionName, "/", key), 
 				new MapBuilder()
 					.put("x-voc-expires", expiredDate == null ? null : DateUtils.format(expiredDate, "yyyy-MM-dd'T'HH:mm:ss'Z'"))
 					.put("x-voc-extended", attributes == null ? null : EntityFactory.toJsonString(attributes))
@@ -80,7 +80,7 @@ public class InternalKVSDriverImpl extends BaseArangoDriverImpl {
 		
 		validateCollectionName(collectionName);
 		HttpResponseEntity res = httpManager.doPut(
-				createEndpoint(baseUrl, database, "/_api/key", collectionName, "/", key),
+				createEndpointUrl(baseUrl, database, "/_api/key", collectionName, "/", key),
 				new MapBuilder()
 					.put("x-voc-expires", expiredDate == null ? null : DateUtils.format(expiredDate, "yyyy-MM-dd'T'HH:mm:ss'Z'"))
 					.put("x-voc-extended", attributes == null ? null : EntityFactory.toJsonString(attributes))

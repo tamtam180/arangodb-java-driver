@@ -35,6 +35,7 @@ import at.orz.arangodb.entity.Direction;
 import at.orz.arangodb.entity.DocumentEntity;
 import at.orz.arangodb.entity.EdgeEntity;
 import at.orz.arangodb.entity.EdgesEntity;
+import at.orz.arangodb.entity.Endpoint;
 import at.orz.arangodb.entity.ExplainEntity;
 import at.orz.arangodb.entity.ImportResultEntity;
 import at.orz.arangodb.entity.IndexEntity;
@@ -56,6 +57,7 @@ import at.orz.arangodb.impl.InternalCursorDriverImpl;
 import at.orz.arangodb.impl.InternalDatabaseDriverImpl;
 import at.orz.arangodb.impl.InternalDocumentDriverImpl;
 import at.orz.arangodb.impl.InternalEdgeDriverImpl;
+import at.orz.arangodb.impl.InternalEndpointDriverImpl;
 import at.orz.arangodb.impl.InternalImportDriverImpl;
 import at.orz.arangodb.impl.InternalIndexDriverImpl;
 import at.orz.arangodb.impl.InternalKVSDriverImpl;
@@ -89,6 +91,7 @@ public class ArangoDriver extends BaseArangoDriver {
 	private InternalUsersDriverImpl usersDriver;
 	private InternalImportDriverImpl importDriver;
 	private InternalDatabaseDriverImpl databaseDriver;
+	private InternalEndpointDriverImpl endpointDriver;
 	
 	private String database;
 	
@@ -119,6 +122,8 @@ public class ArangoDriver extends BaseArangoDriver {
 		this.importDriver = ImplFactory.createImportDriver(configure);
 		this.databaseDriver = ImplFactory.createDatabaseDriver(configure);
 
+		this.endpointDriver = ImplFactory.createEndpointDriver(configure);
+		
 	}
 	
 	public String getDefaultDatabase() {
@@ -772,6 +777,46 @@ public class ArangoDriver extends BaseArangoDriver {
 	}
 	// ---------------------------------------- end of database ----------------------------------------
 
+
+	// ---------------------------------------- start of endpoint ----------------------------------------
+
+	/**
+	 * 
+	 * @param endpoint
+	 * @param databases
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public BooleanResultEntity createEndpoint(String endpoint, String... databases) throws ArangoException {
+		return endpointDriver.createEndpoint(endpoint, databases);
+	}
+
+	/**
+	 * 
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public List<Endpoint> getEndpoints() throws ArangoException {
+		return endpointDriver.getEndpoints();
+	}
+	
+	/**
+	 * 
+	 * @param endpoint
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public BooleanResultEntity deleteEndpoint(String endpoint) throws ArangoException {
+		return endpointDriver.deleteEndpoint(endpoint);
+	}
+
+	
+	// ---------------------------------------- end of endpoint ----------------------------------------
+
+	
 	
 	// ---------------------------------------- start of xxx ----------------------------------------
 

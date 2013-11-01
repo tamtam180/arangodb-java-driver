@@ -27,7 +27,7 @@ public class InternalEdgeDriverImpl extends BaseArangoDriverImpl {
 		validateDocumentHandle(fromHandle);
 		validateDocumentHandle(toHandle);
 		HttpResponseEntity res = httpManager.doPost(
-				createEndpoint(baseUrl, database, "/_api/edge"), 
+				createEndpointUrl(baseUrl, database, "/_api/edge"), 
 				new MapBuilder()
 					.put("collection", collectionName)
 					.put("from", fromHandle)
@@ -56,7 +56,7 @@ public class InternalEdgeDriverImpl extends BaseArangoDriverImpl {
 		validateDocumentHandle(fromHandle);
 		validateDocumentHandle(toHandle);
 		HttpResponseEntity res = httpManager.doPut(
-				createEndpoint(baseUrl, database, "/_api/edge"), 
+				createEndpointUrl(baseUrl, database, "/_api/edge"), 
 				new MapBuilder()
 					.put("collection", collectionName)
 					.put("from", fromHandle)
@@ -78,7 +78,7 @@ public class InternalEdgeDriverImpl extends BaseArangoDriverImpl {
 		
 		validateDocumentHandle(edgeHandle);
 		HttpResponseEntity res = httpManager.doHead(
-				createEndpoint(baseUrl, database, "/_api/edge", edgeHandle),
+				createEndpointUrl(baseUrl, database, "/_api/edge", edgeHandle),
 				null
 				);
 		
@@ -98,7 +98,7 @@ public class InternalEdgeDriverImpl extends BaseArangoDriverImpl {
 		
 		validateDocumentHandle(edgeHandle);
 		HttpResponseEntity res = httpManager.doGet(
-				createEndpoint(baseUrl, database, "/_api/edge", edgeHandle)
+				createEndpointUrl(baseUrl, database, "/_api/edge", edgeHandle)
 				);
 		
 		try {
@@ -118,7 +118,7 @@ public class InternalEdgeDriverImpl extends BaseArangoDriverImpl {
 		
 		validateDocumentHandle(edgeHandle);
 		HttpResponseEntity res = httpManager.doDelete(
-				createEndpoint(baseUrl, database, "/_api/edge", edgeHandle),
+				createEndpointUrl(baseUrl, database, "/_api/edge", edgeHandle),
 				null);
 		
 		try {
@@ -135,7 +135,7 @@ public class InternalEdgeDriverImpl extends BaseArangoDriverImpl {
 		validateCollectionName(collectionName);
 		validateDocumentHandle(vertexHandle);
 		HttpResponseEntity res = httpManager.doGet(
-				createEndpoint(baseUrl, database, "/_api/edges", collectionName), 
+				createEndpointUrl(baseUrl, database, "/_api/edges", collectionName), 
 				new MapBuilder()
 					.put("vertex", vertexHandle)
 					.put("direction", direction.name().toLowerCase(Locale.US))

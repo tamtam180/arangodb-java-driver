@@ -16,6 +16,7 @@
 
 package at.orz.arangodb;
 
+import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Map;
@@ -171,12 +172,12 @@ public abstract class BaseArangoDriver {
 		}
 	}
 	
-	protected <T> T createEntityImpl(HttpResponseEntity res, Class<T> clazz) throws ArangoException {
-		T entity = EntityFactory.createEntity(res.getText(), clazz);
+	protected <T> T createEntityImpl(HttpResponseEntity res, Type type) throws ArangoException {
+		T entity = EntityFactory.createEntity(res.getText(), type);
 		return entity;
 	}
 	
-	protected String createEndpoint(String baseUrl, String database, Object...paths) throws ArangoException {
+	protected String createEndpointUrl(String baseUrl, String database, Object...paths) throws ArangoException {
 
 		// FIXME: Very very foolish implement.
 		

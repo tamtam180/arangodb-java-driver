@@ -10,6 +10,7 @@ v1.4.0-SNAPSHOT(2013-11-xx)
 * add: getStatistics 
 * remove: getConnectionStatistics
 * add: statisticsDescription
+* add support API: /_api/endpoint
 
 v1.2.2(2013-07-10)
 ---------------------------

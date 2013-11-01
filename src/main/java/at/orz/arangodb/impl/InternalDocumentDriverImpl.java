@@ -46,7 +46,7 @@ public class InternalDocumentDriverImpl extends BaseArangoDriverImpl {
 		
 		validateCollectionName(collectionName);
 		HttpResponseEntity res = httpManager.doPost(
-				createEndpoint(baseUrl, database, "/_api/document"), 
+				createEndpointUrl(baseUrl, database, "/_api/document"), 
 				new MapBuilder()
 					.put("collection", collectionName)
 					.put("createCollection", createCollection)
@@ -70,7 +70,7 @@ public class InternalDocumentDriverImpl extends BaseArangoDriverImpl {
 		
 		validateDocumentHandle(documentHandle);
 		HttpResponseEntity res = httpManager.doPut(
-				createEndpoint(baseUrl, database, "/_api/document", documentHandle), 
+				createEndpointUrl(baseUrl, database, "/_api/document", documentHandle), 
 				new MapBuilder()
 					.put("rev", rev == -1 ? null : rev)
 					.put("policy", policy == null ? null : policy.name())
@@ -86,7 +86,7 @@ public class InternalDocumentDriverImpl extends BaseArangoDriverImpl {
 		
 		validateDocumentHandle(documentHandle);
 		HttpResponseEntity res = httpManager.doPatch(
-				createEndpoint(baseUrl, database, "/_api/document", documentHandle), 
+				createEndpointUrl(baseUrl, database, "/_api/document", documentHandle), 
 				new MapBuilder()
 					.put("rev", rev == -1 ? null : rev)
 					.put("policy", policy == null ? null : policy.name())
@@ -104,7 +104,7 @@ public class InternalDocumentDriverImpl extends BaseArangoDriverImpl {
 	public List<String> getDocuments(String database, String collectionName, boolean handleConvert) throws ArangoException {
 		
 		HttpResponseEntity res = httpManager.doGet(
-				createEndpoint(baseUrl, database, "/_api/document"), 
+				createEndpointUrl(baseUrl, database, "/_api/document"), 
 				new MapBuilder("collection", collectionName).get()
 				);
 		
@@ -127,7 +127,7 @@ public class InternalDocumentDriverImpl extends BaseArangoDriverImpl {
 		
 		validateDocumentHandle(documentHandle);
 		HttpResponseEntity res = httpManager.doHead(
-				createEndpoint(baseUrl, database, "/_api/document", documentHandle),
+				createEndpointUrl(baseUrl, database, "/_api/document", documentHandle),
 				null
 				);
 		
@@ -143,7 +143,7 @@ public class InternalDocumentDriverImpl extends BaseArangoDriverImpl {
 		
 		validateDocumentHandle(documentHandle);
 		HttpResponseEntity res = httpManager.doGet(
-				createEndpoint(baseUrl, database, "/_api/document", documentHandle),
+				createEndpointUrl(baseUrl, database, "/_api/document", documentHandle),
 				null);
 		
 		// TODO Case of StatusCode=304
@@ -162,7 +162,7 @@ public class InternalDocumentDriverImpl extends BaseArangoDriverImpl {
 		
 		validateDocumentHandle(documentHandle);
 		HttpResponseEntity res = httpManager.doDelete(
-				createEndpoint(baseUrl, database, "/_api/document", documentHandle), 
+				createEndpointUrl(baseUrl, database, "/_api/document", documentHandle), 
 				new MapBuilder()
 				.put("rev", rev == -1 ? null : rev)
 				.put("policy", policy == null ? null : policy.name().toLowerCase(Locale.US))

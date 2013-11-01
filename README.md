@@ -1,7 +1,12 @@
 
 This library ia a Java driver for ArangoDB.
 
-Support version: ArangoDB-1.2.x
+Support version: ArangoDB-1.4.x
+
+# Memo
+
+Now, /edge and /admin/* API does not support. plz wait.
+
 
 # Required
 
@@ -22,7 +27,7 @@ Support version: ArangoDB-1.2.x
   <dependency>
     <groupId>at.orz</groupId>
     <artifactId>arangodb-java-driver</artifactId>
-    <version>[1.2,1.3)</version>
+    <version>[1.4,1.5)</version>
   </dependency>
 </dependencies>
 ```
@@ -71,6 +76,7 @@ This library has 4 layers.
 <tr><th>connectionTimeout</th><td>socket connect timeout(millisecond)</td><td>-1</td></tr>
 <tr><th>timeout</th><td>socket read timeout(millisecond)</td><td>-1</td></tr>
 <tr><th>retryCount</th><td>http retry count</td><td>3</td></tr>
+<tr><th>defaultDatabase</th><td>default database</td><td></td></tr>
 </table>
 
 ## Basic usage ArangoDriver

@@ -6,6 +6,10 @@ v1.4.0-SNAPSHOT(2013-11-xx)
 * add configure: defaultDatabase
 * getDocuments was changed to return document-handle
 * changed the version API endpoint. (/_admin/version -> /_api/version)
+* remove: getServerStatus
+* add: getStatistics 
+* remove: getConnectionStatistics
+* add: statisticsDescription
 
 v1.2.2(2013-07-10)
 ---------------------------

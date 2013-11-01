@@ -16,6 +16,7 @@
 
 package at.orz.arangodb.entity;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -53,7 +54,7 @@ public class StatisticsEntity extends BaseEntity {
 	}
 	
 	
-	public static class Figure {
+	public static class FigureValue implements Serializable {
 		double sum;
 		long count;
 		long[] counts;
@@ -78,24 +79,24 @@ public class StatisticsEntity extends BaseEntity {
 		
 	}
 	
-	public static class Client {
+	public static class Client implements Serializable {
 		int httpConnections;
-		Map<String, Figure> figures;
+		Map<String, FigureValue> figures;
 		public int getHttpConnections() {
 			return httpConnections;
 		}
-		public Map<String, Figure> getFigures() {
+		public Map<String, FigureValue> getFigures() {
 			return figures;
 		}
 		public void setHttpConnections(int httpConnections) {
 			this.httpConnections = httpConnections;
 		}
-		public void setFigures(Map<String, Figure> figures) {
+		public void setFigures(Map<String, FigureValue> figures) {
 			this.figures = figures;
 		}
 	}
 	
-	public static class Server {
+	public static class Server implements Serializable {
 		double uptime;
 
 		public double getUptime() {
@@ -108,7 +109,7 @@ public class StatisticsEntity extends BaseEntity {
 		
 	}
 	
-	public static class System {
+	public static class System implements Serializable {
 		
 		long minorPageFaults;
 		long majorPageFaults;

@@ -16,22 +16,19 @@
 
 package at.orz.arangodb;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 
 import at.orz.arangodb.entity.AdminLogEntity;
 import at.orz.arangodb.entity.ArangoUnixTime;
 import at.orz.arangodb.entity.ArangoVersion;
-import at.orz.arangodb.entity.ConnectionStatisticsEntity;
 import at.orz.arangodb.entity.DefaultEntity;
+import at.orz.arangodb.entity.StatisticsDescriptionEntity;
 import at.orz.arangodb.entity.StatisticsEntity;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 /**
  * @author tamtam180 - kirscheless at gmail.com
@@ -111,19 +108,23 @@ public class ArangoDriverAdminTest extends BaseTest {
 		System.out.println(gson.toJson(stat.getClient()));
 		System.out.println(gson.toJson(stat.getServer()));
 
+		// TODO: assert null
+
 	}
 
 	@Test
-	public void test_connection_statistics() throws ArangoException {
+	public void test_statistics_description() throws ArangoException {
+
+		StatisticsDescriptionEntity desc = driver.getStatisticsDescription();
+
+		// debug
+		Gson gson = new Gson();
+		System.out.println(gson.toJson(desc));
+		System.out.println(gson.toJson(desc.getGroups()));
+		System.out.println(gson.toJson(desc.getFigures()));
+	
+		// TODO: assert null
 		
-		// Array
-		ConnectionStatisticsEntity cs = driver.getConnectionStatistics(null, null);
-		System.out.println(new GsonBuilder() .setPrettyPrinting().serializeSpecialFloatingPointValues().create().toJson(cs));
-
-		// One
-		cs = driver.getConnectionStatistics(null, 0);
-		System.out.println(new GsonBuilder() .setPrettyPrinting().serializeSpecialFloatingPointValues().create().toJson(cs));
-
 	}
 	
 	@Test

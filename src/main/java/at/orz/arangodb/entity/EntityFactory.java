@@ -59,7 +59,7 @@ public class EntityFactory {
 			.registerTypeAdapter(SimpleByResultEntity.class, new EntityDeserializers.SimpleByResultEntityDeserializer())
 			.registerTypeAdapter(AdminLogEntity.class, new EntityDeserializers.AdminLogEntryEntityDeserializer())
 			.registerTypeAdapter(StatisticsEntity.class, new EntityDeserializers.StatisticsEntityDeserializer())
-			.registerTypeAdapter(ConnectionStatisticsEntity.class, new EntityDeserializers.ConnectionStatisticsEntityDeserializer())
+			.registerTypeAdapter(StatisticsDescriptionEntity.class, new EntityDeserializers.StatisticsDescriptionEntityDeserializer())
 			.registerTypeAdapter(ExplainEntity.class, new EntityDeserializers.ExplainEntityDeserializer())
 			.registerTypeAdapter(UserEntity.class, new EntityDeserializers.UserEntityDeserializer())
 			.registerTypeAdapter(ImportResultEntity.class, new EntityDeserializers.ImportResultEntityDeserializer())

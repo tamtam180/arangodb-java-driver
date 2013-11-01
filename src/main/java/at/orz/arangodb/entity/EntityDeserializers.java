@@ -17,19 +17,21 @@
 package at.orz.arangodb.entity;
 
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import at.orz.arangodb.entity.CollectionEntity.Figures;
 import at.orz.arangodb.entity.ExplainEntity.ExpressionEntity;
 import at.orz.arangodb.entity.ExplainEntity.PlanEntity;
-import at.orz.arangodb.entity.StatisticsEntity.Figure;
-import at.orz.arangodb.util.JsonUtils;
+import at.orz.arangodb.entity.StatisticsDescriptionEntity.Figure;
+import at.orz.arangodb.entity.StatisticsDescriptionEntity.Group;
+import at.orz.arangodb.entity.StatisticsEntity.FigureValue;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
@@ -558,7 +560,7 @@ public class EntityDeserializers {
 			
 			if (obj.has("client")) {
 				StatisticsEntity.Client cli = new StatisticsEntity.Client();
-				cli.figures = new TreeMap<String, StatisticsEntity.Figure>();
+				cli.figures = new TreeMap<String, StatisticsEntity.FigureValue>();
 				entity.client = cli;
 
 				JsonObject client = obj.getAsJsonObject("client");
@@ -568,11 +570,11 @@ public class EntityDeserializers {
 				for (Entry<String, JsonElement> ent : client.entrySet()) {
 					if (!ent.getKey().equals("httpConnections")) {
 						JsonObject f = ent.getValue().getAsJsonObject();
-						Figure figure = new Figure();
-						figure.sum = f.getAsJsonPrimitive("sum").getAsDouble();
-						figure.count = f.getAsJsonPrimitive("count").getAsLong();
-						figure.counts = context.deserialize(f.getAsJsonArray("counts"), countsType);
-						cli.figures.put(ent.getKey(), figure);
+						FigureValue fv = new FigureValue();
+						fv.sum = f.getAsJsonPrimitive("sum").getAsDouble();
+						fv.count = f.getAsJsonPrimitive("count").getAsLong();
+						fv.counts = context.deserialize(f.getAsJsonArray("counts"), countsType);
+						cli.figures.put(ent.getKey(), fv);
 					}
 				}
 			}
@@ -591,8 +593,9 @@ public class EntityDeserializers {
 		}
 	}
 
-	public static class ConnectionStatisticsEntityDeserializer implements JsonDeserializer<ConnectionStatisticsEntity> {
-		public ConnectionStatisticsEntity deserialize(JsonElement json,
+	public static class StatisticsDescriptionEntityDeserializer implements JsonDeserializer<StatisticsDescriptionEntity> {
+		Type cutsTypes = new TypeToken<BigDecimal[]>(){}.getType();
+		public StatisticsDescriptionEntity deserialize(JsonElement json,
 				Type typeOfT, JsonDeserializationContext context)
 				throws JsonParseException {
 
@@ -601,109 +604,45 @@ public class EntityDeserializers {
 			}
 
 			JsonObject obj = json.getAsJsonObject();
-			ConnectionStatisticsEntity entity = deserializeBaseParameter(obj, new ConnectionStatisticsEntity());
-			
-			if (obj.has("resolution")) {
-				entity.resolution = obj.getAsJsonPrimitive("resolution").getAsInt();
-			}
-			
-			// length = currentでコールされた時は無いパラメータ
-			if (obj.has("length")) {
-				entity.length = obj.getAsJsonPrimitive("length").getAsInt();
-			}
-			if (obj.has("totalLength")) {
-				entity.totalLength = obj.getAsJsonPrimitive("totalLength").getAsInt();
-			}
+			StatisticsDescriptionEntity entity = deserializeBaseParameter(obj, new StatisticsDescriptionEntity());
 
-			if (obj.has("httpDuration")) {
-				JsonObject httpDuration = obj.getAsJsonObject("httpDuration");
-				if (httpDuration.has("cuts")) {
-					JsonArray cuts = httpDuration.getAsJsonArray("cuts");
-					entity.httpDurationCuts = new double[cuts.size()];
-					for (int i = 0; i < cuts.size(); i++) {
-						entity.httpDurationCuts[i] = cuts.get(i).getAsDouble();
-					}
+			if (obj.has("groups")) {
+				JsonArray groups = obj.getAsJsonArray("groups");
+				entity.groups = new ArrayList<StatisticsDescriptionEntity.Group>(groups.size());
+				for (int i = 0, imax = groups.size(); i < imax; i++) {
+					JsonObject g = groups.get(i).getAsJsonObject();
+					
+					Group group = new Group();
+					group.group = g.getAsJsonPrimitive("group").getAsString();
+					group.name = g.getAsJsonPrimitive("name").getAsString();
+					group.description = g.getAsJsonPrimitive("description").getAsString();
+					
+					entity.groups.add(group);
 				}
 			}
 			
-			// FIXME 項目が増えてきたら List<Map<String, Object>> として汎用的に処理してしまう。
-			// その時のキーは 階層.階層.階層 とする。
-			
-			// 型が変わる...
-			int len = entity.length == 0 ? 1: entity.length;
-			entity.statistics = new ConnectionStatisticsEntity.StatisticsEntity[len];
-			for (int i = 0; i < len; i++) {
-				entity.statistics[i] = new ConnectionStatisticsEntity.StatisticsEntity();
-				
-				if (obj.has("start")) {
-					JsonElement start = obj.get("start");
-					if (start.isJsonArray()) {
-						entity.statistics[i].start = start.getAsJsonArray().get(i).getAsInt();
-					} else {
-						entity.statistics[i].start = start.getAsInt();
+			if (obj.has("figures")) {
+				JsonArray figures = obj.getAsJsonArray("figures");
+				entity.figures = new ArrayList<StatisticsDescriptionEntity.Figure>(figures.size());
+				for (int i = 0, imax = figures.size(); i < imax; i++) {
+					JsonObject f = figures.get(i).getAsJsonObject();
+					
+					Figure figure = new Figure();
+					figure.group = f.getAsJsonPrimitive("group").getAsString();
+					figure.identifier = f.getAsJsonPrimitive("identifier").getAsString();
+					figure.name = f.getAsJsonPrimitive("name").getAsString();
+					figure.description = f.getAsJsonPrimitive("description").getAsString();
+					figure.type = f.getAsJsonPrimitive("type").getAsString();
+					figure.units = f.getAsJsonPrimitive("units").getAsString();
+					if (f.has("cuts")) {
+						figure.cuts = context.deserialize(f.getAsJsonArray("cuts"), cutsTypes);
 					}
+					
+					entity.figures.add(figure);
+					
 				}
-				
-				if (obj.has("httpConnections")) {
-					JsonObject httpConnections = obj.getAsJsonObject("httpConnections");
-					if (httpConnections.has("count")) {
-						JsonElement count = httpConnections.get("count");
-						if (count.isJsonArray()) {
-							entity.statistics[i].httpConnectionsCount = count.getAsJsonArray().get(i).getAsInt();
-						} else {
-							entity.statistics[i].httpConnectionsCount = count.getAsInt();
-						}
-					}
-					if (httpConnections.has("perSecond")) {
-						JsonElement perSecond = httpConnections.get("perSecond");
-						if (perSecond.isJsonArray()) {
-							entity.statistics[i].httpConnectionsPerSecond = JsonUtils.toDouble(perSecond.getAsJsonArray().get(i));
-						} else {
-							entity.statistics[i].httpConnectionsPerSecond = JsonUtils.toDouble(perSecond);
-						}
-					}
-				}
-				
-				if (obj.has("httpDuration")) {
-					JsonObject httpDuration = obj.getAsJsonObject("httpDuration");
-					if (httpDuration.has("count")) {
-						JsonElement count = httpDuration.get("count");
-						if (count.isJsonArray()) {
-							entity.statistics[i].httpDurationCount = count.getAsJsonArray().get(i).getAsInt();
-						} else {
-							entity.statistics[i].httpDurationCount = count.getAsInt();
-						}
-					}
-					if (httpDuration.has("mean")) {
-						JsonElement mean = httpDuration.get("mean");
-						if (mean.isJsonArray()) {
-							entity.statistics[i].httpDurationMean = JsonUtils.toDouble(mean.getAsJsonArray().get(i));
-						} else {
-							entity.statistics[i].httpDurationMean = JsonUtils.toDouble(mean);
-						}
-					}
-					if (httpDuration.has("min")) {
-						JsonElement min = httpDuration.get("min");
-						if (min.isJsonArray()) {
-							entity.statistics[i].httpDurationMin = JsonUtils.toDouble(min.getAsJsonArray().get(i));
-						} else {
-							entity.statistics[i].httpDurationMin = JsonUtils.toDouble(min);
-						}
-					}
-					if (httpDuration.has("distribution")) {
-						JsonArray distribution = httpDuration.getAsJsonArray("distribution");
-						if (distribution.size() > 0) {
-							if (distribution.get(0).isJsonArray()) {
-								entity.statistics[i].httpDurationDistribution = JsonUtils.toArray(distribution.get(i).getAsJsonArray());
-							} else {
-								entity.statistics[i].httpDurationDistribution = JsonUtils.toArray(distribution);
-							}
-						}
-					}
-				}
-				
 			}
-
+			
 			return entity;
 		}
 	}

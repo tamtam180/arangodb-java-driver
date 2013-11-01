@@ -28,7 +28,6 @@ import at.orz.arangodb.entity.BooleanResultEntity;
 import at.orz.arangodb.entity.CollectionEntity;
 import at.orz.arangodb.entity.CollectionType;
 import at.orz.arangodb.entity.CollectionsEntity;
-import at.orz.arangodb.entity.ConnectionStatisticsEntity;
 import at.orz.arangodb.entity.CursorEntity;
 import at.orz.arangodb.entity.DatabaseEntity;
 import at.orz.arangodb.entity.DefaultEntity;
@@ -37,7 +36,6 @@ import at.orz.arangodb.entity.DocumentEntity;
 import at.orz.arangodb.entity.EdgeEntity;
 import at.orz.arangodb.entity.EdgesEntity;
 import at.orz.arangodb.entity.ExplainEntity;
-import at.orz.arangodb.entity.Granularity;
 import at.orz.arangodb.entity.ImportResultEntity;
 import at.orz.arangodb.entity.IndexEntity;
 import at.orz.arangodb.entity.IndexType;
@@ -46,6 +44,7 @@ import at.orz.arangodb.entity.KeyValueEntity;
 import at.orz.arangodb.entity.Policy;
 import at.orz.arangodb.entity.ScalarExampleEntity;
 import at.orz.arangodb.entity.SimpleByResultEntity;
+import at.orz.arangodb.entity.StatisticsDescriptionEntity;
 import at.orz.arangodb.entity.StatisticsEntity;
 import at.orz.arangodb.entity.StringsResultEntity;
 import at.orz.arangodb.entity.UserEntity;
@@ -497,11 +496,11 @@ public class ArangoDriver extends BaseArangoDriver {
 	public StatisticsEntity getStatistics() throws ArangoException {
 		return adminDriver.getStatistics();
 	}
-	
-	public ConnectionStatisticsEntity getConnectionStatistics(Granularity granularity, Integer length, String... figures) throws ArangoException {
-		return adminDriver.getConnectionStatistics(granularity, length, figures);
-	}
 
+	public StatisticsDescriptionEntity getStatisticsDescription() throws ArangoException {
+		return adminDriver.getStatisticsDescription();
+	}
+	
 	public ArangoVersion getVersion() throws ArangoException {
 		return adminDriver.getVersion();
 	}

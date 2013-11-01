@@ -4,6 +4,7 @@ v1.4.0-SNAPSHOT(2013-11-xx)
 * support database (for 1.4 feature)
 * add support API: /_api/database
 * add configure: defaultDatabase
+* getDocuments was changed to return document-handle
 
 v1.2.2(2013-07-10)
 ---------------------------

@@ -112,6 +112,71 @@ This library has 4 layers.
   configure.shutdown();
 ```
 
+## Database Change
+
+Since ArangoDB-1.4, support multi database.
+
+ArangoDriver is thread-safe. But ArangoDriver#setDefaultDatabase() is not safety.
+So, if you wants to switch the database, you need to create an another instance.
+
+```Java
+public class ExampleMDB {
+
+	public static void main(String[] args) {
+
+		// Initialize configure
+		ArangoConfigure configure = new ArangoConfigure();
+		configure.init();
+		
+		// Create Driver (this instance is thread-safe)
+		// If you use a multi database, you need create each instance.
+		ArangoDriver driverA = new ArangoDriver(configure); // db = _system (configure#defaultDatabase)
+		ArangoDriver driverB = new ArangoDriver(configure, "mydb2");
+		
+		try {
+			
+			// Create Collection at db(_system)
+			driverA.createCollection("example1", false, null, null, null, CollectionType.DOCUMENT);
+			driverA.createDocument("example1", 
+					new MapBuilder().put("attr1", "value1").put("attr2", "value2").get(), 
+					false, false);
+
+			// Create Database mydb2
+			driverB.createDatabase("mydb2");
+			
+			// Create Collection at db(mydb2)
+			driverB.createCollection("example2", false, null, null, null, CollectionType.DOCUMENT);
+			driverB.createDocument("example2", 
+					new MapBuilder().put("attr1-B", "value1").put("attr2-B", "value2").get(), 
+					false, false);
+			
+			// print all database names.
+			System.out.println(driverA.getDatabases());
+			// -> _system, mydb2
+
+			// get all document-handle, and print get & print document. (_system DB)
+			for (String documentHandle: driverA.getDocuments("example1", true)) {
+				DocumentEntity<Map> doc = driverA.getDocument(documentHandle, Map.class);
+				System.out.println(doc.getEntity());
+			}
+
+			for (String documentHandle: driverB.getDocuments("example2", true)) {
+				DocumentEntity<Map> doc = driverB.getDocument(documentHandle, Map.class);
+				System.out.println(doc.getEntity());
+			}
+
+		} catch (ArangoException e) {
+			e.printStackTrace();
+		} finally {
+			configure.shutdown();
+		}
+
+	}
+
+}
+```
+
+
 ## Create Graph data.
 
 Since ArangoDB-1.1, If you put a graph document to collection, you need create a collection of graph type.

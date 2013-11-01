@@ -16,10 +16,13 @@
 
 package at.orz.arangodb.example;
 
+import java.util.Map;
+
 import at.orz.arangodb.ArangoConfigure;
 import at.orz.arangodb.ArangoDriver;
 import at.orz.arangodb.ArangoException;
 import at.orz.arangodb.entity.CollectionType;
+import at.orz.arangodb.entity.DocumentEntity;
 import at.orz.arangodb.util.MapBuilder;
 
 /**
@@ -67,15 +70,20 @@ public class ExampleMDB {
 					new MapBuilder().put("attr1-B", "value1").put("attr2-B", "value2").get(), 
 					false, false);
 			
+			// print all database names.
 			System.out.println(driverA.getDatabases());
 			// -> _system, mydb2
 
-//			for (String d: driverA.getDocuments("example1")) {
-//				driverA.getDocument(documentHandle, clazz);
-//			}
+			// get all document-handle, and print get & print document. (_system DB)
+			for (String documentHandle: driverA.getDocuments("example1", true)) {
+				DocumentEntity<Map> doc = driverA.getDocument(documentHandle, Map.class);
+				System.out.println(doc.getEntity());
+			}
 
-			System.out.println(driverB.getDocuments("example2"));
-			// -> _system, mydb2
+			for (String documentHandle: driverB.getDocuments("example2", true)) {
+				DocumentEntity<Map> doc = driverB.getDocument(documentHandle, Map.class);
+				System.out.println(doc.getEntity());
+			}
 
 		} catch (ArangoException e) {
 			e.printStackTrace();

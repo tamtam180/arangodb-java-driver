@@ -58,6 +58,11 @@ public class BaseTest {
 		ArangoDriver driver = new ArangoDriver(configure);
 		ArangoDriver driverMDB = new ArangoDriver(configure, "mydb");
 		
+		// create mydb
+		try {
+			driver.createDatabase("mydb");
+		} catch (ArangoException e) {}
+		
 		return Arrays.asList(
 				new Object[]{ configure, driver },
 				new Object[]{ configure, driverMDB }
@@ -72,10 +77,7 @@ public class BaseTest {
 	
 	@BeforeClass
 	public static void __setup() {
-//		configure = new ArangoConfigure();
-//		configure.init();
-//		driver = new ArangoDriver(configure);
-//		driverMDB = new ArangoDriver(configure);
+
 	}
 	
 	@AfterClass

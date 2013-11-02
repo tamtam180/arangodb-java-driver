@@ -14,7 +14,7 @@ v1.4.0-SNAPSHOT(2013-11-xx)
 * fixed ArangoUnixTime bug.
 * remove: getServerStatus
 * remove: getConnectionStatistics
-
+* gson library upgrade to 2.2.4
 
 v1.2.2(2013-07-10)
 ---------------------------

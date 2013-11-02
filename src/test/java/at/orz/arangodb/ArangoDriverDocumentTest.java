@@ -303,6 +303,26 @@ public class ArangoDriverDocumentTest extends BaseTest {
 
 	}
 
+	@Test
+	public void test_get_document() throws ArangoException {
+		
+		// 適当にドキュメントを作る
+		TestComplexEntity01 value = new TestComplexEntity01("user-" + 9999, "説明:" + 9999, 9999);
+		DocumentEntity<TestComplexEntity01> doc = driver.createDocument(collectionName, value, null, false);
+		
+		assertThat(doc.getDocumentKey(), is(notNullValue()));
+		assertThat(doc.getDocumentHandle(), is(collectionName + "/" + doc.getDocumentKey()));
+		assertThat(doc.getDocumentRevision(), is(not(0L)));
+		
+		// Get
+		DocumentEntity<TestComplexEntity01> retVal = driver.getDocument(doc.getDocumentHandle(), TestComplexEntity01.class);
+		assertThat(retVal.getDocumentHandle(), is(doc.getDocumentHandle()));
+		assertThat(retVal.getDocumentRevision(), is(doc.getDocumentRevision()));
+		assertThat(retVal.getDocumentKey(), is(doc.getDocumentKey()));
+		
+	}
+
+	
 	// TODO Delete
 //	@Test
 //	public void test_checkDocument() throws ArangoException {

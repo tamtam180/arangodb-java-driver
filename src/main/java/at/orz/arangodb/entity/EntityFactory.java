@@ -73,7 +73,7 @@ public class EntityFactory {
 		gson = getBuilder().create();
 		gsonNull = getBuilder().serializeNulls().create();
 	}
-	
+
 	public static <T> CursorEntity<T> createResult(CursorEntity<T> entity, Class<T> clazz) {
 		if (entity._array == null) {
 			entity.results = Collections.emptyList();

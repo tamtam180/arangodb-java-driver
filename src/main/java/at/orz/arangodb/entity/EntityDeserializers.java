@@ -47,6 +47,14 @@ import com.google.gson.reflect.TypeToken;
  */
 public class EntityDeserializers {
 	
+	private static ThreadLocal<Class<?>> parameterizedBridger = new ThreadLocal<Class<?>>();
+	public static void setParameterized(Class<?> clazz) {
+		parameterizedBridger.set(clazz);
+	}
+	public static void removeParameterized() {
+		parameterizedBridger.remove();
+	}
+
 	private static <T extends BaseEntity> T deserializeBaseParameter(JsonObject obj, T entity) {
 		
 		if (obj.has("error")) {

@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import at.orz.arangodb.entity.BaseEntity;
+import at.orz.arangodb.entity.EntityDeserializers;
 import at.orz.arangodb.entity.EntityFactory;
 import at.orz.arangodb.entity.KeyValueEntity;
 import at.orz.arangodb.http.HttpResponseEntity;
@@ -124,21 +125,31 @@ public abstract class BaseArangoDriver {
 	 * @return
 	 * @throws ArangoException
 	 */
-	protected <T extends BaseEntity> T createEntity(HttpResponseEntity res, Class<T> clazz, boolean validate) throws ArangoException {
-		T entity = createEntityImpl(res, clazz);
-		if (entity == null) {
-			entity = ReflectionUtils.newInstance(clazz);
-		}
-		setStatusCode(res, entity);
-		if (validate) {
-			validate(res, entity);
+	protected <T extends BaseEntity> T createEntity(HttpResponseEntity res, Class<T> clazz, Class<?> pclazz, boolean validate) throws ArangoException {
+		try {
+			EntityDeserializers.setParameterized(pclazz);
 			
+			T entity = createEntityImpl(res, clazz);
+			if (entity == null) {
+				entity = ReflectionUtils.newInstance(clazz);
+			}
+			setStatusCode(res, entity);
+			if (validate) {
+				validate(res, entity);
+				
+			}
+			return entity;
+		} finally {
+			EntityDeserializers.removeParameterized();
 		}
-		return entity;
 	}
 
 	protected <T extends BaseEntity> T createEntity(HttpResponseEntity res, Class<T> clazz) throws ArangoException {
-		return createEntity(res, clazz, true);
+		return createEntity(res, clazz, null, true);
+	}
+
+	protected <T extends BaseEntity> T createEntity(HttpResponseEntity res, Class<T> clazz, Class<?> pclazz) throws ArangoException {
+		return createEntity(res, clazz, pclazz, true);
 	}
 
 	protected void setStatusCode(HttpResponseEntity res, BaseEntity entity) throws ArangoException {

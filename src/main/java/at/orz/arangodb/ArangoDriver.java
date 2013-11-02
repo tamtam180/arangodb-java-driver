@@ -185,6 +185,19 @@ public class ArangoDriver extends BaseArangoDriver {
 	public CollectionEntity getCollectionFigures(String name) throws ArangoException {
 		return collectionDriver.getCollectionFigures(getDefaultDatabase(), name);
 	}
+	
+	/**
+	 * 
+	 * @param name
+	 * @param withRevisions
+	 * @param withData
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public CollectionEntity getCollectionChecksum(String name, Boolean withRevisions, Boolean withData) throws ArangoException {
+		return collectionDriver.getCollectionChecksum(getDefaultDatabase(), name, withRevisions, withData);
+	}
 
 	public CollectionsEntity getCollections() throws ArangoException {
 		return collectionDriver.getCollections(getDefaultDatabase(), null);

@@ -2,16 +2,19 @@
 v1.4.0-SNAPSHOT(2013-11-xx)
 ---------------------------
 * support database (for 1.4 feature)
-* add support API: /_api/database
+* add support API: /_api/database/*
 * add configure: defaultDatabase
-* add: getStatistics 
-* add: statisticsDescription
-* add support API: /_api/endpoint
+* add support API: /_admin/statistics (getStatistics) 
+* add support API: /_admin/statistics-description (statisticsDescription)
+* add support API: /_api/endpoint/*
+* add support API: /_api/collection/{collection-name}/checksum (getCollectionChecksum)
+*                  add attribute CollectionEntity#checksum
 * getDocuments was changed to return document-handle
 * changed the version API endpoint. (/_admin/version -> /_api/version)
 * fixed ArangoUnixTime bug.
 * remove: getServerStatus
 * remove: getConnectionStatistics
+
 
 v1.2.2(2013-07-10)
 ---------------------------

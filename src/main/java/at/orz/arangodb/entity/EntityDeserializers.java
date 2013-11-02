@@ -222,6 +222,10 @@ public class EntityDeserializers {
 			if (obj.has("createOptions")) {
 				entity.createOptions = context.deserialize(obj.get("createOptions"), Map.class);
 			}
+			
+			if (obj.has("checksum")) {
+				entity.checksum = obj.getAsJsonPrimitive("checksum").getAsLong();
+			}
 
 			return entity;
 		}

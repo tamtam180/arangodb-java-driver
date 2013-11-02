@@ -129,7 +129,22 @@ public class InternalCollectionDriverImpl extends BaseArangoDriverImpl {
 		}
 
 	}
-	
+
+	public CollectionEntity getCollectionChecksum(String database, String name, Boolean withRevisions, Boolean withData) throws ArangoException {
+		
+		validateCollectionName(name);
+		HttpResponseEntity res = httpManager.doGet(
+				createEndpointUrl(baseUrl, database, "/_api/collection", name, "/checksum"),
+				new MapBuilder()
+				.put("withRevisions", withRevisions)
+				.put("withData", withData)
+				.get());
+		
+		return createEntity(res, CollectionEntity.class);
+		
+	}
+
+
 	public CollectionsEntity getCollections(String database, Boolean excludeSystem) throws ArangoException {
 
 		HttpResponseEntity res = httpManager.doGet(
@@ -141,7 +156,8 @@ public class InternalCollectionDriverImpl extends BaseArangoDriverImpl {
 		return createEntity(res, CollectionsEntity.class);
 		
 	}
-	
+
+
 	public CollectionEntity loadCollection(String database, String name, Boolean count) throws ArangoException {
 		
 		validateCollectionName(name);
@@ -155,7 +171,7 @@ public class InternalCollectionDriverImpl extends BaseArangoDriverImpl {
 		return createEntity(res, CollectionEntity.class);
 		
 	}
-
+	
 	public CollectionEntity unloadCollection(String database, String name) throws ArangoException {
 		
 		validateCollectionName(name);

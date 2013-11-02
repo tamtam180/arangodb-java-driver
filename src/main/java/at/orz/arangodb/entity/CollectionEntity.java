@@ -49,6 +49,11 @@ public class CollectionEntity extends BaseEntity {
 	Figures figures;
 
 	Map<String, Object> createOptions;
+	
+	/**
+	 * @since 1.4.0
+	 */
+	long checksum;
 
 	public String getName() {
 		return name;
@@ -64,6 +69,22 @@ public class CollectionEntity extends BaseEntity {
 
 	public CollectionStatus getStatus() {
 		return status;
+	}
+
+	public long getChecksum() {
+		return checksum;
+	}
+
+	public void setIsSystem(Boolean isSystem) {
+		this.isSystem = isSystem;
+	}
+
+	public void setIsVolatile(Boolean isVolatile) {
+		this.isVolatile = isVolatile;
+	}
+
+	public void setChecksum(long checksum) {
+		this.checksum = checksum;
 	}
 
 	public Boolean getWaitForSync() {
@@ -137,6 +158,14 @@ public class CollectionEntity extends BaseEntity {
 	public void setCreateOptions(Map<String, Object> createOptions) {
 		this.createOptions = createOptions;
 	}
+
+	public long getRevision() {
+		return revision;
+	}
+
+	public void setRevision(long revision) {
+		this.revision = revision;
+	}
 	
 	public static class Figures implements Serializable {
 		
@@ -207,12 +236,5 @@ public class CollectionEntity extends BaseEntity {
 		
 	}
 
-	public long getRevision() {
-		return revision;
-	}
-
-	public void setRevision(long revision) {
-		this.revision = revision;
-	}
 
 }

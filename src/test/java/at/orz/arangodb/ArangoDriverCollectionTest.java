@@ -437,6 +437,22 @@ public class ArangoDriverCollectionTest extends BaseTest {
 		}
 		
 	}
+	
+	@Test
+	public void test_getCollectionChecksum() throws ArangoException {
+		
+		// create collection.
+		CollectionEntity res1 = driver.createCollection(collectionName);
+		assertThat(res1.getCode(), is(200));
+		
+		// checksum
+		CollectionEntity entity = driver.getCollectionChecksum(collectionName, true, true);
+		assertThat(entity.getCode(), is(200));
+		assertThat(entity.isError(), is(false));
+		assertThat(entity.getRevision(), is(0L)); // レスポンスは戻ってきてるんだけど、0なのでどうチェックしたものか・・
+		assertThat(entity.getChecksum(), is(0L)); // 同上
+		
+	}
 
 	@Test
 	public void test_getCollections() throws ArangoException {

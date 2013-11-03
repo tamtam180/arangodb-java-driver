@@ -19,6 +19,7 @@ package at.orz.arangodb.entity;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -47,12 +48,84 @@ import com.google.gson.reflect.TypeToken;
  */
 public class EntityDeserializers {
 	
-	private static ThreadLocal<Class<?>> parameterizedBridger = new ThreadLocal<Class<?>>();
-	public static void setParameterized(Class<?> clazz) {
-		parameterizedBridger.set(clazz);
+	private static class ClassHolder {
+		private Class<?>[] clazz;
+		private int idx;
+		ClassHolder(Class<?>... clazz) {
+			this.clazz = clazz;
+			this.idx = 0;
+		}
+		public boolean isEmpty() {
+			return clazz == null || clazz.length == 0;
+		}
+		public Class<?> get() {
+			if (isEmpty()) {
+				return null;
+			}
+			return clazz[idx];
+		}
+		public Class<?> next() {
+			if (isEmpty()) {
+				return null;
+			}
+			if (idx + 1 >= clazz.length) {
+				throw new IllegalStateException("idx max-over!! idx=" + (idx+1));
+			}
+			return clazz[++idx];
+		}
+		public boolean hasNext() {
+			if (isEmpty()) {
+				return false;
+			}
+			if (idx + 1 >= clazz.length) {
+				return false;
+			}
+			return true;
+		}
+		public Class<?> back() {
+			if (isEmpty()) {
+				return null;
+			}
+			if (idx - 1 < 0) {
+				throw new IllegalStateException("idx min-over!! idx=" + (idx-1));
+			}
+			return clazz[--idx];
+		}
+	}
+	private static ThreadLocal<ClassHolder> parameterizedBridger = new ThreadLocal<ClassHolder>();
+	public static void setParameterized(Class<?>... clazz) {
+		parameterizedBridger.set(new ClassHolder(clazz));
 	}
 	public static void removeParameterized() {
 		parameterizedBridger.remove();
+	}
+	private static Class<?> getParameterized() {
+		ClassHolder holder = parameterizedBridger.get();
+		if (holder == null) {
+			return null;
+		}
+		return holder.get();
+	}
+	private static boolean hasNextParameterized() {
+		ClassHolder holder = parameterizedBridger.get();
+		if (holder == null) {
+			return false;
+		}
+		return holder.hasNext();
+	}
+	private static Class<?> nextParameterized() {
+		ClassHolder holder = parameterizedBridger.get();
+		if (holder == null) {
+			return null;
+		}
+		return holder.next();
+	}
+	private static Class<?> backParameterized() {
+		ClassHolder holder = parameterizedBridger.get();
+		if (holder == null) {
+			return null;
+		}
+		return holder.back();
 	}
 
 	private static <T extends BaseEntity> T deserializeBaseParameter(JsonObject obj, T entity) {
@@ -274,11 +347,31 @@ public class EntityDeserializers {
 	
 			
 			JsonObject obj = json.getAsJsonObject();
-			CursorEntity<?> entity = deserializeBaseParameter(obj, new CursorEntity<Object>());
+			CursorEntity<Object> entity = deserializeBaseParameter(obj, new CursorEntity<Object>());
 			
-			// resultは処理しない。後で処理をする。
+			// TODO
 			if (obj.has("result")) {
-				entity._array = obj.getAsJsonArray("result");
+				JsonArray array = obj.getAsJsonArray("result");
+				if (array == null || array.isJsonNull() || array.size() == 0) {
+					entity.results = Collections.emptyList();
+				} else {
+					Class<?> clazz = getParameterized();
+					boolean withDocument = DocumentEntity.class.isAssignableFrom(clazz);
+					if (withDocument) {
+						nextParameterized();
+					}
+					try {
+						List<Object> list = new ArrayList<Object>(array.size());
+						for (int i = 0, imax = array.size(); i < imax; i++) {
+							list.add(context.deserialize(array.get(i), clazz));
+						}
+						entity.results = list;
+					} finally {
+						if (withDocument) {
+							backParameterized();
+						}
+					}
+				}
 			}
 			
 			if (obj.has("hasMore")) {
@@ -334,6 +427,11 @@ public class EntityDeserializers {
 			}
 			
 			// 他のフィールドはリフレクションで。
+			// TODO:
+			Class<?> clazz = getParameterized();
+			if (clazz != null) {
+				entity.entity = context.deserialize(obj, clazz);
+			}
 			
 			return entity;
 		}
@@ -469,7 +567,15 @@ public class EntityDeserializers {
 				entity.toHandle = obj.getAsJsonPrimitive("_to").getAsString();
 			}
 			
-			// attributeは処理しない
+			if (obj.has("_key")) {
+				entity.key = obj.getAsJsonPrimitive("_key").getAsString();
+			}
+			
+			// FIXME
+			Class<?> clazz = getParameterized();
+			if (clazz != null) {
+				entity.attributes = context.deserialize(obj, clazz);
+			}
 			
 			return entity;
 		}
@@ -484,9 +590,25 @@ public class EntityDeserializers {
 			}
 	
 			JsonObject obj = json.getAsJsonObject();
-			EdgesEntity<?> entity = deserializeBaseParameter(obj, new EdgesEntity<Object>());
+			EdgesEntity<Object> entity = deserializeBaseParameter(obj, new EdgesEntity<Object>());
+			
+			Class<?> clazz = getParameterized();
 			if (obj.has("edges")) {
-				entity._edges = obj.getAsJsonArray("edges");
+				JsonArray array = obj.getAsJsonArray("edges");
+				
+				boolean nest = EdgeEntity.class.isAssignableFrom(clazz);
+				if (nest) nextParameterized();
+				try {
+					List<EdgeEntity<?>> list = new ArrayList<EdgeEntity<?>>(array.size());
+					for (int i = 0, imax = array.size(); i < imax; i++) {
+						EdgeEntity<Object> edge = context.deserialize(array.get(i), clazz);
+						list.add(edge);
+					}
+					entity.edges = list;
+				} finally {
+					if (nest) backParameterized();
+				}
+				
 			}
 			
 			return entity;
@@ -673,9 +795,10 @@ public class EntityDeserializers {
 			JsonObject obj = json.getAsJsonObject();
 			ScalarExampleEntity<?> entity = deserializeBaseParameter(obj, new ScalarExampleEntity<Object>());
 			
+			// TODO
 			// document属性は別のレイヤーで
 			if (obj.has("document")) {
-				entity._documentJson = obj.get("document");
+				entity.document = context.deserialize(obj.get("document"), DocumentEntity.class);
 			}
 			
 			return entity;
@@ -909,6 +1032,35 @@ public class EntityDeserializers {
 			Endpoint entity = new Endpoint();
 			entity.databases = context.deserialize(obj.getAsJsonArray("databases"), databasesType);
 			entity.endpoint = obj.getAsJsonPrimitive("endpoint").getAsString();
+			
+			return entity;
+		}
+	}
+	
+	public static class DocumentResultEntityDeserializer implements JsonDeserializer<DocumentResultEntity<?>> {
+		Type documentsType = new TypeToken<List<DocumentEntity<?>>>(){}.getType();
+		public DocumentResultEntity<?> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			
+			if (json.isJsonNull()) {
+				return null;
+			}
+			
+			JsonObject obj = json.getAsJsonObject();
+			DocumentResultEntity<Object> entity = deserializeBaseParameter(obj, new DocumentResultEntity<Object>());
+			
+			if (obj.has("result")) {
+				JsonElement resultElem = obj.get("result");
+				if (obj.isJsonArray()) {
+					entity.result = context.deserialize(resultElem, documentsType);
+				} else if (obj.isJsonObject()) {
+					DocumentEntity<Object> doc = context.deserialize(resultElem, DocumentEntity.class);
+					List<DocumentEntity<?>> list = new ArrayList<DocumentEntity<?>>(1);
+					list.add(doc);
+					entity.result = list;
+				} else {
+					throw new IllegalStateException("result type is not array or object:" + resultElem);
+				}
+			}
 			
 			return entity;
 		}

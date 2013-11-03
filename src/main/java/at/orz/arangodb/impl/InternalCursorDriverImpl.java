@@ -96,9 +96,9 @@ public class InternalCursorDriverImpl extends BaseArangoDriverImpl {
 						.get())
 				);
 		try {
-			CursorEntity<T> entity = createEntity(res, CursorEntity.class);
+			CursorEntity<T> entity = createEntity(res, CursorEntity.class, clazz);
 			// resultを処理する
-			EntityFactory.createResult(entity, clazz);
+			//EntityFactory.createResult(entity, clazz);
 			return entity;
 		} catch (ArangoException e) {
 			throw e;
@@ -106,7 +106,7 @@ public class InternalCursorDriverImpl extends BaseArangoDriverImpl {
 		
 	}
 	
-	public <T> CursorEntity<T> continueQuery(String database, long cursorId, Class<T> clazz) throws ArangoException {
+	public <T> CursorEntity<T> continueQuery(String database, long cursorId, Class<?> ...clazz) throws ArangoException {
 		
 		HttpResponseEntity res = httpManager.doPut(
 				createEndpointUrl(baseUrl, database, "/_api/cursor", cursorId), 
@@ -115,9 +115,9 @@ public class InternalCursorDriverImpl extends BaseArangoDriverImpl {
 				);
 		
 		try {
-			CursorEntity<T> entity = createEntity(res, CursorEntity.class);
+			CursorEntity<T> entity = createEntity(res, CursorEntity.class, clazz);
 			// resultを処理する
-			EntityFactory.createResult(entity, clazz);
+			//EntityFactory.createResult(entity, clazz);
 			return entity;
 		} catch (ArangoException e) {
 			throw e;
@@ -151,7 +151,7 @@ public class InternalCursorDriverImpl extends BaseArangoDriverImpl {
 			Boolean calcCount, Integer batchSize) throws ArangoException {
 		
 		CursorEntity<T> entity = executeQuery(database, query, bindVars, clazz, calcCount, batchSize);
-		CursorResultSet<T> rs = new CursorResultSet<T>(database, this, clazz, entity);
+		CursorResultSet<T> rs = new CursorResultSet<T>(database, this, entity, clazz);
 		return rs;
 		
 	}

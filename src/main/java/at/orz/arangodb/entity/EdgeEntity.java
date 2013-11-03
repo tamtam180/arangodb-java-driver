@@ -26,6 +26,7 @@ public class EdgeEntity<T> extends BaseEntity {
 	String fromHandle;
 	String toHandle;
 	long revision;
+	String key;
 	
 	T attributes;
 	//long edgeId;
@@ -66,6 +67,14 @@ public class EdgeEntity<T> extends BaseEntity {
 
 	public void setRevision(long revision) {
 		this.revision = revision;
+	}
+
+	public String getKey() {
+		return key;
+	}
+
+	public void setKey(String key) {
+		this.key = key;
 	}
 
 	public void setAttributes(T attributes) {

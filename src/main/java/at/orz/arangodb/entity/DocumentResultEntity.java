@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 tamtam180
+ * Copyright (C) 2012,2013 tamtam180
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,22 +16,36 @@
 
 package at.orz.arangodb.entity;
 
+import java.util.List;
 
 /**
  * @author tamtam180 - kirscheless at gmail.com
  *
  */
-public class ScalarExampleEntity<T> extends BaseEntity {
+public class DocumentResultEntity<T> extends BaseEntity {
 
-	//transient JsonElement _documentJson;
-	DocumentEntity<T> document;
-
-	public DocumentEntity<T> getDocument() {
-		return document;
+	List<DocumentEntity<? extends T>> result;
+	
+	public DocumentEntity<? extends T> getOne() {
+		if (result == null || result.isEmpty()) {
+			return null;
+		}
+		return result.get(0);
+	}
+	
+	public int size() {
+		if (result == null) {
+			return 0;
+		}
+		return result.size();
 	}
 
-	public void setDocument(DocumentEntity<T> document) {
-		this.document = document;
+	public List<DocumentEntity<? extends T>> getResult() {
+		return result;
+	}
+
+	public void setResult(List<DocumentEntity<? extends T>> result) {
+		this.result = result;
 	}
 	
 }

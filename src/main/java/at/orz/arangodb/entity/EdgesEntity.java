@@ -21,18 +21,15 @@ import java.util.List;
 
 import at.orz.arangodb.util.CollectionUtils;
 
-import com.google.gson.JsonArray;
-
 /**
  * @author tamtam180 - kirscheless at gmail.com
  *
  */
-public class EdgesEntity<T> extends BaseEntity implements Iterable<EdgeEntity<T>> {
+public class EdgesEntity<T> extends BaseEntity implements Iterable<EdgeEntity<? extends T>> {
 	
-	List<EdgeEntity<T>> edges;
-	transient JsonArray _edges;
+	List<EdgeEntity<? extends T>> edges;
 
-	public Iterator<EdgeEntity<T>> iterator() {
+	public Iterator<EdgeEntity<? extends T>> iterator() {
 		return CollectionUtils.safetyIterator(edges);
 	}
 	
@@ -40,14 +37,14 @@ public class EdgesEntity<T> extends BaseEntity implements Iterable<EdgeEntity<T>
 		return (edges == null) ? 0 : edges.size();
 	}
 	
-	public EdgeEntity<T> get(int index) {
+	public EdgeEntity<? extends T> get(int index) {
 		return edges.get(index);
 	}
 
-	public List<EdgeEntity<T>> getEdges() {
+	public List<EdgeEntity<? extends T>> getEdges() {
 		return edges;
 	}
-	public void setEdges(List<EdgeEntity<T>> edges) {
+	public void setEdges(List<EdgeEntity<? extends T>> edges) {
 		this.edges = edges;
 	}
 	

@@ -30,13 +30,13 @@ public class CursorResultSet<T> implements Iterable<T> {
 
 	private String database;
 	private transient InternalCursorDriverImpl cursorDriver;
-	private transient Class<T> clazz;
+	private transient Class<?>[] clazz;
 	private transient CursorEntity<T> entity;
 	private transient int pos;
 	private int totalCount;
 	private transient Iterator<T> itr;
 	
-	public CursorResultSet(String database, InternalCursorDriverImpl cursorDriver, Class<T> clazz, CursorEntity<T> entity) {
+	public CursorResultSet(String database, InternalCursorDriverImpl cursorDriver, CursorEntity<T> entity, Class<?> ...clazz) {
 		this.database = database;
 		this.cursorDriver = cursorDriver;
 		this.clazz = clazz;

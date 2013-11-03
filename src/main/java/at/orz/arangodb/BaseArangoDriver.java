@@ -125,7 +125,7 @@ public abstract class BaseArangoDriver {
 	 * @return
 	 * @throws ArangoException
 	 */
-	protected <T extends BaseEntity> T createEntity(HttpResponseEntity res, Class<T> clazz, Class<?> pclazz, boolean validate) throws ArangoException {
+	protected <T extends BaseEntity> T createEntity(HttpResponseEntity res, Class<T> clazz, Class<?>[] pclazz, boolean validate) throws ArangoException {
 		try {
 			EntityDeserializers.setParameterized(pclazz);
 			
@@ -148,7 +148,7 @@ public abstract class BaseArangoDriver {
 		return createEntity(res, clazz, null, true);
 	}
 
-	protected <T extends BaseEntity> T createEntity(HttpResponseEntity res, Class<T> clazz, Class<?> pclazz) throws ArangoException {
+	protected <T extends BaseEntity> T createEntity(HttpResponseEntity res, Class<T> clazz, Class<?>... pclazz) throws ArangoException {
 		return createEntity(res, clazz, pclazz, true);
 	}
 

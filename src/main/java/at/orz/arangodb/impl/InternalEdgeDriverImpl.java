@@ -36,12 +36,8 @@ public class InternalEdgeDriverImpl extends BaseArangoDriverImpl {
 				EntityFactory.toJsonString(attribute)
 				);
 		
-		try {
-			EdgeEntity<T> entity = createEntity(res, EdgeEntity.class);
-			return entity;
-		} catch (ArangoException e) {
-			throw e;
-		}
+		EdgeEntity<T> entity = createEntity(res, EdgeEntity.class);
+		return entity;
 		
 	}
 
@@ -65,12 +61,8 @@ public class InternalEdgeDriverImpl extends BaseArangoDriverImpl {
 				EntityFactory.toJsonString(attribute)
 				);
 		
-		try {
-			EdgeEntity<T> entity = createEntity(res, EdgeEntity.class);
-			return entity;
-		} catch (ArangoException e) {
-			return null;
-		}
+		EdgeEntity<T> entity = createEntity(res, EdgeEntity.class);
+		return entity;
 		
 	}
 	
@@ -101,16 +93,7 @@ public class InternalEdgeDriverImpl extends BaseArangoDriverImpl {
 				createEndpointUrl(baseUrl, database, "/_api/edge", edgeHandle)
 				);
 		
-		try {
-			EdgeEntity<T> entity = createEntity(res, EdgeEntity.class);
-			if (entity != null) {
-				T obj = createEntityImpl(res, attributeClass);
-				entity.setAttributes(obj);
-			}
-			return entity;
-		} catch (ArangoException e) {
-			return null;
-		}
+		return createEntity(res, EdgeEntity.class, attributeClass);
 		
 	}
 
@@ -121,12 +104,8 @@ public class InternalEdgeDriverImpl extends BaseArangoDriverImpl {
 				createEndpointUrl(baseUrl, database, "/_api/edge", edgeHandle),
 				null);
 		
-		try {
-			EdgeEntity<?> entity = createEntity(res, EdgeEntity.class);
-			return entity;
-		} catch (ArangoException e) {
-			return null;
-		}
+		EdgeEntity<?> entity = createEntity(res, EdgeEntity.class);
+		return entity;
 		
 	}
 	
@@ -142,14 +121,7 @@ public class InternalEdgeDriverImpl extends BaseArangoDriverImpl {
 					.get()
 				);
 		
-		try {
-			EdgesEntity<T> entity = EntityFactory.createEdges(res.getText(), edgeAttributeClass);
-			setStatusCode(res, entity);
-			validate(res, entity);
-			return entity;
-		} catch (ArangoException e) {
-			return null;
-		}
+		return createEntity(res, EdgesEntity.class, edgeAttributeClass);
 		
 	}
 

@@ -147,12 +147,12 @@ public class InternalDocumentDriverImpl extends BaseArangoDriverImpl {
 		
 		// TODO Case of StatusCode=304
 		
-		T obj = createEntityImpl(res, clazz);
-		DocumentEntity<T> entity = createEntity(res, DocumentEntity.class);
+		//T obj = createEntityImpl(res, clazz);
+		DocumentEntity<T> entity = createEntity(res, DocumentEntity.class, clazz);
 		if (entity == null) {
 			entity = new DocumentEntity<T>();
 		}
-		entity.setEntity(obj);
+		//entity.setEntity(obj);
 		return entity;
 
 	}

@@ -245,6 +245,36 @@ public class EntityDeserializers {
 		}
 	}
 	
+	public static class CollectionKeyOptionDeserializer implements JsonDeserializer<CollectionKeyOption> {
+		public CollectionKeyOption deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+
+			if (json.isJsonNull()) {
+				return null;
+			}
+
+			JsonObject obj = json.getAsJsonObject();
+			CollectionKeyOption entity = new CollectionKeyOption();
+
+			if (obj.has("type")) {
+				entity.type = obj.getAsJsonPrimitive("type").getAsString();
+			}
+			
+			if (obj.has("allowUserKeys")) {
+				entity.allowUserKeys = obj.getAsJsonPrimitive("allowUserKeys").getAsBoolean();
+			}
+			
+			if (obj.has("increment")) {
+				entity.increment = obj.getAsJsonPrimitive("increment").getAsLong();
+			}
+			
+			if (obj.has("offset")) {
+				entity.offset = obj.getAsJsonPrimitive("offset").getAsLong();
+			}
+			
+			return entity;
+		}
+	}
+	
 	public static class CollectionEntityDeserializer implements JsonDeserializer<CollectionEntity> {
 		public CollectionEntity deserialize(JsonElement json, Type typeOfT,
 				JsonDeserializationContext context) throws JsonParseException {
@@ -300,14 +330,18 @@ public class EntityDeserializers {
 				entity.type = CollectionType.valueOf(obj.getAsJsonPrimitive("type").getAsInt());
 			}
 			
-			if (obj.has("createOptions")) {
-				entity.createOptions = context.deserialize(obj.get("createOptions"), Map.class);
+			if (obj.has("keyOptions")) {
+				entity.keyOptions = context.deserialize(obj.get("keyOptions"), CollectionKeyOption.class);
 			}
 			
 			if (obj.has("checksum")) {
 				entity.checksum = obj.getAsJsonPrimitive("checksum").getAsLong();
 			}
 
+			if (obj.has("doCompact")) {
+				entity.doCompact = obj.getAsJsonPrimitive("doCompact").getAsBoolean();
+			}
+			
 			return entity;
 		}
 	}

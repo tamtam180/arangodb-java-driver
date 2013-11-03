@@ -8,11 +8,15 @@ v1.4.0-SNAPSHOT(2013-11-xx)
 * add support API: /_admin/statistics-description (statisticsDescription)
 * add support API: /_api/endpoint/*
 * add support API: /_api/collection/{collection-name}/checksum (getCollectionChecksum)
-*                  add attribute CollectionEntity#checksum
 * add support API: /_api/example/first
 * add support API: /_api/example/last
+* add attribute: CollectionEntity#checksum
+* add attribute: CollectionEntity#doCompact
+* add attribute: CollectionEntity#keyOptions
+* remove attribute: CollectionEntity#createOptions
 * getDocuments was changed to return document-handle
 * changed the version API endpoint. (/_admin/version -> /_api/version)
+* changed into createOptions to keyOptions of collection API
 * fixed ArangoUnixTime bug.
 * remove: getServerStatus
 * remove: getConnectionStatistics

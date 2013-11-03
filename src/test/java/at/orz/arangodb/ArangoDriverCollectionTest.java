@@ -19,7 +19,6 @@ package at.orz.arangodb;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeSet;
 
@@ -31,6 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import at.orz.arangodb.ArangoException;
 import at.orz.arangodb.entity.CollectionEntity;
+import at.orz.arangodb.entity.CollectionKeyOption;
 import at.orz.arangodb.entity.CollectionStatus;
 import at.orz.arangodb.entity.CollectionType;
 import at.orz.arangodb.entity.CollectionsEntity;
@@ -161,12 +161,13 @@ public class ArangoDriverCollectionTest extends BaseTest {
 	@Test
 	public void test_create_with_options() throws ArangoException {
 		
-		Map<String, Object> createOptions = new LinkedHashMap<String, Object>();
-		createOptions.put("ext_opt1", 100.0);
-		createOptions.put("ext_opt2", "寿司・天ぷら");
-		createOptions.put("ext_opt3", true);
+		CollectionKeyOption keyOptions = new CollectionKeyOption();
+		keyOptions.setType("autoincrement");
+		keyOptions.setAllowUserKeys(true);
+		keyOptions.setIncrement(10);
+		keyOptions.setOffset(200);
 		
-		CollectionEntity res = driver.createCollection(collectionName, null, null, null, null, CollectionType.DOCUMENT, createOptions);
+		CollectionEntity res = driver.createCollection(collectionName, null, null, null, null, CollectionType.DOCUMENT, keyOptions);
 		assertThat(res, is(notNullValue()));
 		assertThat(res.getCode(), is(200));
 		assertThat(res.getId(), is(not(0L)));
@@ -179,13 +180,15 @@ public class ArangoDriverCollectionTest extends BaseTest {
 		
 		// 現状では戻り値でとれないので別のAPIで確認する
 		//// TODO 現状では戻ってこないことを確認する
-		assertThat(res.getCreateOptions(), is(nullValue()));
+		assertThat(res.getKeyOptions(), is(nullValue()));
 		
-		// TODO このAPIでもとれなくなっていた。
-//		CollectionEntity ent = driver.getCollectionProperties(collectionName);
-//		Map<String, Object> map = ent.getCreateOptions();
-//		assertThat(map.size(), is(3));
-//		assertThat(map, is(createOptions));
+		// 別のAPIで確認する
+		CollectionEntity ent = driver.getCollectionProperties(collectionName);
+		CollectionKeyOption opt = ent.getKeyOptions();
+		assertThat(opt.isAllowUserKeys(), is(true));
+		assertThat(opt.getType(), is("autoincrement"));
+		assertThat(opt.getIncrement(), is(10L));
+		assertThat(opt.getOffset(), is(200L));
 		
 	}
 	
@@ -270,11 +273,19 @@ public class ArangoDriverCollectionTest extends BaseTest {
 		assertThat(collection.getName(), is(collectionName));
 		assertThat(collection.getWaitForSync(), is(Boolean.FALSE));
 		assertThat(collection.getJournalSize(), is(32L * 1024 * 1024)); // 32MB
-		// TODO Countがないこと
-		// TODO status
-		// TODO type
-		// TODO Revisionがないこと
+		assertThat(collection.getIsSystem(), is(false));
+		assertThat(collection.getIsVolatile(), is(false));
+
+		assertThat(collection.getStatus(), is(CollectionStatus.LOADED)); // 3
+		assertThat(collection.getType(), is(CollectionType.DOCUMENT)); // 2
+		assertThat(collection.getDoCompact(), is(true));
 		
+		assertThat(collection.getKeyOptions().getType(), is("traditional"));
+		assertThat(collection.getKeyOptions().isAllowUserKeys(), is(true));
+
+		// TODO Countがないこと
+		// TODO Revisionがないこと
+
 	}
 
 	/**

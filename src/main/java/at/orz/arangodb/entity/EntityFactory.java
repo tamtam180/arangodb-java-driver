@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import at.orz.arangodb.entity.CollectionEntity.Figures;
+import at.orz.arangodb.entity.EntityDeserializers.CollectionKeyOptionDeserializer;
 import at.orz.arangodb.http.JsonSequenceEntity;
 
 import com.google.gson.Gson;
@@ -63,6 +64,7 @@ public class EntityFactory {
 			.registerTypeAdapter(BooleanResultEntity.class, new EntityDeserializers.BooleanResultEntityDeserializer())
 			.registerTypeAdapter(Endpoint.class, new EntityDeserializers.EndpointDeserializer())
 			.registerTypeAdapter(DocumentResultEntity.class, new EntityDeserializers.DocumentResultEntityDeserializer())
+			.registerTypeAdapter(CollectionKeyOptionDeserializer.class, new EntityDeserializers.CollectionKeyOptionDeserializer())
 			;
 	}
 	static {

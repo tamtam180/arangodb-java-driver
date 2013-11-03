@@ -17,7 +17,6 @@
 package at.orz.arangodb.entity;
 
 import java.io.Serializable;
-import java.util.Map;
 
 
 /**
@@ -48,12 +47,20 @@ public class CollectionEntity extends BaseEntity {
 	
 	Figures figures;
 
-	Map<String, Object> createOptions;
+	/**
+	 * @since 1.4.0
+	 */
+	CollectionKeyOption keyOptions;
 	
 	/**
 	 * @since 1.4.0
 	 */
 	long checksum;
+	
+	/**
+	 * @since 1.4.0
+	 */
+	Boolean doCompact;
 
 	public String getName() {
 		return name;
@@ -111,8 +118,8 @@ public class CollectionEntity extends BaseEntity {
 		return figures;
 	}
 
-	public Map<String, Object> getCreateOptions() {
-		return createOptions;
+	public CollectionKeyOption getKeyOptions() {
+		return keyOptions;
 	}
 	
 	public void setName(String name) {
@@ -155,8 +162,8 @@ public class CollectionEntity extends BaseEntity {
 		this.figures = figures;
 	}
 	
-	public void setCreateOptions(Map<String, Object> createOptions) {
-		this.createOptions = createOptions;
+	public void setKeyOptions(CollectionKeyOption keyOptions) {
+		this.keyOptions = keyOptions;
 	}
 
 	public long getRevision() {
@@ -166,7 +173,15 @@ public class CollectionEntity extends BaseEntity {
 	public void setRevision(long revision) {
 		this.revision = revision;
 	}
-	
+
+	public Boolean getDoCompact() {
+		return doCompact;
+	}
+
+	public void setDoCompact(Boolean doCompact) {
+		this.doCompact = doCompact;
+	}
+
 	public static class Figures implements Serializable {
 		
 		long aliveCount;
@@ -235,6 +250,5 @@ public class CollectionEntity extends BaseEntity {
 		}
 		
 	}
-
 
 }

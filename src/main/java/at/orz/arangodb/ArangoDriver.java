@@ -26,6 +26,7 @@ import at.orz.arangodb.entity.ArangoUnixTime;
 import at.orz.arangodb.entity.ArangoVersion;
 import at.orz.arangodb.entity.BooleanResultEntity;
 import at.orz.arangodb.entity.CollectionEntity;
+import at.orz.arangodb.entity.CollectionKeyOption;
 import at.orz.arangodb.entity.CollectionType;
 import at.orz.arangodb.entity.CollectionsEntity;
 import at.orz.arangodb.entity.CursorEntity;
@@ -147,8 +148,8 @@ public class ArangoDriver extends BaseArangoDriver {
 	}
 
 	public CollectionEntity createCollection(String name, Boolean waitForSync,
-			Integer journalSize, Boolean isSystem, Boolean isVolatile, CollectionType type, Map<String, Object> createOptions) throws ArangoException {
-		return collectionDriver.createCollection(getDefaultDatabase(), name, waitForSync, journalSize, isSystem, isVolatile, type, createOptions);
+			Integer journalSize, Boolean isSystem, Boolean isVolatile, CollectionType type, CollectionKeyOption keyOptions) throws ArangoException {
+		return collectionDriver.createCollection(getDefaultDatabase(), name, waitForSync, journalSize, isSystem, isVolatile, type, keyOptions);
 	}
 	
 	public CollectionEntity getCollection(long id) throws ArangoException {

@@ -2,6 +2,8 @@
 v1.4.0-SNAPSHOT(2013-11-xx)
 ---------------------------
 * support database (for 1.4 feature)
+* stop the API of edge *temporarily* in version 1.4.0
+* stop the API of kvs(/_api/key) in version 1.4.0(because server does not support yet.)
 * add support API: /_api/database/*
 * add configure: defaultDatabase
 * add support API: /_admin/statistics (getStatistics) 

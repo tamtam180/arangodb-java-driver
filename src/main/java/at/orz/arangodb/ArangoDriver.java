@@ -17,7 +17,6 @@
 package at.orz.arangodb;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -32,18 +31,14 @@ import at.orz.arangodb.entity.CollectionsEntity;
 import at.orz.arangodb.entity.CursorEntity;
 import at.orz.arangodb.entity.DatabaseEntity;
 import at.orz.arangodb.entity.DefaultEntity;
-import at.orz.arangodb.entity.Direction;
 import at.orz.arangodb.entity.DocumentEntity;
 import at.orz.arangodb.entity.DocumentResultEntity;
-import at.orz.arangodb.entity.EdgeEntity;
-import at.orz.arangodb.entity.EdgesEntity;
 import at.orz.arangodb.entity.Endpoint;
 import at.orz.arangodb.entity.ExplainEntity;
 import at.orz.arangodb.entity.ImportResultEntity;
 import at.orz.arangodb.entity.IndexEntity;
 import at.orz.arangodb.entity.IndexType;
 import at.orz.arangodb.entity.IndexesEntity;
-import at.orz.arangodb.entity.KeyValueEntity;
 import at.orz.arangodb.entity.Policy;
 import at.orz.arangodb.entity.ScalarExampleEntity;
 import at.orz.arangodb.entity.SimpleByResultEntity;
@@ -58,11 +53,9 @@ import at.orz.arangodb.impl.InternalCollectionDriverImpl;
 import at.orz.arangodb.impl.InternalCursorDriverImpl;
 import at.orz.arangodb.impl.InternalDatabaseDriverImpl;
 import at.orz.arangodb.impl.InternalDocumentDriverImpl;
-import at.orz.arangodb.impl.InternalEdgeDriverImpl;
 import at.orz.arangodb.impl.InternalEndpointDriverImpl;
 import at.orz.arangodb.impl.InternalImportDriverImpl;
 import at.orz.arangodb.impl.InternalIndexDriverImpl;
-import at.orz.arangodb.impl.InternalKVSDriverImpl;
 import at.orz.arangodb.impl.InternalSimpleDriverImpl;
 import at.orz.arangodb.impl.InternalUsersDriverImpl;
 import at.orz.arangodb.util.ResultSetUtils;
@@ -85,9 +78,9 @@ public class ArangoDriver extends BaseArangoDriver {
 	private InternalCursorDriverImpl cursorDriver;
 	private InternalCollectionDriverImpl collectionDriver;
 	private InternalDocumentDriverImpl documentDriver;
-	private InternalKVSDriverImpl kvsDriver;
+	//private InternalKVSDriverImpl kvsDriver;
 	private InternalIndexDriverImpl indexDriver;
-	private InternalEdgeDriverImpl edgeDriver;
+	//private InternalEdgeDriverImpl edgeDriver;
 	private InternalAdminDriverImpl adminDriver;
 	private InternalSimpleDriverImpl simpleDriver;
 	private InternalUsersDriverImpl usersDriver;
@@ -115,9 +108,9 @@ public class ArangoDriver extends BaseArangoDriver {
 		this.cursorDriver = ImplFactory.createCursorDriver(configure);
 		this.collectionDriver = ImplFactory.createCollectionDriver(configure);
 		this.documentDriver = ImplFactory.createDocumentDriver(configure);
-		this.kvsDriver = ImplFactory.createKVSDriver(configure);
+		//this.kvsDriver = ImplFactory.createKVSDriver(configure);
 		this.indexDriver = ImplFactory.createIndexDriver(configure, cursorDriver);
-		this.edgeDriver = ImplFactory.createEdgeDriver(configure);
+		//this.edgeDriver = ImplFactory.createEdgeDriver(configure);
 		this.adminDriver = ImplFactory.createAdminDriver(configure);
 		this.simpleDriver = ImplFactory.createSimpleDriver(configure, cursorDriver);
 		this.usersDriver = ImplFactory.createUsersDriver(configure);
@@ -374,22 +367,22 @@ public class ArangoDriver extends BaseArangoDriver {
 
 	// ---------------------------------------- start of kvs ----------------------------------------
 	
-	public KeyValueEntity createKeyValue(
-			String collectionName, String key, Object value, 
-			Map<String, Object> attributes, Date expiredDate
-			) throws ArangoException {
-		return kvsDriver.createKeyValue(getDefaultDatabase(), collectionName, key, value, attributes, expiredDate);
-	}
-	
-	public KeyValueEntity updateKeyValue(
-			String collectionName, String key, Object value, 
-			Map<String, Object> attributes, Date expiredDate,
-			boolean create
-			) throws ArangoException {
-		return kvsDriver.updateKeyValue(getDefaultDatabase(), collectionName, key, value, attributes, expiredDate, create);
-	}
-	
-	// TODO 全部実装されていないので実装する。ただ、1.1.1の段階ではドキュメントが工事中なんだが。
+//	public KeyValueEntity createKeyValue(
+//			String collectionName, String key, Object value, 
+//			Map<String, Object> attributes, Date expiredDate
+//			) throws ArangoException {
+//		return kvsDriver.createKeyValue(getDefaultDatabase(), collectionName, key, value, attributes, expiredDate);
+//	}
+//	
+//	public KeyValueEntity updateKeyValue(
+//			String collectionName, String key, Object value, 
+//			Map<String, Object> attributes, Date expiredDate,
+//			boolean create
+//			) throws ArangoException {
+//		return kvsDriver.updateKeyValue(getDefaultDatabase(), collectionName, key, value, attributes, expiredDate, create);
+//	}
+//	
+//	// TODO 全部実装されていないので実装する。ただ、1.1.1の段階ではドキュメントが工事中なんだが。
 	
 	// ---------------------------------------- end of kvs ----------------------------------------
 
@@ -448,54 +441,54 @@ public class ArangoDriver extends BaseArangoDriver {
 
 	// ---------------------------------------- start of edge ----------------------------------------
 
-	public <T> EdgeEntity<T> createEdge(
-			long collectionId, 
-			String fromHandle, String toHandle, 
-			T attribute) throws ArangoException {
-		return createEdge(String.valueOf(collectionId), fromHandle, toHandle, attribute);
-	}
-	
-	public <T> EdgeEntity<T> createEdge(
-			String collectionName, 
-			String fromHandle, String toHandle, 
-			T attribute) throws ArangoException {
-		
-		return edgeDriver.createEdge(getDefaultDatabase(), collectionName, fromHandle, toHandle, attribute);
-	}
-
-	// TODO UpdateEdge
-	public <T> EdgeEntity<T> updateEdge(
-			String collectionName, 
-			String fromHandle, String toHandle, 
-			T attribute) throws ArangoException {
-		return edgeDriver.updateEdge(getDefaultDatabase(), collectionName, fromHandle, toHandle, attribute);
-	}
-	
-	public long checkEdge(String edgeHandle) throws ArangoException {
-		return edgeDriver.checkEdge(getDefaultDatabase(), edgeHandle);
-	}
-	
-	/**
-	 * エッジハンドルを指定して、エッジの情報を取得する。
-	 * @param edgeHandle
-	 * @param attributeClass
-	 * @return
-	 * @throws ArangoException
-	 */
-	public <T> EdgeEntity<T> getEdge(String edgeHandle, Class<T> attributeClass) throws ArangoException {
-		return edgeDriver.getEdge(getDefaultDatabase(), edgeHandle, attributeClass);
-	}
-
-	public EdgeEntity<?> deleteEdge(long collectionId, String edgeHandle) throws ArangoException {
-		return deleteEdge(String.valueOf(collectionId), edgeHandle);
-	}
-	public EdgeEntity<?> deleteEdge(String collectionName, String edgeHandle) throws ArangoException {
-		return edgeDriver.deleteEdge(getDefaultDatabase(), collectionName, edgeHandle);
-	}
-	
-	public <T> EdgesEntity<T> getEdges(String collectionName, String vertexHandle, Direction direction, Class<T> edgeAttributeClass) throws ArangoException {
-		return edgeDriver.getEdges(getDefaultDatabase(), collectionName, vertexHandle, direction, edgeAttributeClass);
-	}
+//	public <T> EdgeEntity<T> createEdge(
+//			long collectionId, 
+//			String fromHandle, String toHandle, 
+//			T attribute) throws ArangoException {
+//		return createEdge(String.valueOf(collectionId), fromHandle, toHandle, attribute);
+//	}
+//	
+//	public <T> EdgeEntity<T> createEdge(
+//			String collectionName, 
+//			String fromHandle, String toHandle, 
+//			T attribute) throws ArangoException {
+//		
+//		return edgeDriver.createEdge(getDefaultDatabase(), collectionName, fromHandle, toHandle, attribute);
+//	}
+//
+//	// TODO UpdateEdge
+//	public <T> EdgeEntity<T> updateEdge(
+//			String collectionName, 
+//			String fromHandle, String toHandle, 
+//			T attribute) throws ArangoException {
+//		return edgeDriver.updateEdge(getDefaultDatabase(), collectionName, fromHandle, toHandle, attribute);
+//	}
+//	
+//	public long checkEdge(String edgeHandle) throws ArangoException {
+//		return edgeDriver.checkEdge(getDefaultDatabase(), edgeHandle);
+//	}
+//	
+//	/**
+//	 * エッジハンドルを指定して、エッジの情報を取得する。
+//	 * @param edgeHandle
+//	 * @param attributeClass
+//	 * @return
+//	 * @throws ArangoException
+//	 */
+//	public <T> EdgeEntity<T> getEdge(String edgeHandle, Class<T> attributeClass) throws ArangoException {
+//		return edgeDriver.getEdge(getDefaultDatabase(), edgeHandle, attributeClass);
+//	}
+//
+//	public EdgeEntity<?> deleteEdge(long collectionId, String edgeHandle) throws ArangoException {
+//		return deleteEdge(String.valueOf(collectionId), edgeHandle);
+//	}
+//	public EdgeEntity<?> deleteEdge(String collectionName, String edgeHandle) throws ArangoException {
+//		return edgeDriver.deleteEdge(getDefaultDatabase(), collectionName, edgeHandle);
+//	}
+//	
+//	public <T> EdgesEntity<T> getEdges(String collectionName, String vertexHandle, Direction direction, Class<T> edgeAttributeClass) throws ArangoException {
+//		return edgeDriver.getEdges(getDefaultDatabase(), collectionName, vertexHandle, direction, edgeAttributeClass);
+//	}
 	
 	
 	// ---------------------------------------- end of edge ----------------------------------------

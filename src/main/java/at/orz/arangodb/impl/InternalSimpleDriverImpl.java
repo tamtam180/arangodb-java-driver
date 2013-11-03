@@ -532,8 +532,27 @@ public class InternalSimpleDriverImpl extends BaseArangoDriverWithCursorImpl {
 		
 	}
 
-
-
 	// ----- last --------------------
+
+	public <T> DocumentResultEntity<T> executeSimpleLast(
+			String database,
+			String collectionName,
+			Integer count,
+			Class<T> clazz) throws ArangoException {
+		
+		validateCollectionName(collectionName);
+		HttpResponseEntity res = httpManager.doPut(
+				createEndpointUrl(baseUrl, database, "/_api/simple/last"), 
+				null,
+				EntityFactory.toJsonString(
+						new MapBuilder()
+						.put("collection", collectionName)
+						.put("count", count)
+						.get())
+				);
+		
+		return createEntity(res, DocumentResultEntity.class, clazz);
+		
+	}
 
 }

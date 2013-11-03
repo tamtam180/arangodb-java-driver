@@ -688,13 +688,38 @@ public class ArangoDriver extends BaseArangoDriver {
 		return simpleDriver.executeSimpleUpdateByExample(getDefaultDatabase(), collectionName, example, newValue, keepNull, waitForSync, limit);
 	}
 
+	/**
+	 * 
+	 * @param collectionName
+	 * @param count
+	 * @param clazz
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
 	public <T> DocumentResultEntity<T> executeSimpleFirst(
 			String collectionName,
 			Integer count,
 			Class<T> clazz) throws ArangoException {
 		return simpleDriver.executeSimpleFirst(getDefaultDatabase(), collectionName, count, clazz);
 	}
-	
+
+	/**
+	 * 
+	 * @param collectionName
+	 * @param count
+	 * @param clazz
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public <T> DocumentResultEntity<T> executeSimpleLast(
+			String collectionName,
+			Integer count,
+			Class<T> clazz) throws ArangoException {
+		return simpleDriver.executeSimpleLast(getDefaultDatabase(), collectionName, count, clazz);
+	}
+
 	// ---------------------------------------- end of simple ----------------------------------------
 
 	// ---------------------------------------- start of users ----------------------------------------

@@ -19,14 +19,19 @@ package at.orz.arangodb;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import org.junit.Before;
 import org.junit.Test;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import at.orz.arangodb.entity.EntityFactory;
+import at.orz.arangodb.entity.ReplicationDumpRecord;
 import at.orz.arangodb.entity.ReplicationInventoryEntity;
 import at.orz.arangodb.entity.ReplicationInventoryEntity.Collection;
+import at.orz.arangodb.util.DumpHandler;
 
 /**
  * @author tamtam180 - kirscheless at gmail.com
@@ -36,6 +41,11 @@ public class ArangoDriverReplicationTest extends BaseTest {
 
 	public ArangoDriverReplicationTest(ArangoConfigure configure, ArangoDriver driver) {
 		super(configure, driver);
+	}
+	
+	@Before
+	public void before() {
+		driver.setDefaultDatabase(null);
 	}
 
 	@Test
@@ -79,5 +89,125 @@ public class ArangoDriverReplicationTest extends BaseTest {
 		}
 		
 	}
+	
+	@Test
+	public void test_get_dump() throws ArangoException {
+		
+		String collectionName = "rep_dump_test";
+		
+		try {
+			driver.deleteCollection(collectionName);
+		} catch (ArangoException e) {}
+		try {
+			driver.createCollection(collectionName);
+		} catch (ArangoException e) {}
 
+		// create 10 document
+		for (int i = 0; i < 10; i++) {
+			TestComplexEntity01 entity = new TestComplexEntity01("user-" + i, "desc-" + i, 20+i);
+			driver.createDocument(collectionName, entity, true, null);
+		}
+		// truncate
+		try {
+			driver.truncateCollection(collectionName);
+		} catch (ArangoException e) {}
+		// create 1 document
+		TestComplexEntity01 entity = new TestComplexEntity01("user-99", "desc-99", 99);
+		driver.createDocument(collectionName, entity, true, null);
+		
+		final AtomicInteger upsertCount = new AtomicInteger(0);
+		final AtomicInteger deleteCount = new AtomicInteger(0);
+		driver.getReplicationDump(collectionName, null, null, null, null, TestComplexEntity01.class, new DumpHandler<TestComplexEntity01>() {
+			public boolean handle(ReplicationDumpRecord<TestComplexEntity01> entity) {
+				switch (entity.getType()) {
+				case DOCUMENT_UPSERT:
+				case EDGE_UPSERT:
+					int x = upsertCount.getAndIncrement();
+					assertThat(entity.getTick(), is(not(0L)));
+					assertThat(entity.getKey(), is(not(nullValue())));
+					assertThat(entity.getRev(), is(not(0L)));
+					assertThat(entity.getData(), is(notNullValue()));
+					assertThat(entity.getData().getDocumentKey(), is(notNullValue()));
+					assertThat(entity.getData().getDocumentRevision(), is(not(0L)));
+					assertThat(entity.getData().getDocumentHandle(), is(nullValue()));
+					assertThat(entity.getData().getEntity().getAge(), is(not(0)));
+					break;
+				case DELETION:
+					deleteCount.incrementAndGet();
+					assertThat(entity.getTick(), is(not(0L)));
+					assertThat(entity.getKey(), is(not(nullValue())));
+					assertThat(entity.getRev(), is(not(0L)));
+					assertThat(entity.getData(), is(nullValue()));
+					break;
+				}
+				return true;
+			}
+		});
+		
+		assertThat(upsertCount.get(), is(11));
+		assertThat(deleteCount.get(), is(10));
+		
+	}
+
+	@Test
+	public void test_get_dump_noticks() throws ArangoException {
+		
+		String collectionName = "rep_dump_test";
+		
+		try {
+			driver.deleteCollection(collectionName);
+		} catch (ArangoException e) {}
+		try {
+			driver.createCollection(collectionName);
+		} catch (ArangoException e) {}
+
+		// create 10 document
+		for (int i = 0; i < 10; i++) {
+			TestComplexEntity01 entity = new TestComplexEntity01("user-" + i, "desc-" + i, 20+i);
+			driver.createDocument(collectionName, entity, true, null);
+		}
+		// truncate
+		try {
+			driver.truncateCollection(collectionName);
+		} catch (ArangoException e) {}
+		// create 1 document
+		TestComplexEntity01 entity = new TestComplexEntity01("user-99", "desc-99", 99);
+		driver.createDocument(collectionName, entity, true, null);
+		
+		final AtomicInteger upsertCount = new AtomicInteger(0);
+		final AtomicInteger deleteCount = new AtomicInteger(0);
+		driver.getReplicationDump(collectionName, null, null, null, false, TestComplexEntity01.class, new DumpHandler<TestComplexEntity01>() {
+			public boolean handle(ReplicationDumpRecord<TestComplexEntity01> entity) {
+				switch (entity.getType()) {
+				case DOCUMENT_UPSERT:
+				case EDGE_UPSERT:
+					int x = upsertCount.getAndIncrement();
+					assertThat(entity.getTick(), is((0L)));
+					assertThat(entity.getKey(), is(not(nullValue())));
+					assertThat(entity.getRev(), is(not(0L)));
+					assertThat(entity.getData(), is(notNullValue()));
+					assertThat(entity.getData().getDocumentKey(), is(notNullValue()));
+					assertThat(entity.getData().getDocumentRevision(), is(not(0L)));
+					assertThat(entity.getData().getDocumentHandle(), is(nullValue()));
+					assertThat(entity.getData().getEntity().getAge(), is(not(0)));
+					break;
+				case DELETION:
+					deleteCount.incrementAndGet();
+					assertThat(entity.getTick(), is((0L)));
+					assertThat(entity.getKey(), is(not(nullValue())));
+					assertThat(entity.getRev(), is(not(0L)));
+					assertThat(entity.getData(), is(nullValue()));
+					break;
+				}
+				return true;
+			}
+		});
+		
+		assertThat(upsertCount.get(), is(11));
+		assertThat(deleteCount.get(), is(10));
+		
+	}
+
+	// TODO: Dump from-to
+	
 }

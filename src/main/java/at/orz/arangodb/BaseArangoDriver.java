@@ -16,7 +16,6 @@
 
 package at.orz.arangodb;
 
-import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Map;
@@ -26,6 +25,7 @@ import at.orz.arangodb.entity.BaseEntity;
 import at.orz.arangodb.entity.EntityDeserializers;
 import at.orz.arangodb.entity.EntityFactory;
 import at.orz.arangodb.entity.KeyValueEntity;
+import at.orz.arangodb.entity.StreamEntity;
 import at.orz.arangodb.http.HttpResponseEntity;
 import at.orz.arangodb.util.DateUtils;
 import at.orz.arangodb.util.ReflectionUtils;
@@ -136,9 +136,17 @@ public abstract class BaseArangoDriver {
 			setStatusCode(res, entity);
 			if (validate) {
 				validate(res, entity);
-				
 			}
 			return entity;
+		} finally {
+			EntityDeserializers.removeParameterized();
+		}
+	}
+
+	protected <T> T createEntity(String str, Class<T> clazz, Class<?>... pclazz) throws ArangoException {
+		try {
+			EntityDeserializers.setParameterized(pclazz);
+			return EntityFactory.createEntity(str, clazz);
 		} finally {
 			EntityDeserializers.removeParameterized();
 		}
@@ -171,6 +179,7 @@ public abstract class BaseArangoDriver {
 		// Custom Error
 		if (res.getStatusCode() >= 400) {
 			entity.setErrorNumber(res.getStatusCode());
+			entity.setErrorMessage(res.getStatusPhrase());
 			switch (res.getStatusCode()) {
 			case 401:
 				entity.setErrorMessage("Unauthorized");
@@ -178,12 +187,16 @@ public abstract class BaseArangoDriver {
 			case 403:
 				entity.setErrorMessage("Forbidden");
 				break;
+			default:
 			}
 			throw new ArangoException(entity);
 		}
 	}
 	
-	protected <T> T createEntityImpl(HttpResponseEntity res, Type type) throws ArangoException {
+	protected <T> T createEntityImpl(HttpResponseEntity res, Class<T> type) throws ArangoException {
+		if (StreamEntity.class.isAssignableFrom(type)) {
+			return (T) new StreamEntity(res.getStream());
+		}
 		T entity = EntityFactory.createEntity(res.getText(), type);
 		return entity;
 	}

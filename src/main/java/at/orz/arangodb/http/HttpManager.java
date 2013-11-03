@@ -19,6 +19,7 @@ package at.orz.arangodb.http;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
@@ -328,9 +329,20 @@ public class HttpManager {
 			// レスポンスの取得
 			HttpEntity entity = response.getEntity();
 			if (entity != null) {
+				Header contentType = entity.getContentType();
+				if (contentType != null) {
+					if (contentType.getValue() != null) {
+						if (contentType.getValue().toLowerCase(Locale.US).startsWith("application/x-arango-dump")) {
+							responseEntity.stream = entity.getContent();
+							logger.debug("[RES]http-{}: stream, {}", requestEntity.type, contentType.getValue());
+						}
+					}
+				}
 				// Close stream in this method.
-				responseEntity.text = IOUtils.toString(entity.getContent());
-				logger.debug("[RES]http-{}: text={}", requestEntity.type, responseEntity.text);
+				if (responseEntity.stream == null) {
+					responseEntity.text = IOUtils.toString(entity.getContent());
+					logger.debug("[RES]http-{}: text={}", requestEntity.type, responseEntity.text);
+				}
 			}
 			
 			return responseEntity;

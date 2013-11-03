@@ -60,6 +60,7 @@ import at.orz.arangodb.impl.InternalIndexDriverImpl;
 import at.orz.arangodb.impl.InternalReplicationDriverImpl;
 import at.orz.arangodb.impl.InternalSimpleDriverImpl;
 import at.orz.arangodb.impl.InternalUsersDriverImpl;
+import at.orz.arangodb.util.DumpHandler;
 import at.orz.arangodb.util.ResultSetUtils;
 
 /**
@@ -882,6 +883,27 @@ public class ArangoDriver extends BaseArangoDriver {
 	 */
 	public ReplicationInventoryEntity getReplicationInventory(boolean includeSystem) throws ArangoException {
 		return replicationDriver.getReplicationInventory(getDefaultDatabase(), includeSystem);
+	}
+
+	/**
+	 * 
+	 * @param collectionName
+	 * @param from
+	 * @param to
+	 * @param chunkSize
+	 * @param ticks
+	 * @param clazz
+	 * @param handler
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public <T> void getReplicationDump(
+			String collectionName,
+			Long from, Long to, Integer chunkSize, Boolean ticks,
+			Class<T> clazz, DumpHandler<T> handler) throws ArangoException {
+
+		replicationDriver.getReplicationDump(getDefaultDatabase(), collectionName, from, to, chunkSize, ticks, clazz, handler);
+		
 	}
 	
 	// ---------------------------------------- end of replication ----------------------------------------

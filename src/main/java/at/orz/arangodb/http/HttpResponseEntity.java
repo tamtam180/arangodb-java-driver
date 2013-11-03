@@ -16,6 +16,7 @@
 
 package at.orz.arangodb.http;
 
+import java.io.InputStream;
 import java.util.Map;
 
 /**
@@ -27,11 +28,18 @@ public class HttpResponseEntity {
 	int statusCode;
 	String statusPhrase;
 	String text;
+	InputStream stream;
 	long etag = -1;
 	Map<String, String> headers;
 	
 	public int getStatusCode() {
 		return statusCode;
+	}
+	public InputStream getStream() {
+		return stream;
+	}
+	public void setStream(InputStream stream) {
+		this.stream = stream;
 	}
 	public String getStatusPhrase() {
 		return statusPhrase;

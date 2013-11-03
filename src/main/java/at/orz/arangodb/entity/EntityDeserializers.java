@@ -39,8 +39,6 @@ import at.orz.arangodb.entity.StatisticsDescriptionEntity.Group;
 import at.orz.arangodb.entity.StatisticsEntity.FigureValue;
 import at.orz.arangodb.util.DateUtils;
 
-import ch.qos.logback.core.joran.action.ParamAction;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -1210,5 +1208,38 @@ public class EntityDeserializers {
 			return entity;
 		}
 	}
+
+	public static class ReplicationDumpRecordDeserializer implements JsonDeserializer<ReplicationDumpRecord<?>> {
+		Type documentsType = new TypeToken<List<DocumentEntity<?>>>(){}.getType();
+		public ReplicationDumpRecord<?> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			
+			if (json.isJsonNull()) {
+				return null;
+			}
+			
+			JsonObject obj = json.getAsJsonObject();
+			ReplicationDumpRecord<DocumentEntity<Object>> entity = new ReplicationDumpRecord<DocumentEntity<Object>>();
+			
+			if (obj.has("tick")) {
+				entity.tick = obj.getAsJsonPrimitive("tick").getAsLong();
+			}
+			if (obj.has("type")) {
+				int type = obj.getAsJsonPrimitive("type").getAsInt();
+				entity.type = ReplicationDumpRecord.Type.valueOf(type);
+			}
+			if (obj.has("key")) {
+				entity.key = obj.getAsJsonPrimitive("key").getAsString();
+			}
+			if (obj.has("rev")) {
+				entity.rev = obj.getAsJsonPrimitive("rev").getAsLong();
+			}
+			if (obj.has("data")) {
+				entity.data = context.deserialize(obj.getAsJsonObject("data"), DocumentEntity.class);
+			}
+			
+			return entity;
+		}
+	}
+
 	
 }

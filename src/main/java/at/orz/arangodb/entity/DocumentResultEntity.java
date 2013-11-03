@@ -24,9 +24,9 @@ import java.util.List;
  */
 public class DocumentResultEntity<T> extends BaseEntity {
 
-	List<DocumentEntity<? extends T>> result;
+	List<DocumentEntity<T>> result;
 	
-	public DocumentEntity<? extends T> getOne() {
+	public DocumentEntity<T> getOne() {
 		if (result == null || result.isEmpty()) {
 			return null;
 		}
@@ -40,11 +40,11 @@ public class DocumentResultEntity<T> extends BaseEntity {
 		return result.size();
 	}
 
-	public List<DocumentEntity<? extends T>> getResult() {
+	public List<DocumentEntity<T>> getResult() {
 		return result;
 	}
 
-	public void setResult(List<DocumentEntity<? extends T>> result) {
+	public void setResult(List<DocumentEntity<T>> result) {
 		this.result = result;
 	}
 	

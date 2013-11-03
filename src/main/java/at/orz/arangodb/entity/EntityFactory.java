@@ -62,6 +62,7 @@ public class EntityFactory {
 			.registerTypeAdapter(StringsResultEntity.class, new EntityDeserializers.StringsResultEntityDeserializer())
 			.registerTypeAdapter(BooleanResultEntity.class, new EntityDeserializers.BooleanResultEntityDeserializer())
 			.registerTypeAdapter(Endpoint.class, new EntityDeserializers.EndpointDeserializer())
+			.registerTypeAdapter(DocumentResultEntity.class, new EntityDeserializers.DocumentResultEntityDeserializer())
 			;
 	}
 	static {

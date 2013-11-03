@@ -33,6 +33,7 @@ import at.orz.arangodb.entity.DatabaseEntity;
 import at.orz.arangodb.entity.DefaultEntity;
 import at.orz.arangodb.entity.Direction;
 import at.orz.arangodb.entity.DocumentEntity;
+import at.orz.arangodb.entity.DocumentResultEntity;
 import at.orz.arangodb.entity.EdgeEntity;
 import at.orz.arangodb.entity.EdgesEntity;
 import at.orz.arangodb.entity.Endpoint;
@@ -685,6 +686,13 @@ public class ArangoDriver extends BaseArangoDriver {
 			Boolean waitForSync,
 			Integer limit) throws ArangoException {
 		return simpleDriver.executeSimpleUpdateByExample(getDefaultDatabase(), collectionName, example, newValue, keepNull, waitForSync, limit);
+	}
+
+	public <T> DocumentResultEntity<T> executeSimpleFirst(
+			String collectionName,
+			Integer count,
+			Class<T> clazz) throws ArangoException {
+		return simpleDriver.executeSimpleFirst(getDefaultDatabase(), collectionName, count, clazz);
 	}
 	
 	// ---------------------------------------- end of simple ----------------------------------------

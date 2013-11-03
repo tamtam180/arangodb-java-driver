@@ -32,6 +32,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import at.orz.arangodb.entity.DocumentEntity;
+import at.orz.arangodb.entity.DocumentResultEntity;
 import at.orz.arangodb.entity.IndexType;
 import at.orz.arangodb.entity.ScalarExampleEntity;
 import at.orz.arangodb.entity.SimpleByResultEntity;
@@ -45,11 +46,14 @@ import at.orz.arangodb.util.TestUtils;
  */
 public class ArangoDriverSimpleTest extends BaseTest {
 
+	// TODO: 404 test each example.
+	
 	public ArangoDriverSimpleTest(ArangoConfigure configure, ArangoDriver driver) {
 		super(configure, driver);
 	}
 
 	private String collectionName = "unit_test_simple_test";
+	private String collectionName404 = "unit_test_simple_test_404";
 
 	@Before
 	public void setup() throws ArangoException {
@@ -72,6 +76,11 @@ public class ArangoDriverSimpleTest extends BaseTest {
 					i);
 			driver.createDocument(collectionName, value, null, null);
 		}
+		
+		// 存在しないコレクション
+		try {
+			driver.deleteCollection(collectionName404);
+		} catch (ArangoException e) {}
 
 	}
 	
@@ -556,5 +565,89 @@ public class ArangoDriverSimpleTest extends BaseTest {
 		System.out.println(stations);
 		
 	}
-	
+
+	@Test
+	public void test_first() throws ArangoException {
+		
+		// server returns object-type
+		DocumentResultEntity<TestComplexEntity01> entity = driver.executeSimpleFirst(collectionName, null, TestComplexEntity01.class);
+		assertThat(entity.getCode(), is(200));
+		assertThat(entity.isError(), is(false));
+		assertThat(entity.getResult().size(), is(1));
+		
+		DocumentEntity<TestComplexEntity01> obj = entity.getOne();
+		assertThat(obj.getDocumentHandle(), is(notNullValue()));
+		assertThat(obj.getDocumentRevision(), is(not(0L)));
+		assertThat(obj.getDocumentKey(), is(notNullValue()));
+		
+		assertThat(obj.getEntity().getAge(), is(0));
+		assertThat(obj.getEntity().getUser(), is("user_0"));
+		assertThat(obj.getEntity().getDesc(), is("desc0"));
+		
+	}
+
+	@Test
+	public void test_first_count1() throws ArangoException {
+		
+		// count = null と count = 1はサーバが返してくるresultの戻りの型が違う
+		// server returns array-type
+		DocumentResultEntity<TestComplexEntity01> entity = driver.executeSimpleFirst(collectionName, 1, TestComplexEntity01.class);
+		assertThat(entity.getCode(), is(200));
+		assertThat(entity.isError(), is(false));
+		assertThat(entity.getResult().size(), is(1));
+		
+		DocumentEntity<TestComplexEntity01> obj = entity.getOne();
+		assertThat(obj.getDocumentHandle(), is(notNullValue()));
+		assertThat(obj.getDocumentRevision(), is(not(0L)));
+		assertThat(obj.getDocumentKey(), is(notNullValue()));
+		
+		assertThat(obj.getEntity().getAge(), is(0));
+		assertThat(obj.getEntity().getUser(), is("user_0"));
+		assertThat(obj.getEntity().getDesc(), is("desc0"));
+		
+	}
+
+	@Test
+	public void test_first_count5() throws ArangoException {
+		
+		DocumentResultEntity<TestComplexEntity01> entity = driver.executeSimpleFirst(collectionName, 5, TestComplexEntity01.class);
+		assertThat(entity.getCode(), is(200));
+		assertThat(entity.isError(), is(false));
+		assertThat(entity.getResult().size(), is(5));
+		
+		DocumentEntity<TestComplexEntity01> obj = entity.getOne();
+		assertThat(obj.getDocumentHandle(), is(notNullValue()));
+		assertThat(obj.getDocumentRevision(), is(not(0L)));
+		assertThat(obj.getDocumentKey(), is(notNullValue()));
+
+		assertThat(obj.getEntity().getAge(), is(0));
+		assertThat(obj.getEntity().getUser(), is("user_0"));
+		assertThat(obj.getEntity().getDesc(), is("desc0"));
+
+		DocumentEntity<TestComplexEntity01> obj4 = entity.getResult().get(4);
+		assertThat(obj4.getDocumentHandle(), is(notNullValue()));
+		assertThat(obj4.getDocumentRevision(), is(not(0L)));
+		assertThat(obj4.getDocumentKey(), is(notNullValue()));
+
+		assertThat(obj4.getEntity().getAge(), is(4));
+		assertThat(obj4.getEntity().getUser(), is("user_4"));
+		assertThat(obj4.getEntity().getDesc(), is("desc4"));
+		
+	}
+
+	@Test
+	public void test_first_404() throws ArangoException {
+		
+		// FIXME: arangodb-1.4.0の時点でサーバが間違った値を返すため失敗する.400が戻ってくるが404が正しいのでは？
+		// {"error":true,"code":400,"errorNum":17,"errorMessage":"TypeError: Cannot call method 'first' of null"}
+		
+		try {
+			driver.executeSimpleFirst(collectionName404, 1, TestComplexEntity01.class);
+			fail();
+		} catch (ArangoException e) {
+			assertThat(e.getCode(), is(404));
+			//assertThat(e.getErrorNumber(), is(1203));
+		}
+		
+	}
 }

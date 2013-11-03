@@ -1050,11 +1050,11 @@ public class EntityDeserializers {
 			
 			if (obj.has("result")) {
 				JsonElement resultElem = obj.get("result");
-				if (obj.isJsonArray()) {
+				if (resultElem.isJsonArray()) {
 					entity.result = context.deserialize(resultElem, documentsType);
-				} else if (obj.isJsonObject()) {
+				} else if (resultElem.isJsonObject()) {
 					DocumentEntity<Object> doc = context.deserialize(resultElem, DocumentEntity.class);
-					List<DocumentEntity<?>> list = new ArrayList<DocumentEntity<?>>(1);
+					List<DocumentEntity<Object>> list = new ArrayList<DocumentEntity<Object>>(1);
 					list.add(doc);
 					entity.result = list;
 				} else {

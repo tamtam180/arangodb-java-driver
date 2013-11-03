@@ -9,6 +9,7 @@ v1.4.0-SNAPSHOT(2013-11-xx)
 * add support API: /_api/endpoint/*
 * add support API: /_api/collection/{collection-name}/checksum (getCollectionChecksum)
 *                  add attribute CollectionEntity#checksum
+* add support API: /_api/example/first
 * getDocuments was changed to return document-handle
 * changed the version API endpoint. (/_admin/version -> /_api/version)
 * fixed ArangoUnixTime bug.

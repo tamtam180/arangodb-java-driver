@@ -23,6 +23,7 @@ import at.orz.arangodb.ArangoException;
 import at.orz.arangodb.CursorResultSet;
 import at.orz.arangodb.entity.CursorEntity;
 import at.orz.arangodb.entity.DocumentEntity;
+import at.orz.arangodb.entity.DocumentResultEntity;
 import at.orz.arangodb.entity.EntityFactory;
 import at.orz.arangodb.entity.ScalarExampleEntity;
 import at.orz.arangodb.entity.SimpleByResultEntity;
@@ -510,27 +511,26 @@ public class InternalSimpleDriverImpl extends BaseArangoDriverWithCursorImpl {
 
 	// ----- first --------------------
 
-//	public <T> DocumentResultEntity<T> executeSimpleFirst(
-//			String database,
-//			String collectionName,
-//			Integer count,
-//			Class<T> clazz) throws ArangoException {
-//		
-//		validateCollectionName(collectionName);
-//		HttpResponseEntity res = httpManager.doPut(
-//				createEndpointUrl(baseUrl, database, "/_api/simple/first"), 
-//				null,
-//				EntityFactory.toJsonString(
-//						new MapBuilder()
-//						.put("collection", collectionName)
-//						.put("count", count)
-//						.get())
-//				);
-//		
-//		DocumentResultEntity entity = createEntity(res, DocumentResultEntity.class, clazz);
-//		return entity;
-//		
-//	}
+	public <T> DocumentResultEntity<T> executeSimpleFirst(
+			String database,
+			String collectionName,
+			Integer count,
+			Class<T> clazz) throws ArangoException {
+		
+		validateCollectionName(collectionName);
+		HttpResponseEntity res = httpManager.doPut(
+				createEndpointUrl(baseUrl, database, "/_api/simple/first"), 
+				null,
+				EntityFactory.toJsonString(
+						new MapBuilder()
+						.put("collection", collectionName)
+						.put("count", count)
+						.get())
+				);
+		
+		return createEntity(res, DocumentResultEntity.class, clazz);
+		
+	}
 
 
 

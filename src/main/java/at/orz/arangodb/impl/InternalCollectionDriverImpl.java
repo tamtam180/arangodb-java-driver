@@ -40,6 +40,7 @@ public class InternalCollectionDriverImpl extends BaseArangoDriverImpl {
 			String database,
 			String name, 
 			Boolean waitForSync, 
+			Boolean doCompact,
 			Integer journalSize, 
 			Boolean isSystem, 
 			Boolean isVolatile,
@@ -53,6 +54,7 @@ public class InternalCollectionDriverImpl extends BaseArangoDriverImpl {
 				EntityFactory.toJsonString(new MapBuilder()
 					.put("name", name)
 					.put("waitForSync", waitForSync)
+					.put("doCompact", doCompact)
 					.put("journalSize", journalSize)
 					.put("isSystem", isSystem)
 					.put("isVolatile", isVolatile)

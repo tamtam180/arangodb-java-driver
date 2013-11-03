@@ -139,17 +139,17 @@ public class ArangoDriver extends BaseArangoDriver {
 	// ---------------------------------------- start of collection ----------------------------------------
 	
 	public CollectionEntity createCollection(String name) throws ArangoException {
-		return collectionDriver.createCollection(getDefaultDatabase(), name, null, null, null, null, null, null);
+		return collectionDriver.createCollection(getDefaultDatabase(), name, null, null, null, null, null, null, null);
 	}
 
-	public CollectionEntity createCollection(String name, Boolean waitForSync,
+	public CollectionEntity createCollection(String name, Boolean waitForSync, Boolean doCompact,
 			Integer journalSize, Boolean isSystem, Boolean isVolatile, CollectionType type) throws ArangoException {
-		return collectionDriver.createCollection(getDefaultDatabase(), name, waitForSync, journalSize, isSystem, isVolatile, type, null);
+		return collectionDriver.createCollection(getDefaultDatabase(), name, waitForSync, doCompact, journalSize, isSystem, isVolatile, type, null);
 	}
 
-	public CollectionEntity createCollection(String name, Boolean waitForSync,
+	public CollectionEntity createCollection(String name, Boolean waitForSync, Boolean doCompact,
 			Integer journalSize, Boolean isSystem, Boolean isVolatile, CollectionType type, CollectionKeyOption keyOptions) throws ArangoException {
-		return collectionDriver.createCollection(getDefaultDatabase(), name, waitForSync, journalSize, isSystem, isVolatile, type, keyOptions);
+		return collectionDriver.createCollection(getDefaultDatabase(), name, waitForSync, doCompact, journalSize, isSystem, isVolatile, type, keyOptions);
 	}
 	
 	public CollectionEntity getCollection(long id) throws ArangoException {

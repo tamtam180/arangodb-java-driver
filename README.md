@@ -136,7 +136,7 @@ public class ExampleMDB {
 		try {
 			
 			// Create Collection at db(_system)
-			driverA.createCollection("example1", false, null, null, null, CollectionType.DOCUMENT);
+			driverA.createCollection("example1", false, null, null, null, null, CollectionType.DOCUMENT);
 			driverA.createDocument("example1", 
 					new MapBuilder().put("attr1", "value1").put("attr2", "value2").get(), 
 					false, false);
@@ -145,7 +145,7 @@ public class ExampleMDB {
 			driverB.createDatabase("mydb2");
 			
 			// Create Collection at db(mydb2)
-			driverB.createCollection("example2", false, null, null, null, CollectionType.DOCUMENT);
+			driverB.createCollection("example2", false, null, null, null, null, CollectionType.DOCUMENT);
 			driverB.createDocument("example2", 
 					new MapBuilder().put("attr1-B", "value1").put("attr2-B", "value2").get(), 
 					false, false);
@@ -212,7 +212,7 @@ public class Example2 {
 		try {
 			
 			// Create Collection for *Graph*
-			driver.createCollection(collectionName, false, null, null, null, CollectionType.EDGE);
+			driver.createCollection(collectionName, false, null, null, null, null, CollectionType.EDGE);
 			
 			// Create 10 Vertex
 			ArrayList<DocumentEntity<TestVertex>> docs = new ArrayList<DocumentEntity<TestVertex>>();

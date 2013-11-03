@@ -105,7 +105,7 @@ public class ArangoDriverCollectionTest extends BaseTest {
 	//@Parameters
 	public void test_create_edge_collection() throws ArangoException {
 		
-		CollectionEntity res2 = driver.createCollection(collectionName, null, null, null, null, CollectionType.EDGE);
+		CollectionEntity res2 = driver.createCollection(collectionName, null, null, null, null, null, CollectionType.EDGE);
 		assertThat(res2, is(notNullValue()));
 		assertThat(res2.getCode(), is(200));
 		assertThat(res2.getId(), is(notNullValue()));
@@ -125,7 +125,7 @@ public class ArangoDriverCollectionTest extends BaseTest {
 	@Test
 	public void test_create_inmemory_document_collection() throws ArangoException {
 		
-		CollectionEntity res = driver.createCollection(collectionName, null, null, null, true, CollectionType.DOCUMENT);
+		CollectionEntity res = driver.createCollection(collectionName, null, null, null, null, true, CollectionType.DOCUMENT);
 		assertThat(res, is(notNullValue()));
 		assertThat(res.getCode(), is(200));
 		assertThat(res.getId(), is(not(0L)));
@@ -145,7 +145,7 @@ public class ArangoDriverCollectionTest extends BaseTest {
 	@Test
 	public void test_create_inmemory_edge_collection() throws ArangoException {
 		
-		CollectionEntity res = driver.createCollection(collectionName, null, null, null, true, CollectionType.EDGE);
+		CollectionEntity res = driver.createCollection(collectionName, null, null, null, null, true, CollectionType.EDGE);
 		assertThat(res, is(notNullValue()));
 		assertThat(res.getCode(), is(200));
 		assertThat(res.getId(), is(not(0L)));
@@ -167,7 +167,7 @@ public class ArangoDriverCollectionTest extends BaseTest {
 		keyOptions.setIncrement(10);
 		keyOptions.setOffset(200);
 		
-		CollectionEntity res = driver.createCollection(collectionName, null, null, null, null, CollectionType.DOCUMENT, keyOptions);
+		CollectionEntity res = driver.createCollection(collectionName, null, null, null, null, null, CollectionType.DOCUMENT, keyOptions);
 		assertThat(res, is(notNullValue()));
 		assertThat(res.getCode(), is(200));
 		assertThat(res.getId(), is(not(0L)));
@@ -189,6 +189,29 @@ public class ArangoDriverCollectionTest extends BaseTest {
 		assertThat(opt.getType(), is("autoincrement"));
 		assertThat(opt.getIncrement(), is(10L));
 		assertThat(opt.getOffset(), is(200L));
+		
+	}
+
+	@Test
+	public void test_create_no_compact() throws ArangoException {
+		
+		// DocumentCollection
+		CollectionEntity res1 = driver.createCollection(collectionName, false, false, null, null, null, null);
+		assertThat(res1, is(notNullValue()));
+		assertThat(res1.getCode(), is(200));
+		assertThat(res1.getId(), is(notNullValue()));
+		assertThat(res1.getName(), is(collectionName));
+		assertThat(res1.getWaitForSync(), is(false));
+		assertThat(res1.getIsVolatile(), is(false));
+		assertThat(res1.getIsSystem(), is(false));
+		assertThat(res1.getStatus(), is(CollectionStatus.LOADED));
+		assertThat(res1.getType(), is(CollectionType.DOCUMENT));
+		
+		
+		CollectionEntity prop = driver.getCollectionProperties(collectionName);
+		assertThat(prop.getCode(), is(200));
+		assertThat(prop.getId(), is(res1.getId()));
+		assertThat(prop.getDoCompact(), is(false));
 		
 	}
 	
@@ -503,7 +526,7 @@ public class ArangoDriverCollectionTest extends BaseTest {
 	public void test_load_unload() throws ArangoException {
 		
 		// create
-		CollectionEntity collection = driver.createCollection(collectionName, null, null, null, null, null);
+		CollectionEntity collection = driver.createCollection(collectionName, null, null, null, null, null, null);
 		assertThat(collection, is(notNullValue()));
 		assertThat(collection.getCode(), is(200));
 		
@@ -567,7 +590,7 @@ public class ArangoDriverCollectionTest extends BaseTest {
 	@Test
 	public void test_truncate() throws ArangoException {
 		
-		CollectionEntity collection = driver.createCollection(collectionName, true, null, null, null, null);
+		CollectionEntity collection = driver.createCollection(collectionName, true, null, null, null, null, null);
 		assertThat(collection, is(notNullValue()));
 		assertThat(collection.getCode(), is(200));
 		
@@ -606,7 +629,7 @@ public class ArangoDriverCollectionTest extends BaseTest {
 	@Test
 	public void test_setCollectionProperties() throws ArangoException {
 	
-		CollectionEntity collection = driver.createCollection(collectionName, false, null, null, null, null);
+		CollectionEntity collection = driver.createCollection(collectionName, false, null, null, null, null, null);
 		assertThat(collection, is(notNullValue()));
 		assertThat(collection.getCode(), is(200));
 		assertThat(collection.getWaitForSync(), is(Boolean.FALSE));
@@ -643,7 +666,7 @@ public class ArangoDriverCollectionTest extends BaseTest {
 		TreeSet<String> collectionNames = new TreeSet<String>();
 		for (int i = 0; i < 10; i++) {
 			try {
-				CollectionEntity col = driver.createCollection("unit_test_arango_" + (1000 + i), true, null, null, null, null);
+				CollectionEntity col = driver.createCollection("unit_test_arango_" + (1000 + i), true, null, null, null, null, null);
 				long collectionId = col.getId();
 				if (i == 5) {
 					// 1個だけ消す
@@ -680,7 +703,7 @@ public class ArangoDriverCollectionTest extends BaseTest {
 	@Test
 	public void test_rename_404() throws ArangoException {
 
-		CollectionEntity collection = driver.createCollection(collectionName, true, null, null, null, null);
+		CollectionEntity collection = driver.createCollection(collectionName, true, null, null, null, null, null);
 		assertThat(collection.getCode(), is(200));
 		
 		try {
@@ -700,10 +723,10 @@ public class ArangoDriverCollectionTest extends BaseTest {
 	@Test
 	public void test_rename_dup() throws ArangoException {
 
-		CollectionEntity collection1 = driver.createCollection(collectionName, true, null, null, null, null);
+		CollectionEntity collection1 = driver.createCollection(collectionName, true, null, null, null, null, null);
 		assertThat(collection1.getCode(), is(200));
 
-		CollectionEntity collection2 = driver.createCollection(collectionName2, true, null, null, null, null);
+		CollectionEntity collection2 = driver.createCollection(collectionName2, true, null, null, null, null, null);
 		assertThat(collection2.getCode(), is(200));
 
 		try {

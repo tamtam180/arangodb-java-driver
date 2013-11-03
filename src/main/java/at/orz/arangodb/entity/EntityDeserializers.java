@@ -1225,7 +1225,7 @@ public class EntityDeserializers {
 			}
 			if (obj.has("type")) {
 				int type = obj.getAsJsonPrimitive("type").getAsInt();
-				entity.type = ReplicationDumpRecord.Type.valueOf(type);
+				entity.type = ReplicationEventType.valueOf(type);
 			}
 			if (obj.has("key")) {
 				entity.key = obj.getAsJsonPrimitive("key").getAsString();

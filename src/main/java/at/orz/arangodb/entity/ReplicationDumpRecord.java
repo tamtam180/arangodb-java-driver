@@ -27,36 +27,15 @@ import java.util.TreeMap;
 public class ReplicationDumpRecord<T> implements Serializable {
 
 	long tick;
-	Type type;
+	ReplicationEventType type;
 	String key;
 	long rev;
 	DocumentEntity<T> data;
 	
-	public static enum Type {
-		DOCUMENT_UPSERT(2300),
-		EDGE_UPSERT(2301),
-		DELETION(2302);
-		private final int type;
-		private Type(int type) {
-			this.type = type;
-		}
-		public int getType() {
-			return type;
-		}
-		public static Type valueOf(int type) {
-			switch (type) {
-			case 2300: return DOCUMENT_UPSERT;
-			case 2301: return EDGE_UPSERT;
-			case 2302: return DELETION;
-			}
-			return null;
-		}
-	}
-	
 	public long getTick() {
 		return tick;
 	}
-	public Type getType() {
+	public ReplicationEventType getType() {
 		return type;
 	}
 	public String getKey() {
@@ -71,7 +50,7 @@ public class ReplicationDumpRecord<T> implements Serializable {
 	public void setTick(long tick) {
 		this.tick = tick;
 	}
-	public void setType(Type type) {
+	public void setType(ReplicationEventType type) {
 		this.type = type;
 	}
 	public void setKey(String key) {

@@ -210,4 +210,10 @@ public class ArangoDriverReplicationTest extends BaseTest {
 
 	// TODO: Dump from-to
 	
+//	public void test_sync() throws ArangoException {
+//		
+//		driver.syncReplication(endpoint, database, username, password, restrictType, restrictCollections);
+//		
+//	}
+	
 }

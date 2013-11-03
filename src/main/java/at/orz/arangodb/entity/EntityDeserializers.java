@@ -1241,5 +1241,26 @@ public class EntityDeserializers {
 		}
 	}
 
+	public static class ReplicationSyncEntityDeserializer implements JsonDeserializer<ReplicationSyncEntity> {
+		Type collectionsType = new TypeToken<List<String>>(){}.getType();
+		public ReplicationSyncEntity deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			
+			if (json.isJsonNull()) {
+				return null;
+			}
+			
+			JsonObject obj = json.getAsJsonObject();
+			ReplicationSyncEntity entity = deserializeBaseParameter(obj, new ReplicationSyncEntity());
+			
+			if (obj.has("collections")) {
+				entity.collections = context.deserialize(obj.getAsJsonArray("collections"), collectionsType);
+			}
+			if (obj.has("lastLogTick")) {
+				entity.lastLogTick = obj.getAsJsonPrimitive("lastLogTick").getAsLong();
+			}
+			
+			return entity;
+		}
+	}
 	
 }

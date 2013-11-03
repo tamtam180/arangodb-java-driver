@@ -20,11 +20,15 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.util.Locale;
 
 import at.orz.arangodb.ArangoConfigure;
 import at.orz.arangodb.ArangoException;
+import at.orz.arangodb.entity.EntityFactory;
 import at.orz.arangodb.entity.ReplicationDumpRecord;
 import at.orz.arangodb.entity.ReplicationInventoryEntity;
+import at.orz.arangodb.entity.ReplicationSyncEntity;
+import at.orz.arangodb.entity.RestrictType;
 import at.orz.arangodb.entity.StreamEntity;
 import at.orz.arangodb.http.HttpResponseEntity;
 import at.orz.arangodb.util.DumpHandler;
@@ -90,4 +94,29 @@ public class InternalReplicationDriverImpl extends BaseArangoDriverImpl {
 		
 	}
 
+	public ReplicationSyncEntity syncReplication(
+			String endpoint, String database, 
+			String username, String password, 
+			RestrictType restrictType, String... restrictCollections
+			) throws ArangoException {
+		
+		HttpResponseEntity res = httpManager.doPut(
+				createEndpointUrl(baseUrl, null, "/_api/replication/sync"), 
+				null, 
+				EntityFactory.toJsonString(
+					new MapBuilder()
+					.put("endpoint", endpoint)
+					.put("database", database)
+					.put("username", username)
+					.put("password", password)
+					.put("restrictType", restrictType == null ? null : restrictType.name().toLowerCase(Locale.US))
+					.put("restrictCollections", restrictCollections == null || restrictCollections.length == 0 ? null : restrictCollections)
+					.get()
+				)
+				);
+		
+		return createEntity(res, ReplicationSyncEntity.class);
+		
+	}
+	
 }

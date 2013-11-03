@@ -41,6 +41,8 @@ import at.orz.arangodb.entity.IndexType;
 import at.orz.arangodb.entity.IndexesEntity;
 import at.orz.arangodb.entity.Policy;
 import at.orz.arangodb.entity.ReplicationInventoryEntity;
+import at.orz.arangodb.entity.ReplicationSyncEntity;
+import at.orz.arangodb.entity.RestrictType;
 import at.orz.arangodb.entity.ScalarExampleEntity;
 import at.orz.arangodb.entity.SimpleByResultEntity;
 import at.orz.arangodb.entity.StatisticsDescriptionEntity;
@@ -905,7 +907,26 @@ public class ArangoDriver extends BaseArangoDriver {
 		replicationDriver.getReplicationDump(getDefaultDatabase(), collectionName, from, to, chunkSize, ticks, clazz, handler);
 		
 	}
-	
+
+	/**
+	 * 
+	 * @param endpoint
+	 * @param database
+	 * @param username
+	 * @param password
+	 * @param restrictType
+	 * @param restrictCollections
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public ReplicationSyncEntity syncReplication(
+			String endpoint, String database, 
+			String username, String password, 
+			RestrictType restrictType, String... restrictCollections
+			) throws ArangoException {
+		return replicationDriver.syncReplication(endpoint, database, username, password, restrictType, restrictCollections);
+	}
 	// ---------------------------------------- end of replication ----------------------------------------
 
 	

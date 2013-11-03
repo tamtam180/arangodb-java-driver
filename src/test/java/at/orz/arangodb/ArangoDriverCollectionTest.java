@@ -419,16 +419,22 @@ public class ArangoDriverCollectionTest extends BaseTest {
 		assertThat(collection.getName(), is(collectionName));
 		assertThat(collection.getWaitForSync(), is(Boolean.FALSE));
 		assertThat(collection.getJournalSize(), is(32L * 1024 * 1024)); // 32MB
-		assertThat(collection.getCount(), is(99L)); // 何も入っていないのでゼロ
-		// TODO status, type
+		assertThat(collection.getCount(), is(99L));
+		assertThat(collection.getType(), is(CollectionType.DOCUMENT));
+		assertThat(collection.getStatus(), is(CollectionStatus.LOADED));
 		
 		assertThat(collection.getFigures().getAliveCount(), is(99L));
 		assertThat(collection.getFigures().getAliveSize(), is(not(0L))); // 7603L // 1つ77バイト
 		assertThat(collection.getFigures().getDeadCount(), is(1L));
 		assertThat(collection.getFigures().getDeadSize(), is(not(0L)));
-		// TODO deletion
-		// assertThat(collection.getFigures().getDatafileCount(), is(not(0L)));
-		// TODO journals
+		// TODO datafilesCount, datafilesFileSize 
+		assertThat(collection.getFigures().getJournalsCount(), is(1L));
+		assertThat(collection.getFigures().getJournalsFileSize(), is(not(0L)));
+		// TODO compactorsCount, compactorsSize
+		assertThat(collection.getFigures().getShapefilesCount(), is(1L));
+		assertThat(collection.getFigures().getShapefilesFileSize(), is(not(0L)));
+		assertThat(collection.getFigures().getShapesCount(), is(not(0L)));
+		assertThat(collection.getFigures().getAttributesCount(), is(not(0L)));
 		
 	}
 	

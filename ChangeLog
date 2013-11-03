@@ -13,6 +13,7 @@ v1.4.0-SNAPSHOT(2013-11-xx)
 * add attribute: CollectionEntity#checksum
 * add attribute: CollectionEntity#doCompact
 * add attribute: CollectionEntity#keyOptions
+* add attribute: CollectionEntity.Figures#(compactorsCount,compactorsFileSize,shapefilesCount,shapefilesFileSize,shapesCount,attributesCount)
 * remove attribute: CollectionEntity#createOptions
 * getDocuments was changed to return document-handle
 * changed the version API endpoint. (/_admin/version -> /_api/version)

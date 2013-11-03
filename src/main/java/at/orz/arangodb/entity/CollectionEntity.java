@@ -193,6 +193,18 @@ public class CollectionEntity extends BaseEntity {
 		long datafileFileSize;
 		long journalsCount;
 		long journalsFileSize;
+		/** @since 1.4.0 */
+		long compactorsCount;
+		/** @since 1.4.0 */
+		long compactorsFileSize;
+		/** @since 1.4.0 */
+		long shapefilesCount;
+		/** @since 1.4.0 */
+		long shapefilesFileSize;
+		/** @since 1.4.0 */
+		long shapesCount;
+		/** @since 1.4.0 */
+		long attributesCount;
 		
 		public long getAliveCount() {
 			return aliveCount;
@@ -221,6 +233,24 @@ public class CollectionEntity extends BaseEntity {
 		public long getJournalsFileSize() {
 			return journalsFileSize;
 		}
+		public long getCompactorsCount() {
+			return compactorsCount;
+		}
+		public long getCompactorsFileSize() {
+			return compactorsFileSize;
+		}
+		public long getShapefilesCount() {
+			return shapefilesCount;
+		}
+		public long getShapefilesFileSize() {
+			return shapefilesFileSize;
+		}
+		public long getShapesCount() {
+			return shapesCount;
+		}
+		public long getAttributesCount() {
+			return attributesCount;
+		}
 		public void setAliveCount(long aliveCount) {
 			this.aliveCount = aliveCount;
 		}
@@ -247,6 +277,24 @@ public class CollectionEntity extends BaseEntity {
 		}
 		public void setJournalsFileSize(long journalsFileSize) {
 			this.journalsFileSize = journalsFileSize;
+		}
+		public void setCompactorsCount(long compactorsCount) {
+			this.compactorsCount = compactorsCount;
+		}
+		public void setCompactorsFileSize(long compactorsFileSize) {
+			this.compactorsFileSize = compactorsFileSize;
+		}
+		public void setShapefilesCount(long shapefilesCount) {
+			this.shapefilesCount = shapefilesCount;
+		}
+		public void setShapefilesFileSize(long shapefilesFileSize) {
+			this.shapefilesFileSize = shapefilesFileSize;
+		}
+		public void setShapesCount(long shapesCount) {
+			this.shapesCount = shapesCount;
+		}
+		public void setAttributesCount(long attributesCount) {
+			this.attributesCount = attributesCount;
 		}
 		
 	}

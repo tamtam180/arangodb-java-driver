@@ -233,12 +233,35 @@ public class EntityDeserializers {
 			if (obj.has("datafiles")) {
 				JsonObject datafiles = obj.getAsJsonObject("datafiles");
 				entity.datafileCount = datafiles.getAsJsonPrimitive("count").getAsLong();
+				entity.datafileFileSize = datafiles.getAsJsonPrimitive("fileSize").getAsLong();
 			}
 			
 			if (obj.has("journals")) {
 				JsonObject journals = obj.getAsJsonObject("journals");
 				entity.journalsCount = journals.getAsJsonPrimitive("count").getAsLong();
 				entity.journalsFileSize = journals.getAsJsonPrimitive("fileSize").getAsLong();
+			}
+			
+			if (obj.has("compactors")) {
+				JsonObject compactors = obj.getAsJsonObject("compactors");
+				entity.compactorsCount = compactors.getAsJsonPrimitive("count").getAsLong();
+				entity.compactorsFileSize = compactors.getAsJsonPrimitive("fileSize").getAsLong();
+			}
+			
+			if (obj.has("shapefiles")) {
+				JsonObject shapefiles = obj.getAsJsonObject("shapefiles");
+				entity.shapefilesCount = shapefiles.getAsJsonPrimitive("count").getAsLong();
+				entity.shapefilesFileSize = shapefiles.getAsJsonPrimitive("fileSize").getAsLong();
+			}
+			
+			if (obj.has("shapes")) {
+				JsonObject shapes = obj.getAsJsonObject("shapes");
+				entity.shapesCount = shapes.getAsJsonPrimitive("count").getAsLong();
+			}
+			
+			if (obj.has("attributes")) {
+				JsonObject attributes = obj.getAsJsonObject("attributes");
+				entity.attributesCount = attributes.getAsJsonPrimitive("count").getAsLong();
 			}
 			
 			return entity;

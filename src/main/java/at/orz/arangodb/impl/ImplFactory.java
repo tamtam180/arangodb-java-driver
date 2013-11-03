@@ -59,4 +59,7 @@ public class ImplFactory {
 	public static InternalEndpointDriverImpl createEndpointDriver(ArangoConfigure configure) {
 		return new InternalEndpointDriverImpl(configure);
 	}
+	public static InternalReplicationDriverImpl createReplicationDriver(ArangoConfigure configure) {
+		return new InternalReplicationDriverImpl(configure);
+	}
 }

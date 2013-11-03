@@ -12,6 +12,7 @@ v1.4.0-SNAPSHOT(2013-11-xx)
 * add support API: /_api/collection/{collection-name}/checksum (getCollectionChecksum)
 * add support API: /_api/example/first
 * add support API: /_api/example/last
+* add support API: /_api/replication/inventory
 * add attribute: CollectionEntity#checksum
 * add attribute: CollectionEntity#doCompact
 * add attribute: CollectionEntity#keyOptions

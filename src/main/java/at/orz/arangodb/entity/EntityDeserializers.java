@@ -18,6 +18,7 @@ package at.orz.arangodb.entity;
 
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -30,9 +31,15 @@ import java.util.TreeMap;
 import at.orz.arangodb.entity.CollectionEntity.Figures;
 import at.orz.arangodb.entity.ExplainEntity.ExpressionEntity;
 import at.orz.arangodb.entity.ExplainEntity.PlanEntity;
+import at.orz.arangodb.entity.ReplicationInventoryEntity.Collection;
+import at.orz.arangodb.entity.ReplicationInventoryEntity.CollectionParameter;
+import at.orz.arangodb.entity.ReplicationInventoryEntity.State;
 import at.orz.arangodb.entity.StatisticsDescriptionEntity.Figure;
 import at.orz.arangodb.entity.StatisticsDescriptionEntity.Group;
 import at.orz.arangodb.entity.StatisticsEntity.FigureValue;
+import at.orz.arangodb.util.DateUtils;
+
+import ch.qos.logback.core.joran.action.ParamAction;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
@@ -1123,4 +1130,85 @@ public class EntityDeserializers {
 		}
 	}
 
+	public static class ReplicationInventoryEntityDeserializer implements JsonDeserializer<ReplicationInventoryEntity> {
+		private Type indexesType = new TypeToken<List<IndexEntity>>(){}.getType();
+		public ReplicationInventoryEntity deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			
+			if (json.isJsonNull()) {
+				return null;
+			}
+			
+			JsonObject obj = json.getAsJsonObject();
+			ReplicationInventoryEntity entity = deserializeBaseParameter(obj, new ReplicationInventoryEntity());
+			
+			if (obj.has("collections")) {
+				JsonArray collections = obj.getAsJsonArray("collections");
+				entity.collections = new ArrayList<ReplicationInventoryEntity.Collection>(collections.size());
+				for (int i = 0, imax = collections.size(); i < imax; i++) {
+					JsonObject elem = collections.get(i).getAsJsonObject();
+					Collection col = new Collection();
+					
+					if (elem.has("parameters")) {
+						JsonObject parameters = elem.getAsJsonObject("parameters");
+
+						col.parameter = new CollectionParameter();
+						if (parameters.has("version")) {
+							col.parameter.version = parameters.getAsJsonPrimitive("version").getAsInt();
+						}
+						if (parameters.has("type")) {
+							col.parameter.type = CollectionType.valueOf(parameters.getAsJsonPrimitive("type").getAsInt());
+						}
+						if (parameters.has("cid")) {
+							col.parameter.cid = parameters.getAsJsonPrimitive("cid").getAsLong();
+						}
+						if (parameters.has("deleted")) {
+							col.parameter.deleted = parameters.getAsJsonPrimitive("deleted").getAsBoolean();
+						}
+						if (parameters.has("doCompact")) {
+							col.parameter.doCompact = parameters.getAsJsonPrimitive("doCompact").getAsBoolean();
+						}
+						if (parameters.has("maximalSize")) {
+							col.parameter.maximalSize = parameters.getAsJsonPrimitive("maximalSize").getAsLong();
+						}
+						if (parameters.has("name")) {
+							col.parameter.name = parameters.getAsJsonPrimitive("name").getAsString();
+						}
+						if (parameters.has("isVolatile")) {
+							col.parameter.isVolatile = parameters.getAsJsonPrimitive("isVolatile").getAsBoolean();
+						}
+						if (parameters.has("waitForSync")) {
+							col.parameter.waitForSync = parameters.getAsJsonPrimitive("waitForSync").getAsBoolean();
+						}
+					}
+					
+					if (elem.has("indexes")) {
+						col.indexes = context.deserialize(elem.getAsJsonArray("indexes"), indexesType);
+					}
+					
+					entity.collections.add(col);
+				}
+			}
+			
+			if (obj.has("state")) {
+				JsonObject s = obj.getAsJsonObject("state");
+				entity.state = new State();
+				entity.state.running = s.getAsJsonPrimitive("running").getAsBoolean();
+				entity.state.lastLogTick = s.getAsJsonPrimitive("lastLogTick").getAsLong();
+				entity.state.totalEvents = s.getAsJsonPrimitive("totalEvents").getAsLong();
+				String strTime = s.getAsJsonPrimitive("time").getAsString();
+				try {
+					entity.state.time = DateUtils.parse(strTime, "yyyy-MM-dd'T'HH:mm:ss'Z'");
+				} catch (ParseException e) {
+					throw new JsonParseException("time format invalid:" + strTime);
+				}
+			}
+			
+			if (obj.has("tick")) {
+				entity.tick = obj.getAsJsonPrimitive("tick").getAsLong();
+			}
+			
+			return entity;
+		}
+	}
+	
 }

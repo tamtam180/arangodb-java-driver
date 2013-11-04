@@ -24,6 +24,7 @@ import java.util.Locale;
 
 import at.orz.arangodb.ArangoConfigure;
 import at.orz.arangodb.ArangoException;
+import at.orz.arangodb.entity.ReplicationDumpHeader;
 import at.orz.arangodb.entity.EntityFactory;
 import at.orz.arangodb.entity.MapAsEntity;
 import at.orz.arangodb.entity.ReplicationDumpRecord;
@@ -73,13 +74,15 @@ public class InternalReplicationDriverImpl extends BaseArangoDriverImpl {
 				.put("ticks", ticks)
 				.get()
 				);
+
+		ReplicationDumpHeader header = toReplicationDumpHeader(res);
+		boolean cont = handler.head(header);
 		
 		StreamEntity entity = createEntity(res, StreamEntity.class);
 		BufferedReader reader = null;
 		try {
 			reader = new BufferedReader(new InputStreamReader(entity.getStream(), "utf-8"));
 			String line = null;
-			boolean cont = true;
 			while (cont && (line = reader.readLine()) != null) {
 				if (line.length() == 0) {
 					continue;

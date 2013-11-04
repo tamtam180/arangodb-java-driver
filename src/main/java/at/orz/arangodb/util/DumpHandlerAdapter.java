@@ -23,9 +23,14 @@ import at.orz.arangodb.entity.ReplicationDumpRecord;
  * @author tamtam180 - kirscheless at gmail.com
  *
  */
-public interface DumpHandler<T> {
-	
-	public boolean head(ReplicationDumpHeader header);
-	public boolean handle(ReplicationDumpRecord<T> entity);
-	
+public class DumpHandlerAdapter<T> implements DumpHandler<T> {
+
+	public boolean head(ReplicationDumpHeader header) {
+		return true;
+	}
+
+	public boolean handle(ReplicationDumpRecord<T> entity) {
+		return false;
+	}
+
 }

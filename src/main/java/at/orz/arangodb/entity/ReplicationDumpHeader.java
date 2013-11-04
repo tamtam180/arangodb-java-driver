@@ -22,43 +22,36 @@ import java.io.Serializable;
  * @author tamtam180 - kirscheless at gmail.com
  *
  */
-public class ReplicationDumpRecord<T> implements Serializable {
+public class ReplicationDumpHeader implements Serializable {
 
-	long tick;
-	ReplicationEventType type;
-	String key;
-	long rev;
-	DocumentEntity<T> data;
+	Long lasttick;
+	Boolean checkmore;
+	Long lastincluded;
+	Boolean active;
 	
-	public long getTick() {
-		return tick;
+	public Long getLasttick() {
+		return lasttick;
 	}
-	public ReplicationEventType getType() {
-		return type;
+	public Boolean getCheckmore() {
+		return checkmore;
 	}
-	public String getKey() {
-		return key;
+	public Long getLastincluded() {
+		return lastincluded;
 	}
-	public long getRev() {
-		return rev;
+	public Boolean getActive() {
+		return active;
 	}
-	public DocumentEntity<T> getData() {
-		return data;
+	public void setLasttick(Long lasttick) {
+		this.lasttick = lasttick;
 	}
-	public void setTick(long tick) {
-		this.tick = tick;
+	public void setCheckmore(Boolean checkmore) {
+		this.checkmore = checkmore;
 	}
-	public void setType(ReplicationEventType type) {
-		this.type = type;
+	public void setLastincluded(Long lastincluded) {
+		this.lastincluded = lastincluded;
 	}
-	public void setKey(String key) {
-		this.key = key;
-	}
-	public void setRev(long rev) {
-		this.rev = rev;
-	}
-	public void setData(DocumentEntity<T> data) {
-		this.data = data;
+	public void setActive(Boolean active) {
+		this.active = active;
 	}
 	
 }

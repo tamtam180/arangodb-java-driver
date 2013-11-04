@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import at.orz.arangodb.entity.ReplicationDumpHeader;
 import at.orz.arangodb.entity.BaseEntity;
 import at.orz.arangodb.entity.EntityDeserializers;
 import at.orz.arangodb.entity.EntityFactory;
@@ -114,6 +115,35 @@ public abstract class BaseArangoDriver {
 			throw new ArangoException(e);
 		}
 		
+	}
+	
+	protected ReplicationDumpHeader toReplicationDumpHeader(HttpResponseEntity res) {
+		ReplicationDumpHeader header = new ReplicationDumpHeader();
+		
+		Map<String, String> headerMap = res.getHeaders();
+		String value;
+		
+		value = headerMap.get("x-arango-replication-active");
+		if (value != null) {
+			header.setActive(Boolean.parseBoolean(value));
+		}
+		
+		value = headerMap.get("x-arango-replication-lastincluded");
+		if (value != null) {
+			header.setLastincluded(Long.parseLong(value));
+		}
+		
+		value = headerMap.get("x-arango-replication-lasttick");
+		if (value != null) {
+			header.setLasttick(Long.parseLong(value));
+		}
+		
+		value = headerMap.get("x-arango-replication-checkmore");
+		if (value != null) {
+			header.setCheckmore(Boolean.parseBoolean(value));
+		}
+		
+		return header;
 	}
 	
 	/**

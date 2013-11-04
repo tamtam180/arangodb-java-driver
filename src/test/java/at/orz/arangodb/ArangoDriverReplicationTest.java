@@ -19,6 +19,7 @@ package at.orz.arangodb;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Before;
@@ -27,11 +28,13 @@ import org.junit.Test;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import at.orz.arangodb.entity.ReplicationDumpHeader;
 import at.orz.arangodb.entity.ReplicationDumpRecord;
 import at.orz.arangodb.entity.ReplicationInventoryEntity;
 import at.orz.arangodb.entity.ReplicationLoggerConfigEntity;
 import at.orz.arangodb.entity.ReplicationInventoryEntity.Collection;
 import at.orz.arangodb.util.DumpHandler;
+import at.orz.arangodb.util.DumpHandlerAdapter;
 
 /**
  * @author tamtam180 - kirscheless at gmail.com
@@ -117,7 +120,16 @@ public class ArangoDriverReplicationTest extends BaseTest {
 		
 		final AtomicInteger upsertCount = new AtomicInteger(0);
 		final AtomicInteger deleteCount = new AtomicInteger(0);
+		final AtomicBoolean headCall = new AtomicBoolean(false);
 		driver.getReplicationDump(collectionName, null, null, null, null, TestComplexEntity01.class, new DumpHandler<TestComplexEntity01>() {
+			public boolean head(ReplicationDumpHeader header) {
+				headCall.set(true);
+				assertThat(header.getCheckmore(), is(not(nullValue())));
+				assertThat(header.getLastincluded(), is(not(nullValue())));
+				assertThat(header.getLasttick(), is((nullValue())));
+				assertThat(header.getActive(), is((nullValue())));
+				return true;
+			}
 			public boolean handle(ReplicationDumpRecord<TestComplexEntity01> entity) {
 				switch (entity.getType()) {
 				case DOCUMENT_UPSERT:
@@ -142,8 +154,10 @@ public class ArangoDriverReplicationTest extends BaseTest {
 				}
 				return true;
 			}
+
 		});
 		
+		assertThat(headCall.get(), is(true));
 		assertThat(upsertCount.get(), is(11));
 		assertThat(deleteCount.get(), is(10));
 		
@@ -176,7 +190,7 @@ public class ArangoDriverReplicationTest extends BaseTest {
 		
 		final AtomicInteger upsertCount = new AtomicInteger(0);
 		final AtomicInteger deleteCount = new AtomicInteger(0);
-		driver.getReplicationDump(collectionName, null, null, null, false, TestComplexEntity01.class, new DumpHandler<TestComplexEntity01>() {
+		driver.getReplicationDump(collectionName, null, null, null, false, TestComplexEntity01.class, new DumpHandlerAdapter<TestComplexEntity01>() {
 			public boolean handle(ReplicationDumpRecord<TestComplexEntity01> entity) {
 				switch (entity.getType()) {
 				case DOCUMENT_UPSERT:
@@ -201,6 +215,7 @@ public class ArangoDriverReplicationTest extends BaseTest {
 				}
 				return true;
 			}
+
 		});
 		
 		assertThat(upsertCount.get(), is(11));
@@ -208,6 +223,95 @@ public class ArangoDriverReplicationTest extends BaseTest {
 		
 	}
 
+	@Test
+	public void test_get_dump_handler_control_1() throws ArangoException {
+		
+		String collectionName = "rep_dump_test";
+		
+		try {
+			driver.deleteCollection(collectionName);
+		} catch (ArangoException e) {}
+		try {
+			driver.createCollection(collectionName);
+		} catch (ArangoException e) {}
+
+		// create 10 document
+		for (int i = 0; i < 10; i++) {
+			TestComplexEntity01 entity = new TestComplexEntity01("user-" + i, "desc-" + i, 20+i);
+			driver.createDocument(collectionName, entity, true, null);
+		}
+		// truncate
+		try {
+			driver.truncateCollection(collectionName);
+		} catch (ArangoException e) {}
+		// create 1 document
+		TestComplexEntity01 entity = new TestComplexEntity01("user-99", "desc-99", 99);
+		driver.createDocument(collectionName, entity, true, null);
+		
+		final AtomicBoolean headCall = new AtomicBoolean(false);
+		driver.getReplicationDump(collectionName, null, null, null, null, TestComplexEntity01.class, new DumpHandler<TestComplexEntity01>() {
+			public boolean head(ReplicationDumpHeader header) {
+				headCall.set(true);
+				return false;
+			}
+			public boolean handle(ReplicationDumpRecord<TestComplexEntity01> entity) {
+				fail("");
+				return true;
+			}
+		});
+		
+		assertThat(headCall.get(), is(true));
+		
+	}
+
+	@Test
+	public void test_get_dump_handler_control_2() throws ArangoException {
+		
+		String collectionName = "rep_dump_test";
+		
+		try {
+			driver.deleteCollection(collectionName);
+		} catch (ArangoException e) {}
+		try {
+			driver.createCollection(collectionName);
+		} catch (ArangoException e) {}
+
+		// create 10 document
+		for (int i = 0; i < 10; i++) {
+			TestComplexEntity01 entity = new TestComplexEntity01("user-" + i, "desc-" + i, 20+i);
+			driver.createDocument(collectionName, entity, true, null);
+		}
+		// truncate
+		try {
+			driver.truncateCollection(collectionName);
+		} catch (ArangoException e) {}
+		// create 1 document
+		TestComplexEntity01 entity = new TestComplexEntity01("user-99", "desc-99", 99);
+		driver.createDocument(collectionName, entity, true, null);
+		
+		final AtomicInteger handleCount = new AtomicInteger(0);
+		final AtomicBoolean headCall = new AtomicBoolean(false);
+		driver.getReplicationDump(collectionName, null, null, null, null, TestComplexEntity01.class, new DumpHandler<TestComplexEntity01>() {
+			public boolean head(ReplicationDumpHeader header) {
+				headCall.set(true);
+				return true;
+			}
+			public boolean handle(ReplicationDumpRecord<TestComplexEntity01> entity) {
+				int cnt = handleCount.incrementAndGet();
+				if (cnt == 5) {
+					return false;
+				}
+				return true;
+			}
+
+		});
+		
+		assertThat(headCall.get(), is(true));
+		assertThat(handleCount.get(), is(5));
+		
+	}
+
+	
 	// TODO: Dump from-to
 	
 //	public void test_sync() throws ArangoException {

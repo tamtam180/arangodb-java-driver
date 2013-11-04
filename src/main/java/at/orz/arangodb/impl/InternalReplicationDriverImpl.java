@@ -130,4 +130,26 @@ public class InternalReplicationDriverImpl extends BaseArangoDriverImpl {
 		
 	}
 	
+	public boolean startReplicationLogger() throws ArangoException {
+		
+		HttpResponseEntity res = httpManager.doPut(
+				createEndpointUrl(baseUrl, null, "/_api/replication/logger-start"), 
+				null, null);
+
+		MapAsEntity entity = createEntity(res, MapAsEntity.class);
+		return (Boolean) entity.getMap().get("running");
+
+	}
+
+	public boolean stopReplicationLogger() throws ArangoException {
+		
+		HttpResponseEntity res = httpManager.doPut(
+				createEndpointUrl(baseUrl, null, "/_api/replication/logger-stop"), 
+				null, null);
+
+		MapAsEntity entity = createEntity(res, MapAsEntity.class);
+		return (Boolean) entity.getMap().get("running");
+
+	}
+
 }

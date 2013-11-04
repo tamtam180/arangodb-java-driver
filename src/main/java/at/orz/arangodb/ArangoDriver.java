@@ -938,6 +938,26 @@ public class ArangoDriver extends BaseArangoDriver {
 		return replicationDriver.getReplicationServerId();
 	}
 	
+	/**
+	 * 
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public boolean startReplicationLogger() throws ArangoException {
+		return replicationDriver.startReplicationLogger();
+	}
+	
+	/**
+	 * 
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public boolean stopReplicationLogger() throws ArangoException {
+		return replicationDriver.stopReplicationLogger();
+	}
+
 	// ---------------------------------------- end of replication ----------------------------------------
 
 	

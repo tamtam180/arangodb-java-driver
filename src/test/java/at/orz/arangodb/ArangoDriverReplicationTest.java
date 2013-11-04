@@ -223,4 +223,26 @@ public class ArangoDriverReplicationTest extends BaseTest {
 		
 	}
 	
+	@Test
+	public void test_start_logger() throws ArangoException {
+		
+		boolean running = driver.startReplicationLogger();
+		assertThat(running, is(true));
+
+		boolean running2 = driver.startReplicationLogger();
+		assertThat(running2, is(true));
+
+	}
+
+	@Test
+	public void test_stop_logger() throws ArangoException {
+
+		boolean running = driver.stopReplicationLogger();
+		assertThat(running, is(false));
+
+		boolean running2 = driver.stopReplicationLogger();
+		assertThat(running2, is(false));
+
+	}
+
 }

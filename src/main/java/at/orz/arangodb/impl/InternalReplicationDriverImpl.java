@@ -25,6 +25,7 @@ import java.util.Locale;
 import at.orz.arangodb.ArangoConfigure;
 import at.orz.arangodb.ArangoException;
 import at.orz.arangodb.entity.EntityFactory;
+import at.orz.arangodb.entity.MapAsEntity;
 import at.orz.arangodb.entity.ReplicationDumpRecord;
 import at.orz.arangodb.entity.ReplicationInventoryEntity;
 import at.orz.arangodb.entity.ReplicationSyncEntity;
@@ -116,6 +117,16 @@ public class InternalReplicationDriverImpl extends BaseArangoDriverImpl {
 				);
 		
 		return createEntity(res, ReplicationSyncEntity.class);
+		
+	}
+	
+	public String getReplicationServerId() throws ArangoException {
+
+		HttpResponseEntity res = httpManager.doGet(
+				createEndpointUrl(baseUrl, null, "/_api/replication/server-id"));
+		
+		MapAsEntity entity = createEntity(res, MapAsEntity.class);
+		return (String) entity.getMap().get("serverId");
 		
 	}
 	

@@ -927,6 +927,17 @@ public class ArangoDriver extends BaseArangoDriver {
 			) throws ArangoException {
 		return replicationDriver.syncReplication(endpoint, database, username, password, restrictType, restrictCollections);
 	}
+	
+	/**
+	 * 
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public String getReplicationServerId() throws ArangoException {
+		return replicationDriver.getReplicationServerId();
+	}
+	
 	// ---------------------------------------- end of replication ----------------------------------------
 
 	

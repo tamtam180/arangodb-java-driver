@@ -1263,4 +1263,22 @@ public class EntityDeserializers {
 		}
 	}
 	
+	public static class MapAsEntityDeserializer implements JsonDeserializer<MapAsEntity> {
+		Type mapType = new TypeToken<Map<String, Object>>(){}.getType();
+		public MapAsEntity deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			
+			if (json.isJsonNull()) {
+				return null;
+			}
+			
+			JsonObject obj = json.getAsJsonObject();
+			MapAsEntity entity = deserializeBaseParameter(obj, new MapAsEntity());
+			
+			entity.map = context.deserialize(obj, mapType);
+			
+			return entity;
+		}
+	}
+
+	
 }

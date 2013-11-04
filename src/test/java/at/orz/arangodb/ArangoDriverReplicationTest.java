@@ -19,7 +19,6 @@ package at.orz.arangodb;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Before;
@@ -215,5 +214,13 @@ public class ArangoDriverReplicationTest extends BaseTest {
 //		driver.syncReplication(endpoint, database, username, password, restrictType, restrictCollections);
 //		
 //	}
+
+	@Test
+	public void test_server_id() throws ArangoException {
+		
+		String serverId = driver.getReplicationServerId();
+		assertThat(serverId, is(notNullValue()));
+		
+	}
 	
 }

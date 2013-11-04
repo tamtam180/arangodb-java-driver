@@ -17,6 +17,8 @@ v1.4.0-SNAPSHOT(2013-11-xx)
 * add support API: /_api/replication/server-id (getReplicationServerId)
 * add support API: /_api/replication/logger-start (startReplicationLogger)
 * add support API: /_api/replication/logger-stop (stopReplicationLogger)
+* add support API: GET /_api/replication/logger-config (getReplicationLoggerConfig)
+* add support API: PUT /_api/replication/logger-config (setReplicationLoggerConfig)
 * add attribute: CollectionEntity#checksum
 * add attribute: CollectionEntity#doCompact
 * add attribute: CollectionEntity#keyOptions

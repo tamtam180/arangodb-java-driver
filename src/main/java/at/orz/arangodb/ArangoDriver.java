@@ -20,6 +20,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import com.google.gson.annotations.Since;
+
 import at.orz.arangodb.entity.AdminLogEntity;
 import at.orz.arangodb.entity.ArangoUnixTime;
 import at.orz.arangodb.entity.ArangoVersion;
@@ -41,6 +43,7 @@ import at.orz.arangodb.entity.IndexType;
 import at.orz.arangodb.entity.IndexesEntity;
 import at.orz.arangodb.entity.Policy;
 import at.orz.arangodb.entity.ReplicationInventoryEntity;
+import at.orz.arangodb.entity.ReplicationLoggerConfigEntity;
 import at.orz.arangodb.entity.ReplicationSyncEntity;
 import at.orz.arangodb.entity.RestrictType;
 import at.orz.arangodb.entity.ScalarExampleEntity;
@@ -958,6 +961,34 @@ public class ArangoDriver extends BaseArangoDriver {
 		return replicationDriver.stopReplicationLogger();
 	}
 
+	/**
+	 * 
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public ReplicationLoggerConfigEntity getReplicationLoggerConfig() throws ArangoException {
+		return replicationDriver.getReplicationLoggerConfig();
+	}
+	
+	/**
+	 * 
+	 * @param autoStart
+	 * @param logRemoteChanges
+	 * @param maxEvents
+	 * @param maxEventsSize
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public ReplicationLoggerConfigEntity setReplicationLoggerConfig(
+			Boolean autoStart,
+			Boolean logRemoteChanges,
+			Long maxEvents,
+			Long maxEventsSize
+			) throws ArangoException {
+		return replicationDriver.setReplicationLoggerConfig(autoStart, logRemoteChanges, maxEvents, maxEventsSize);
+	}
 	// ---------------------------------------- end of replication ----------------------------------------
 
 	

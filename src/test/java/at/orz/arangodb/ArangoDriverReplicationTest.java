@@ -29,6 +29,7 @@ import com.google.gson.GsonBuilder;
 
 import at.orz.arangodb.entity.ReplicationDumpRecord;
 import at.orz.arangodb.entity.ReplicationInventoryEntity;
+import at.orz.arangodb.entity.ReplicationLoggerConfigEntity;
 import at.orz.arangodb.entity.ReplicationInventoryEntity.Collection;
 import at.orz.arangodb.util.DumpHandler;
 
@@ -245,4 +246,46 @@ public class ArangoDriverReplicationTest extends BaseTest {
 
 	}
 
+	@Test
+	public void test_logger_config() throws ArangoException {
+		
+		// set
+		ReplicationLoggerConfigEntity config1 = driver.setReplicationLoggerConfig(true, true, 0L, 0L);
+		assertThat(config1.isAutoStart(), is(true));
+		assertThat(config1.isLogRemoteChanges(), is(true));
+		assertThat(config1.getMaxEvents(), is(0L));
+		assertThat(config1.getMaxEventsSize(), is(0L));
+		
+		// get
+		ReplicationLoggerConfigEntity config2 = driver.getReplicationLoggerConfig();
+		assertThat(config2.isAutoStart(), is(true));
+		assertThat(config2.isLogRemoteChanges(), is(true));
+		assertThat(config2.getMaxEvents(), is(0L));
+		assertThat(config2.getMaxEventsSize(), is(0L));
+
+		// set
+		ReplicationLoggerConfigEntity config3 = driver.setReplicationLoggerConfig(false, false, 1048576L, 134217728L);
+		assertThat(config3.isAutoStart(), is(false));
+		assertThat(config3.isLogRemoteChanges(), is(false));
+		assertThat(config3.getMaxEvents(), is(1048576L));
+		assertThat(config3.getMaxEventsSize(), is(134217728L));
+
+		// get
+		ReplicationLoggerConfigEntity config4 = driver.getReplicationLoggerConfig();
+		assertThat(config4.isAutoStart(), is(false));
+		assertThat(config4.isLogRemoteChanges(), is(false));
+		assertThat(config4.getMaxEvents(), is(1048576L));
+		assertThat(config4.getMaxEventsSize(), is(134217728L));
+
+		// fail (500 error)
+		try {
+			driver.setReplicationLoggerConfig(false, false, 0L, 32768L);
+			fail();
+		} catch (ArangoException e) {
+			assertThat(e.getCode(), is(500));
+			assertThat(e.getErrorNumber(), is(1409));
+		}
+
+	}
+	
 }

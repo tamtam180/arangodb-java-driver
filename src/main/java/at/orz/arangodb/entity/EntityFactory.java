@@ -69,6 +69,7 @@ public class EntityFactory {
 			.registerTypeAdapter(ReplicationDumpRecord.class, new EntityDeserializers.ReplicationDumpRecordDeserializer())
 			.registerTypeAdapter(ReplicationSyncEntity.class, new EntityDeserializers.ReplicationSyncEntityDeserializer())
 			.registerTypeAdapter(MapAsEntity.class, new EntityDeserializers.MapAsEntityDeserializer())
+			.registerTypeAdapter(ReplicationLoggerConfigEntity.class, new EntityDeserializers.ReplicationLoggerConfigEntityDeserializer())
 			;
 	}
 	static {

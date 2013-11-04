@@ -28,6 +28,7 @@ import at.orz.arangodb.entity.EntityFactory;
 import at.orz.arangodb.entity.MapAsEntity;
 import at.orz.arangodb.entity.ReplicationDumpRecord;
 import at.orz.arangodb.entity.ReplicationInventoryEntity;
+import at.orz.arangodb.entity.ReplicationLoggerConfigEntity;
 import at.orz.arangodb.entity.ReplicationSyncEntity;
 import at.orz.arangodb.entity.RestrictType;
 import at.orz.arangodb.entity.StreamEntity;
@@ -150,6 +151,37 @@ public class InternalReplicationDriverImpl extends BaseArangoDriverImpl {
 		MapAsEntity entity = createEntity(res, MapAsEntity.class);
 		return (Boolean) entity.getMap().get("running");
 
+	}
+
+	public ReplicationLoggerConfigEntity getReplicationLoggerConfig() throws ArangoException {
+		
+		HttpResponseEntity res = httpManager.doGet(
+				createEndpointUrl(baseUrl, null, "/_api/replication/logger-config"));
+		
+		return createEntityImpl(res, ReplicationLoggerConfigEntity.class);
+		
+	}
+
+	public ReplicationLoggerConfigEntity setReplicationLoggerConfig(
+			Boolean autoStart,
+			Boolean logRemoteChanges,
+			Long maxEvents,
+			Long maxEventsSize
+			) throws ArangoException {
+		
+		HttpResponseEntity res = httpManager.doPut(
+				createEndpointUrl(baseUrl, null, "/_api/replication/logger-config"),
+				null, 
+				EntityFactory.toJsonString(
+						new MapBuilder()
+						.put("autoStart", autoStart)
+						.put("logRemoteChanges", logRemoteChanges)
+						.put("maxEvents", maxEvents)
+						.put("maxEventsSize", maxEventsSize)
+						.get()));
+		
+		return createEntity(res, ReplicationLoggerConfigEntity.class);
+		
 	}
 
 }

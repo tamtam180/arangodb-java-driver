@@ -17,7 +17,6 @@
 package at.orz.arangodb.entity;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -27,13 +26,13 @@ import java.util.List;
 public class ReplicationInventoryEntity extends BaseEntity {
 	
 	List<Collection> collections;
-	State state;
+	ReplicationState state;
 	long tick;
 
 	public List<Collection> getCollections() {
 		return collections;
 	}
-	public State getState() {
+	public ReplicationState getState() {
 		return state;
 	}
 	public long getTick() {
@@ -42,7 +41,7 @@ public class ReplicationInventoryEntity extends BaseEntity {
 	public void setCollections(List<Collection> collections) {
 		this.collections = collections;
 	}
-	public void setState(State state) {
+	public void setState(ReplicationState state) {
 		this.state = state;
 	}
 	public void setTick(long tick) {
@@ -131,36 +130,6 @@ public class ReplicationInventoryEntity extends BaseEntity {
 			this.indexes = indexes;
 		}
 		
-	}
-	public static class State implements Serializable {
-		boolean running;
-		long lastLogTick;
-		long totalEvents;
-		Date time;
-		public boolean isRunning() {
-			return running;
-		}
-		public long getLastLogTick() {
-			return lastLogTick;
-		}
-		public long getTotalEvents() {
-			return totalEvents;
-		}
-		public Date getTime() {
-			return time;
-		}
-		public void setRunning(boolean running) {
-			this.running = running;
-		}
-		public void setLastLogTick(long lastLogTick) {
-			this.lastLogTick = lastLogTick;
-		}
-		public void setTotalEvents(long totalEvents) {
-			this.totalEvents = totalEvents;
-		}
-		public void setTime(Date time) {
-			this.time = time;
-		}
 	}
 	
 }

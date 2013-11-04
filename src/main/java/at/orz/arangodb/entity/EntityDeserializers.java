@@ -33,7 +33,6 @@ import at.orz.arangodb.entity.ExplainEntity.ExpressionEntity;
 import at.orz.arangodb.entity.ExplainEntity.PlanEntity;
 import at.orz.arangodb.entity.ReplicationInventoryEntity.Collection;
 import at.orz.arangodb.entity.ReplicationInventoryEntity.CollectionParameter;
-import at.orz.arangodb.entity.ReplicationInventoryEntity.State;
 import at.orz.arangodb.entity.StatisticsDescriptionEntity.Figure;
 import at.orz.arangodb.entity.StatisticsDescriptionEntity.Group;
 import at.orz.arangodb.entity.StatisticsEntity.FigureValue;
@@ -1128,6 +1127,30 @@ public class EntityDeserializers {
 		}
 	}
 
+	public static class ReplicationStateDeserializer implements JsonDeserializer<ReplicationState> {
+		public ReplicationState deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+
+			if (json.isJsonNull()) {
+				return null;
+			}
+
+			JsonObject obj = json.getAsJsonObject();
+			ReplicationState entity = new ReplicationState();
+
+			entity.running = obj.getAsJsonPrimitive("running").getAsBoolean();
+			entity.lastLogTick = obj.getAsJsonPrimitive("lastLogTick").getAsLong();
+			entity.totalEvents = obj.getAsJsonPrimitive("totalEvents").getAsLong();
+			String strTime = obj.getAsJsonPrimitive("time").getAsString();
+			try {
+				entity.time = DateUtils.parse(strTime, "yyyy-MM-dd'T'HH:mm:ss'Z'");
+			} catch (ParseException e) {
+				throw new JsonParseException("time format invalid:" + strTime);
+			}
+
+			return entity;
+		}
+	}
+	
 	public static class ReplicationInventoryEntityDeserializer implements JsonDeserializer<ReplicationInventoryEntity> {
 		private Type indexesType = new TypeToken<List<IndexEntity>>(){}.getType();
 		public ReplicationInventoryEntity deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
@@ -1188,17 +1211,7 @@ public class EntityDeserializers {
 			}
 			
 			if (obj.has("state")) {
-				JsonObject s = obj.getAsJsonObject("state");
-				entity.state = new State();
-				entity.state.running = s.getAsJsonPrimitive("running").getAsBoolean();
-				entity.state.lastLogTick = s.getAsJsonPrimitive("lastLogTick").getAsLong();
-				entity.state.totalEvents = s.getAsJsonPrimitive("totalEvents").getAsLong();
-				String strTime = s.getAsJsonPrimitive("time").getAsString();
-				try {
-					entity.state.time = DateUtils.parse(strTime, "yyyy-MM-dd'T'HH:mm:ss'Z'");
-				} catch (ParseException e) {
-					throw new JsonParseException("time format invalid:" + strTime);
-				}
+				entity.state = context.deserialize(obj.getAsJsonObject("state"), ReplicationState.class);
 			}
 			
 			if (obj.has("tick")) {
@@ -1280,5 +1293,33 @@ public class EntityDeserializers {
 		}
 	}
 
+	public static class ReplicationLoggerConfigEntityDeserializer implements JsonDeserializer<ReplicationLoggerConfigEntity> {
+		public ReplicationLoggerConfigEntity deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			
+			if (json.isJsonNull()) {
+				return null;
+			}
+			
+			JsonObject obj = json.getAsJsonObject();
+			ReplicationLoggerConfigEntity entity = deserializeBaseParameter(obj, new ReplicationLoggerConfigEntity());
+			
+			if (obj.has("autoStart")) {
+				entity.autoStart = obj.getAsJsonPrimitive("autoStart").getAsBoolean();
+			}
+			if (obj.has("logRemoteChanges")) {
+				entity.logRemoteChanges = obj.getAsJsonPrimitive("logRemoteChanges").getAsBoolean();
+			}
+			if (obj.has("maxEvents")) {
+				entity.maxEvents = obj.getAsJsonPrimitive("maxEvents").getAsLong();
+			}
+			if (obj.has("maxEventsSize")) {
+				entity.maxEventsSize = obj.getAsJsonPrimitive("maxEventsSize").getAsLong();
+			}
+			
+			return entity;
+		}
+	}
+
+	
 	
 }

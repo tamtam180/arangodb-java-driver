@@ -349,6 +349,7 @@ Under construction
 * PUT /_api/simple/near
 * PUT /_api/simple/within
 * Blueprints
+* Document of Serialization control by annotation (@Exclude)
 
 This library does not support admin/_echo
 
@@ -359,5 +360,3 @@ Apache License 2.0
 # Author
 
 Twitter: @tamtam180
-
-

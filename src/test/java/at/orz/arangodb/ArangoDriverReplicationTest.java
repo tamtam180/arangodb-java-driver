@@ -23,18 +23,21 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
+import at.orz.arangodb.entity.ReplicationApplierConfigEntity;
+import at.orz.arangodb.entity.ReplicationApplierStateEntity;
 import at.orz.arangodb.entity.ReplicationDumpHeader;
 import at.orz.arangodb.entity.ReplicationDumpRecord;
 import at.orz.arangodb.entity.ReplicationInventoryEntity;
-import at.orz.arangodb.entity.ReplicationLoggerConfigEntity;
 import at.orz.arangodb.entity.ReplicationInventoryEntity.Collection;
+import at.orz.arangodb.entity.ReplicationLoggerConfigEntity;
 import at.orz.arangodb.util.DumpHandler;
 import at.orz.arangodb.util.DumpHandlerAdapter;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * @author tamtam180 - kirscheless at gmail.com
@@ -46,6 +49,7 @@ public class ArangoDriverReplicationTest extends BaseTest {
 		super(configure, driver);
 	}
 	
+	
 	@Before
 	public void before() {
 		driver.setDefaultDatabase(null);
@@ -53,6 +57,10 @@ public class ArangoDriverReplicationTest extends BaseTest {
 
 	@Test
 	public void test_get_inventory() throws ArangoException {
+		
+		try {
+			driver.stopReplicationLogger();
+		} catch (Exception e) {}
 		
 		ReplicationInventoryEntity entity = driver.getReplicationInventory();
 		assertThat(entity.getCode(), is(0));
@@ -390,6 +398,98 @@ public class ArangoDriverReplicationTest extends BaseTest {
 			assertThat(e.getErrorNumber(), is(1409));
 		}
 
+	}
+
+	@Ignore("理由は以下のコメントを見てね")
+	@Test
+	public void test_set_applier_config_endpoint_null() {
+
+		// endpointはmust指定のはずなのに、1.4.0時点ではエラーにならない。
+		// 一度endpointを設定してしまうと、REPLICATION-APPLIER-CONFIG ファイルに保存されてしまい、
+		// 以降、修正はできてもリセットはできない。
+		// インストール直後のみ再現するケースである。
+		
+		try {
+			driver.setReplicationApplierConfig(
+					null, // endpoint is null
+					null, null, null, 
+					99, 98, 97, 1024, true, true);
+			fail("");
+		} catch (ArangoException e) {
+			assertThat(e.getCode(), is(400));
+			assertThat(e.getErrorNumber(), is(1410));
+		}
+	}
+	
+	@Test
+	public void test_set_get_applier_config() throws ArangoException {
+
+		// master
+		ReplicationApplierConfigEntity config = driver.setReplicationApplierConfig(
+				configure.getEndpoint(), 
+				null, null, null, 
+				99, 98, 97, 1024, true, true);
+		
+		assertThat(config.getEndpoint(), is(configure.getEndpoint()));
+		assertThat(config.getDatabase(), is("_system"));
+		assertThat(config.getMaxConnectRetries(), is(99));
+		assertThat(config.getConnectTimeout(), is(98));
+		assertThat(config.getRequestTimeout(), is(97));
+		assertThat(config.getChunkSize(), is(1024));
+		assertThat(config.getAutoStart(), is(true));
+		assertThat(config.getAdaptivePolling(), is(true));
+		assertThat(config.getUsername(), is(nullValue()));
+		assertThat(config.getPassword(), is(nullValue()));
+	
+		config = driver.getReplicationApplierConfig();		
+		assertThat(config.getEndpoint(), is(configure.getEndpoint()));
+		assertThat(config.getDatabase(), is("_system"));
+		assertThat(config.getMaxConnectRetries(), is(99));
+		assertThat(config.getConnectTimeout(), is(98));
+		assertThat(config.getRequestTimeout(), is(97));
+		assertThat(config.getChunkSize(), is(1024));
+		assertThat(config.getAutoStart(), is(true));
+		assertThat(config.getAdaptivePolling(), is(true));
+		assertThat(config.getUsername(), is(nullValue()));
+		assertThat(config.getPassword(), is(nullValue()));
+		
+	}
+	
+	@Test
+	public void test_start_stop_applier() throws ArangoException {
+		
+		ReplicationApplierStateEntity config1 = driver.startReplicationApplier(null);
+		assertThat(config1.getStatusCode(), is(200));
+		assertThat(config1.getServerVersion(), is(notNullValue()));
+		assertThat(config1.getServerId(), is(notNullValue()));
+		assertThat(config1.getEndpoint(), is(notNullValue()));
+		assertThat(config1.getDatabase(), is("_system"));
+		assertThat(config1.getState().getRunning(), is(true));
+		assertThat(config1.getState().getLastAppliedContinuousTick(), is(nullValue()));
+		assertThat(config1.getState().getLastProcessedContinuousTick(), is(nullValue()));
+		assertThat(config1.getState().getLastAvailableContinuousTick(), is(nullValue()));
+		assertThat(config1.getState().getTime(), is(notNullValue()));
+		assertThat(config1.getState().getTotalRequests().longValue(), is(not(0L)));
+		assertThat(config1.getState().getTotalFailedConnects().longValue(), is(not(0L)));
+		assertThat(config1.getState().getTotalEvents(), is(notNullValue()));
+		// LastError, Progress -> see Sceinario Test
+		
+		ReplicationApplierStateEntity config2 = driver.stopReplicationApplier();
+		assertThat(config2.getStatusCode(), is(200));
+		assertThat(config2.getStatusCode(), is(200));
+		assertThat(config2.getServerVersion(), is(notNullValue()));
+		assertThat(config2.getServerId(), is(notNullValue()));
+		assertThat(config2.getEndpoint(), is(notNullValue()));
+		assertThat(config2.getDatabase(), is("_system"));
+		assertThat(config2.getState().getRunning(), is(false));
+		assertThat(config2.getState().getLastAppliedContinuousTick(), is(nullValue()));
+		assertThat(config2.getState().getLastProcessedContinuousTick(), is(nullValue()));
+		assertThat(config2.getState().getLastAvailableContinuousTick(), is(nullValue()));
+		assertThat(config2.getState().getTime(), is(notNullValue()));
+		assertThat(config2.getState().getTotalRequests().longValue(), is(not(0L)));
+		assertThat(config2.getState().getTotalFailedConnects().longValue(), is(not(0L)));
+		assertThat(config2.getState().getTotalEvents(), is(notNullValue()));
+		
 	}
 	
 }

@@ -40,6 +40,8 @@ import at.orz.arangodb.entity.IndexEntity;
 import at.orz.arangodb.entity.IndexType;
 import at.orz.arangodb.entity.IndexesEntity;
 import at.orz.arangodb.entity.Policy;
+import at.orz.arangodb.entity.ReplicationApplierConfigEntity;
+import at.orz.arangodb.entity.ReplicationApplierStateEntity;
 import at.orz.arangodb.entity.ReplicationInventoryEntity;
 import at.orz.arangodb.entity.ReplicationLoggerConfigEntity;
 import at.orz.arangodb.entity.ReplicationSyncEntity;
@@ -987,6 +989,83 @@ public class ArangoDriver extends BaseArangoDriver {
 			) throws ArangoException {
 		return replicationDriver.setReplicationLoggerConfig(autoStart, logRemoteChanges, maxEvents, maxEventsSize);
 	}
+	
+	/**
+	 * 
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public ReplicationApplierConfigEntity getReplicationApplierConfig() throws ArangoException {
+		return replicationDriver.getReplicationApplierConfig();
+	}
+	
+	/**
+	 * 
+	 * @param endpoint
+	 * @param database
+	 * @param username
+	 * @param password
+	 * @param maxConnectRetries
+	 * @param connectTimeout
+	 * @param requestTimeout
+	 * @param chunkSize
+	 * @param autoStart
+	 * @param adaptivePolling
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public ReplicationApplierConfigEntity setReplicationApplierConfig(
+			String endpoint,
+			String database,
+			String username,
+			String password,
+			Integer maxConnectRetries,
+			Integer connectTimeout,
+			Integer requestTimeout,
+			Integer chunkSize,
+			Boolean autoStart,
+			Boolean adaptivePolling
+			) throws ArangoException {
+		return replicationDriver.setReplicationApplierConfig(endpoint, database, username, password, maxConnectRetries, connectTimeout, requestTimeout, chunkSize, autoStart, adaptivePolling);
+	}
+	
+
+	/**
+	 * 
+	 * @param param
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public ReplicationApplierConfigEntity setReplicationApplierConfig(
+			ReplicationApplierConfigEntity param
+			) throws ArangoException {
+		return replicationDriver.setReplicationApplierConfig(param);
+	}
+
+	/**
+	 * 
+	 * @param from
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public ReplicationApplierStateEntity startReplicationApplier(Long from) throws ArangoException {
+		return replicationDriver.startReplicationApplier(from);
+	}
+	
+	/**
+	 * 
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public ReplicationApplierStateEntity stopReplicationApplier() throws ArangoException {
+		return replicationDriver.stopReplicationApplier();
+	}
+	
 	// ---------------------------------------- end of replication ----------------------------------------
 
 	

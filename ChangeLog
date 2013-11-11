@@ -19,6 +19,10 @@ v1.4.0-SNAPSHOT(2013-11-xx)
 * add support API: /_api/replication/logger-stop (stopReplicationLogger)
 * add support API: GET /_api/replication/logger-config (getReplicationLoggerConfig)
 * add support API: PUT /_api/replication/logger-config (setReplicationLoggerConfig)
+* add support API: GET /_api/replication/applier-config (getReplicationApplierConfig)
+* add support API: PUT /_api/replication/applier-config (setReplicationApplierConfig)
+* add support API: PUT /_api/replication/applier-start (startReplicationApplier)
+* add support API: PUT /_api/replication/applier-stop (stopReplicationApplier)
 * add attribute: CollectionEntity#checksum
 * add attribute: CollectionEntity#doCompact
 * add attribute: CollectionEntity#keyOptions

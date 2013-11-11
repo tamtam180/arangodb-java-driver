@@ -18,7 +18,6 @@ package at.orz.arangodb.entity;
 
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -31,6 +30,8 @@ import java.util.TreeMap;
 import at.orz.arangodb.entity.CollectionEntity.Figures;
 import at.orz.arangodb.entity.ExplainEntity.ExpressionEntity;
 import at.orz.arangodb.entity.ExplainEntity.PlanEntity;
+import at.orz.arangodb.entity.ReplicationApplierState.LastError;
+import at.orz.arangodb.entity.ReplicationApplierState.Progress;
 import at.orz.arangodb.entity.ReplicationInventoryEntity.Collection;
 import at.orz.arangodb.entity.ReplicationInventoryEntity.CollectionParameter;
 import at.orz.arangodb.entity.StatisticsDescriptionEntity.Figure;
@@ -1136,12 +1137,7 @@ public class EntityDeserializers {
 			entity.running = obj.getAsJsonPrimitive("running").getAsBoolean();
 			entity.lastLogTick = obj.getAsJsonPrimitive("lastLogTick").getAsLong();
 			entity.totalEvents = obj.getAsJsonPrimitive("totalEvents").getAsLong();
-			String strTime = obj.getAsJsonPrimitive("time").getAsString();
-			try {
-				entity.time = DateUtils.parse(strTime, "yyyy-MM-dd'T'HH:mm:ss'Z'");
-			} catch (ParseException e) {
-				throw new JsonParseException("time format invalid:" + strTime);
-			}
+			entity.time = DateUtils.parse(obj.getAsJsonPrimitive("time").getAsString());
 
 			return entity;
 		}
@@ -1316,6 +1312,158 @@ public class EntityDeserializers {
 		}
 	}
 
+	public static class ReplicationApplierConfigEntityDeserializer implements JsonDeserializer<ReplicationApplierConfigEntity> {
+		public ReplicationApplierConfigEntity deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			
+			if (json.isJsonNull()) {
+				return null;
+			}
+			
+			JsonObject obj = json.getAsJsonObject();
+			ReplicationApplierConfigEntity entity = deserializeBaseParameter(obj, new ReplicationApplierConfigEntity());
+			
+			if (obj.has("endpoint")) {
+				entity.endpoint = obj.getAsJsonPrimitive("endpoint").getAsString();
+			}
+
+			if (obj.has("database")) {
+				entity.database = obj.getAsJsonPrimitive("database").getAsString();
+			}
+
+			if (obj.has("username")) {
+				entity.username = obj.getAsJsonPrimitive("username").getAsString();
+			}
+
+			if (obj.has("password")) {
+				entity.password = obj.getAsJsonPrimitive("password").getAsString();
+			}
+			
+			if (obj.has("maxConnectRetries")) {
+				entity.maxConnectRetries = obj.getAsJsonPrimitive("maxConnectRetries").getAsInt();
+			}
+			
+			if (obj.has("connectTimeout")) {
+				entity.connectTimeout = obj.getAsJsonPrimitive("connectTimeout").getAsInt();
+			}
+
+			if (obj.has("requestTimeout")) {
+				entity.requestTimeout = obj.getAsJsonPrimitive("requestTimeout").getAsInt();
+			}
+
+			if (obj.has("chunkSize")) {
+				entity.chunkSize = obj.getAsJsonPrimitive("chunkSize").getAsInt();
+			}
+
+			if (obj.has("autoStart")) {
+				entity.autoStart = obj.getAsJsonPrimitive("autoStart").getAsBoolean();
+			}
+
+			if (obj.has("adaptivePolling")) {
+				entity.adaptivePolling = obj.getAsJsonPrimitive("adaptivePolling").getAsBoolean();
+			}
+
+			return entity;
+		}
+	}
+
+	public static class ReplicationApplierStateDeserializer implements JsonDeserializer<ReplicationApplierState> {
+		public ReplicationApplierState deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			
+			if (json.isJsonNull()) {
+				return null;
+			}
+			
+			JsonObject obj = json.getAsJsonObject();
+			ReplicationApplierState state = new ReplicationApplierState();
+			
+			if (obj.has("running")) {
+				state.running = obj.getAsJsonPrimitive("running").getAsBoolean();
+			}
+			if (obj.has("lastAppliedContinuousTick") && !obj.get("lastAppliedContinuousTick").isJsonNull()) {
+				state.lastAppliedContinuousTick = obj.getAsJsonPrimitive("lastAppliedContinuousTick").getAsLong();
+			}
+			if (obj.has("lastProcessedContinuousTick") && !obj.get("lastProcessedContinuousTick").isJsonNull()) {
+				state.lastProcessedContinuousTick = obj.getAsJsonPrimitive("lastProcessedContinuousTick").getAsLong();
+			}
+			if (obj.has("lastAvailableContinuousTick") && !obj.get("lastAvailableContinuousTick").isJsonNull()) {
+				state.lastAvailableContinuousTick = obj.getAsJsonPrimitive("lastAvailableContinuousTick").getAsLong();
+			}
+			if (obj.has("time")) {
+				state.time = DateUtils.parse(obj.getAsJsonPrimitive("time").getAsString());
+			}
+			if (obj.has("totalRequests")) {
+				state.totalRequests = obj.getAsJsonPrimitive("totalRequests").getAsLong();
+			}
+			if (obj.has("totalFailedConnects")) {
+				state.totalFailedConnects = obj.getAsJsonPrimitive("totalFailedConnects").getAsLong();
+			}
+			if (obj.has("totalEvents")) {
+				state.totalEvents = obj.getAsJsonPrimitive("totalEvents").getAsLong();
+			}
+			
+			if (obj.has("lastError") && !obj.get("lastError").isJsonNull()) {
+				JsonObject lastError = obj.getAsJsonObject("lastError");
+				state.lastError = new LastError();
+				if (lastError.has("time")) {
+					state.lastError.time = DateUtils.parse(lastError.getAsJsonPrimitive("time").getAsString());
+				}
+				if (lastError.has("errorNum")) {
+					state.lastError.errorNum = lastError.getAsJsonPrimitive("errorNum").getAsLong();
+				}
+				if (lastError.has("errorMessage")) {
+					state.lastError.errorMessage = lastError.getAsJsonPrimitive("errorMessage").getAsString();
+				}
+			}
+			
+			if (obj.has("progress")) {
+				JsonObject progress = obj.getAsJsonObject("progress");
+				state.progress = new Progress();
+				if (progress.has("failedConnects")) {
+					state.progress.failedConnects = progress.getAsJsonPrimitive("failedConnects").getAsLong();
+				}
+				if (progress.has("message")) {
+					state.progress.message = progress.getAsJsonPrimitive("message").getAsString();
+				}
+				if (progress.has("time")) {
+					state.progress.time = DateUtils.parse(progress.getAsJsonPrimitive("time").getAsString());
+				}
+			}
+
+			return state;
+		}
+	}
 	
+	public static class ReplicationApplierStateEntityDeserializer implements JsonDeserializer<ReplicationApplierStateEntity> {
+		public ReplicationApplierStateEntity deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			
+			if (json.isJsonNull()) {
+				return null;
+			}
+			
+			JsonObject obj = json.getAsJsonObject();
+			ReplicationApplierStateEntity entity = deserializeBaseParameter(obj, new ReplicationApplierStateEntity());
+			
+			if (obj.has("endpoint")) {
+				entity.endpoint = obj.getAsJsonPrimitive("endpoint").getAsString();
+			}
+
+			if (obj.has("database")) {
+				entity.database = obj.getAsJsonPrimitive("database").getAsString();
+			}
+			
+			if (obj.has("server")) {
+				JsonObject server = obj.getAsJsonObject("server");
+				entity.serverVersion = server.getAsJsonPrimitive("version").getAsString();
+				entity.serverId = server.getAsJsonPrimitive("serverId").getAsString();
+			}
+			
+			if (obj.has("state")) {
+				entity.state = context.deserialize(obj.get("state"), ReplicationApplierState.class);
+			}
+
+			return entity;
+		}
+	}
+
 	
 }

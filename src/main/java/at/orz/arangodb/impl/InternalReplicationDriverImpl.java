@@ -24,9 +24,11 @@ import java.util.Locale;
 
 import at.orz.arangodb.ArangoConfigure;
 import at.orz.arangodb.ArangoException;
-import at.orz.arangodb.entity.ReplicationDumpHeader;
 import at.orz.arangodb.entity.EntityFactory;
 import at.orz.arangodb.entity.MapAsEntity;
+import at.orz.arangodb.entity.ReplicationApplierConfigEntity;
+import at.orz.arangodb.entity.ReplicationApplierStateEntity;
+import at.orz.arangodb.entity.ReplicationDumpHeader;
 import at.orz.arangodb.entity.ReplicationDumpRecord;
 import at.orz.arangodb.entity.ReplicationInventoryEntity;
 import at.orz.arangodb.entity.ReplicationLoggerConfigEntity;
@@ -184,6 +186,82 @@ public class InternalReplicationDriverImpl extends BaseArangoDriverImpl {
 						.get()));
 		
 		return createEntity(res, ReplicationLoggerConfigEntity.class);
+		
+	}
+
+	public ReplicationApplierConfigEntity getReplicationApplierConfig() throws ArangoException {
+
+		HttpResponseEntity res = httpManager.doGet(
+				createEndpointUrl(baseUrl, null, "/_api/replication/applier-config"));
+		
+		return createEntityImpl(res, ReplicationApplierConfigEntity.class);
+
+	}
+	
+	public ReplicationApplierConfigEntity setReplicationApplierConfig(
+			String endpoint,
+			String database,
+			String username,
+			String password,
+			Integer maxConnectRetries,
+			Integer connectTimeout,
+			Integer requestTimeout,
+			Integer chunkSize,
+			Boolean autoStart,
+			Boolean adaptivePolling
+			) throws ArangoException {
+
+		ReplicationApplierConfigEntity bodyParam = new ReplicationApplierConfigEntity();
+		bodyParam.setEndpoint(endpoint);
+		bodyParam.setDatabase(database);
+		bodyParam.setUsername(username);
+		bodyParam.setPassword(password);
+		bodyParam.setMaxConnectRetries(maxConnectRetries);
+		bodyParam.setConnectTimeout(connectTimeout);
+		bodyParam.setRequestTimeout(requestTimeout);
+		bodyParam.setChunkSize(chunkSize);
+		bodyParam.setAutoStart(autoStart);
+		bodyParam.setAdaptivePolling(adaptivePolling);
+		
+		return setReplicationApplierConfig(bodyParam);
+
+	}
+
+	public ReplicationApplierConfigEntity setReplicationApplierConfig(
+			ReplicationApplierConfigEntity param
+			) throws ArangoException {
+
+		HttpResponseEntity res = httpManager.doPut(
+				createEndpointUrl(baseUrl, null, "/_api/replication/applier-config"),
+				null, 
+				EntityFactory.toJsonString(param)
+				);
+		
+		return createEntity(res, ReplicationApplierConfigEntity.class);
+
+	}
+	
+	public ReplicationApplierStateEntity startReplicationApplier(Long from) throws ArangoException {
+		
+		HttpResponseEntity res = httpManager.doPut(
+				createEndpointUrl(baseUrl, null, "/_api/replication/applier-start"),
+				new MapBuilder().put("from", from).get(), 
+				null
+				);
+		
+		return createEntity(res, ReplicationApplierStateEntity.class);
+		
+	}
+
+	public ReplicationApplierStateEntity stopReplicationApplier() throws ArangoException {
+		
+		HttpResponseEntity res = httpManager.doPut(
+				createEndpointUrl(baseUrl, null, "/_api/replication/applier-stop"),
+				null,
+				null
+				);
+		
+		return createEntity(res, ReplicationApplierStateEntity.class);
 		
 	}
 

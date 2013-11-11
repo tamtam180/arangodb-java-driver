@@ -76,12 +76,19 @@ public class ArangoConfigure {
 	HttpManager httpManager;
 	
 	public ArangoConfigure() {
+		init(DEFAULT_PROPERTY_FILE);
+	}
+	
+	public ArangoConfigure(String propertyPath) {
+		init(propertyPath);
+	}
+	
+	private void init(String propertyPath) {
 		this.host = DEFAULT_HOST;
 		this.port = DEFAULT_PORT;
 		this.maxPerConnection = DEFAULT_MAX_PER_CONNECTION;
 		this.maxTotalConnection = DEFAULT_MAX_CONNECTION;
-		// Load from Property file
-		loadProperties();
+		loadProperties(propertyPath);
 	}
 	
 	/**
@@ -203,6 +210,11 @@ public class ArangoConfigure {
 	// 複数ホスト対応の際は、セレクタのクラスを保持するようにする。
 	public String getBaseUrl() {
 		return "http://" + this.host + ":" + this.port;
+	}
+	
+	// TODO: 同上
+	public String getEndpoint() {
+		return "tcp://" + this.host + ":" + this.port;
 	}
 	
 	public static String getDefaultHost() {

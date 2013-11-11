@@ -21,10 +21,13 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Iterator;
 
+import at.orz.arangodb.annotations.Exclude;
 import at.orz.arangodb.entity.CollectionEntity.Figures;
 import at.orz.arangodb.entity.EntityDeserializers.CollectionKeyOptionDeserializer;
 import at.orz.arangodb.http.JsonSequenceEntity;
 
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -38,6 +41,8 @@ public class EntityFactory {
 	private static Gson gsonNull;
 	private static GsonBuilder getBuilder() {
 		return new GsonBuilder()
+			.addSerializationExclusionStrategy(new ExcludeExclusionStrategy(true))
+			.addDeserializationExclusionStrategy(new ExcludeExclusionStrategy(false))
 			.registerTypeAdapter(CollectionStatus.class, new CollectionStatusTypeAdapter())
 			.registerTypeAdapter(CollectionEntity.class, new EntityDeserializers.CollectionEntityDeserializer())
 			.registerTypeAdapter(DocumentEntity.class, new EntityDeserializers.DocumentEntityDeserializer())
@@ -70,6 +75,9 @@ public class EntityFactory {
 			.registerTypeAdapter(ReplicationSyncEntity.class, new EntityDeserializers.ReplicationSyncEntityDeserializer())
 			.registerTypeAdapter(MapAsEntity.class, new EntityDeserializers.MapAsEntityDeserializer())
 			.registerTypeAdapter(ReplicationLoggerConfigEntity.class, new EntityDeserializers.ReplicationLoggerConfigEntityDeserializer())
+			.registerTypeAdapter(ReplicationApplierConfigEntity.class, new EntityDeserializers.ReplicationApplierConfigEntityDeserializer())
+			.registerTypeAdapter(ReplicationApplierState.class, new EntityDeserializers.ReplicationApplierStateDeserializer())
+			.registerTypeAdapter(ReplicationApplierStateEntity.class, new EntityDeserializers.ReplicationApplierStateEntityDeserializer())
 			;
 	}
 	static {
@@ -141,42 +149,27 @@ public class EntityFactory {
 		return includeNullValue ? gsonNull.toJson(obj) : gson.toJson(obj);
 	}
 
-//	public static <T> EdgesEntity<T> createEdges(String jsonText, Class<T> clazz) {
-//		EdgesEntity<T> edges = createEntity(jsonText, EdgesEntity.class);
-//		edges.edges = createEdges(edges._edges, clazz);
-//		edges._edges = null;
-//		return edges;
-//	}
-//	private static <T> List<EdgeEntity<T>> createEdges(JsonArray array, Class<T> clazz) {
-//		
-//		if (array == null) {
-//			return null;
-//		}
-//		
-//		ArrayList<EdgeEntity<T>> edges = new ArrayList<EdgeEntity<T>>(array.size());
-//		for (JsonElement elem: array) {
-//			EdgeEntity<T> edge = gson.fromJson(elem, EdgeEntity.class);
-//			if (clazz != null) {
-//				edge.attributes = gson.fromJson(elem, clazz);
-//			}
-//			edges.add(edge);
-//		}
-//		
-//		return edges;
-//	}
 	
-//	public static <T> ScalarExampleEntity<T> createScalarExampleEntity(ScalarExampleEntity<T> entity, Class<T> clazz) {
-//		
-//		if (entity._documentJson != null) {
-//			DocumentEntity<T> document = gson.fromJson(entity._documentJson, DocumentEntity.class);
-//			if (document != null) {
-//				document.setEntity(gson.fromJson(entity._documentJson, clazz));
-//				entity.setDocument(document);
-//				entity._documentJson = null;
-//			}
-//		}
-//		
-//		return entity;
-//	}
+	/**
+	 * 
+	 * @author tamtam180 - kirscheless at gmail.com
+	 * @since 1.4.0
+	 */
+	private static class ExcludeExclusionStrategy implements ExclusionStrategy {
+		private boolean serialize;
+		public ExcludeExclusionStrategy(boolean serialize) {
+			this.serialize = serialize;
+		}
+		public boolean shouldSkipField(FieldAttributes f) {
+			Exclude annotation = f.getAnnotation(Exclude.class);
+			if (annotation != null && (serialize ? annotation.serialize() : annotation.deserialize())) {
+				return true;
+			}
+			return false;
+		}
+		public boolean shouldSkipClass(Class<?> clazz) {
+			return false;
+		}
+	}
 	
 }

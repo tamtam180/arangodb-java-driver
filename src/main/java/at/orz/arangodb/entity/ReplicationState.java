@@ -29,6 +29,7 @@ public class ReplicationState implements Serializable {
 	long lastLogTick;
 	long totalEvents;
 	Date time;
+
 	public boolean isRunning() {
 		return running;
 	}

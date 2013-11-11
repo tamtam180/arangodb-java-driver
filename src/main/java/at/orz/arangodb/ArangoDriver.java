@@ -20,8 +20,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import com.google.gson.annotations.Since;
-
 import at.orz.arangodb.entity.AdminLogEntity;
 import at.orz.arangodb.entity.ArangoUnixTime;
 import at.orz.arangodb.entity.ArangoVersion;
@@ -118,7 +116,7 @@ public class ArangoDriver extends BaseArangoDriver {
 		this.collectionDriver = ImplFactory.createCollectionDriver(configure);
 		this.documentDriver = ImplFactory.createDocumentDriver(configure);
 		//this.kvsDriver = ImplFactory.createKVSDriver(configure);
-		this.indexDriver = ImplFactory.createIndexDriver(configure, cursorDriver);
+		this.indexDriver = ImplFactory.createIndexDriver(configure);
 		//this.edgeDriver = ImplFactory.createEdgeDriver(configure);
 		this.adminDriver = ImplFactory.createAdminDriver(configure);
 		this.simpleDriver = ImplFactory.createSimpleDriver(configure, cursorDriver);

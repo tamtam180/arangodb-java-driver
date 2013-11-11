@@ -41,8 +41,8 @@ public class ImplFactory {
 	public static InternalSimpleDriverImpl createSimpleDriver(ArangoConfigure configure, InternalCursorDriverImpl cursorDriver) {
 		return new InternalSimpleDriverImpl(configure, cursorDriver);
 	}
-	public static InternalIndexDriverImpl createIndexDriver(ArangoConfigure configure, InternalCursorDriverImpl cursorDriver) {
-		return new InternalIndexDriverImpl(configure, cursorDriver);
+	public static InternalIndexDriverImpl createIndexDriver(ArangoConfigure configure) {
+		return new InternalIndexDriverImpl(configure);
 	}
 	public static InternalAdminDriverImpl createAdminDriver(ArangoConfigure configure) {
 		return new InternalAdminDriverImpl(configure);

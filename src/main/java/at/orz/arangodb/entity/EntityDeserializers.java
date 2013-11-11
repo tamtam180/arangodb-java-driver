@@ -410,7 +410,6 @@ public class EntityDeserializers {
 			JsonObject obj = json.getAsJsonObject();
 			CursorEntity<Object> entity = deserializeBaseParameter(obj, new CursorEntity<Object>());
 			
-			// TODO
 			if (obj.has("result")) {
 				JsonArray array = obj.getAsJsonArray("result");
 				if (array == null || array.isJsonNull() || array.size() == 0) {
@@ -488,7 +487,6 @@ public class EntityDeserializers {
 			}
 			
 			// 他のフィールドはリフレクションで。
-			// TODO:
 			Class<?> clazz = getParameterized();
 			if (clazz != null) {
 				entity.entity = context.deserialize(obj, clazz);
@@ -856,8 +854,6 @@ public class EntityDeserializers {
 			JsonObject obj = json.getAsJsonObject();
 			ScalarExampleEntity<?> entity = deserializeBaseParameter(obj, new ScalarExampleEntity<Object>());
 			
-			// TODO
-			// document属性は別のレイヤーで
 			if (obj.has("document")) {
 				entity.document = context.deserialize(obj.get("document"), DocumentEntity.class);
 			}

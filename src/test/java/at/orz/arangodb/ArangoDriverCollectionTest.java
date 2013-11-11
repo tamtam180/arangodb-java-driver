@@ -306,8 +306,10 @@ public class ArangoDriverCollectionTest extends BaseTest {
 		assertThat(collection.getKeyOptions().getType(), is("traditional"));
 		assertThat(collection.getKeyOptions().isAllowUserKeys(), is(true));
 
-		// TODO Countがないこと
-		// TODO Revisionがないこと
+		// Countがないこと
+		// Revisionがないこと
+		assertThat(collection.getCount(), is(0L));
+		assertThat(collection.getRevision(), is(0L));
 
 	}
 

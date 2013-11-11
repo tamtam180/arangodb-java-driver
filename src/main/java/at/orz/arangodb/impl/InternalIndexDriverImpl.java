@@ -33,9 +33,8 @@ import at.orz.arangodb.util.MapBuilder;
  */
 public class InternalIndexDriverImpl extends BaseArangoDriverWithCursorImpl {
 	
-	InternalCursorDriverImpl cursorDriver; // FIXME: Delete
-	InternalIndexDriverImpl(ArangoConfigure configure, InternalCursorDriverImpl cursorDriver) {
-		super(configure, cursorDriver);
+	InternalIndexDriverImpl(ArangoConfigure configure) {
+		super(configure, null);
 	}
 
 	public IndexEntity createIndex(String database, String collectionName, IndexType type, boolean unique, String... fields) throws ArangoException {

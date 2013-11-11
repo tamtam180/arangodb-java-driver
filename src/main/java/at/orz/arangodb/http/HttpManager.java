@@ -348,10 +348,8 @@ public class HttpManager {
 			return responseEntity;
 			
 		} catch (ClientProtocolException e) {
-			// TODO
 			throw new ArangoException(e);
 		} catch (IOException e) {
-			// TODO
 			throw new ArangoException(e);
 		}
 		

@@ -1409,7 +1409,7 @@ public class EntityDeserializers {
 					state.lastError.time = DateUtils.parse(lastError.getAsJsonPrimitive("time").getAsString());
 				}
 				if (lastError.has("errorNum")) {
-					state.lastError.errorNum = lastError.getAsJsonPrimitive("errorNum").getAsLong();
+					state.lastError.errorNum = lastError.getAsJsonPrimitive("errorNum").getAsInt();
 				}
 				if (lastError.has("errorMessage")) {
 					state.lastError.errorMessage = lastError.getAsJsonPrimitive("errorMessage").getAsString();

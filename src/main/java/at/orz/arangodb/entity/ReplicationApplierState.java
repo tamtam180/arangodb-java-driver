@@ -63,14 +63,14 @@ public class ReplicationApplierState implements Serializable {
 	public static class LastError implements Serializable {
 		Date time;
 		String errorMessage;
-		Long errorNum;
+		Integer errorNum;
 		public Date getTime() {
 			return time;
 		}
 		public String getErrorMessage() {
 			return errorMessage;
 		}
-		public Long getErrorNum() {
+		public Integer getErrorNum() {
 			return errorNum;
 		}
 		public void setTime(Date time) {
@@ -79,7 +79,7 @@ public class ReplicationApplierState implements Serializable {
 		public void setErrorMessage(String errorMessage) {
 			this.errorMessage = errorMessage;
 		}
-		public void setErrorNum(Long errorNum) {
+		public void setErrorNum(Integer errorNum) {
 			this.errorNum = errorNum;
 		}
 	}

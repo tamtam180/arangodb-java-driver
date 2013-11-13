@@ -1077,6 +1077,16 @@ public class ArangoDriver extends BaseArangoDriver {
 		return replicationDriver.stopReplicationApplier(getDefaultDatabase());
 	}
 	
+	/**
+	 * 
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public ReplicationApplierStateEntity getReplicationApplierState() throws ArangoException {
+		return replicationDriver.getReplicationApplierState(getDefaultDatabase());
+	}
+	
 	// ---------------------------------------- end of replication ----------------------------------------
 
 	

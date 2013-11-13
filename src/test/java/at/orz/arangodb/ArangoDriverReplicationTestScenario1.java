@@ -34,6 +34,7 @@ import at.orz.arangodb.entity.BooleanResultEntity;
 import at.orz.arangodb.entity.CollectionEntity;
 import at.orz.arangodb.entity.DocumentEntity;
 import at.orz.arangodb.entity.ImportResultEntity;
+import at.orz.arangodb.entity.ReplicationApplierStateEntity;
 import at.orz.arangodb.entity.ReplicationLoggerStateEntity;
 import at.orz.arangodb.entity.ReplicationSyncEntity;
 import at.orz.arangodb.util.MapBuilder;
@@ -238,6 +239,10 @@ public class ArangoDriverReplicationTestScenario1 {
 			assertThat(e.getCode(), is(404));
 		}
 
+		// ------------------------------------------------------------
+		// State
+		// ------------------------------------------------------------
+
 		// [Master] logger state
 		ReplicationLoggerStateEntity state2 = masterDriver.getReplicationLoggerState();
 		assertThat(state2.getState().isRunning(), is(true));
@@ -254,6 +259,29 @@ public class ArangoDriverReplicationTestScenario1 {
 		assertThat(state2.getClients().get(0).getTime(), is(notNullValue()));
 		
 		System.out.println(state2.getClients().get(0).getTime());
+		
+		// [Slave] applier state
+		ReplicationApplierStateEntity state3 = slaveDriver.getReplicationApplierState();
+		assertThat(state3.getStatusCode(), is(200));
+		assertThat(state3.getServerVersion(), is(notNullValue()));
+		assertThat(state3.getServerId(), is(slaveDriver.getReplicationServerId()));
+		assertThat(state3.getEndpoint(), is(masterConfigure.getEndpoint()));
+		assertThat(state3.getDatabase(), is(database));
+		assertThat(state3.getState().getRunning(), is(true));
+		assertThat(state3.getState().getLastAppliedContinuousTick(), is(notNullValue()));
+		assertThat(state3.getState().getLastProcessedContinuousTick(), is(notNullValue()));
+		assertThat(state3.getState().getLastAvailableContinuousTick(), is(notNullValue()));
+		assertThat(state3.getState().getProgress().getTime(), is(notNullValue()));
+		assertThat(state3.getState().getProgress().getMessage(), startsWith("fetching master log from offset"));
+		assertThat(state3.getState().getProgress().getFailedConnects(), is(0L));
+		assertThat(state3.getState().getTotalRequests().longValue(), is(not(0L)));
+		assertThat(state3.getState().getTotalFailedConnects().longValue(), is(0L));
+		assertThat(state3.getState().getTotalEvents(), is(306L));
+		assertThat(state3.getState().getLastError().getErrorNum(), is(0));
+		assertThat(state3.getState().getLastError().getErrorMessage(), is(nullValue()));
+		assertThat(state3.getState().getLastError().getTime(), is(nullValue()));
+		assertThat(state3.getState().getTime(), is(notNullValue()));
+		
 		
 	}
 	

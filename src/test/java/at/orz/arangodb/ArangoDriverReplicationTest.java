@@ -459,37 +459,36 @@ public class ArangoDriverReplicationTest extends BaseTest {
 	@Test
 	public void test_start_stop_applier() throws ArangoException {
 		
-		ReplicationApplierStateEntity config1 = driver.startReplicationApplier(null);
-		assertThat(config1.getStatusCode(), is(200));
-		assertThat(config1.getServerVersion(), is(notNullValue()));
-		assertThat(config1.getServerId(), is(notNullValue()));
-		assertThat(config1.getEndpoint(), is(notNullValue()));
-		assertThat(config1.getDatabase(), is("_system"));
-		assertThat(config1.getState().getRunning(), is(true));
-		assertThat(config1.getState().getLastAppliedContinuousTick(), is(nullValue()));
-		assertThat(config1.getState().getLastProcessedContinuousTick(), is(nullValue()));
-		assertThat(config1.getState().getLastAvailableContinuousTick(), is(nullValue()));
-		assertThat(config1.getState().getTime(), is(notNullValue()));
-		assertThat(config1.getState().getTotalRequests().longValue(), is(not(0L)));
-		assertThat(config1.getState().getTotalFailedConnects().longValue(), is(not(0L)));
-		assertThat(config1.getState().getTotalEvents(), is(notNullValue()));
+		ReplicationApplierStateEntity state1 = driver.startReplicationApplier(null);
+		assertThat(state1.getStatusCode(), is(200));
+		assertThat(state1.getServerVersion(), is(notNullValue()));
+		assertThat(state1.getServerId(), is(notNullValue()));
+		assertThat(state1.getEndpoint(), is(notNullValue()));
+		assertThat(state1.getDatabase(), is("_system"));
+		assertThat(state1.getState().getRunning(), is(true));
+		assertThat(state1.getState().getLastAppliedContinuousTick(), is(nullValue()));
+		assertThat(state1.getState().getLastProcessedContinuousTick(), is(nullValue()));
+		assertThat(state1.getState().getLastAvailableContinuousTick(), is(nullValue()));
+		assertThat(state1.getState().getTime(), is(notNullValue()));
+		assertThat(state1.getState().getTotalRequests().longValue(), is(not(0L)));
+		assertThat(state1.getState().getTotalFailedConnects().longValue(), is(not(0L)));
+		assertThat(state1.getState().getTotalEvents(), is(notNullValue()));
 		// LastError, Progress -> see Sceinario Test
 		
-		ReplicationApplierStateEntity config2 = driver.stopReplicationApplier();
-		assertThat(config2.getStatusCode(), is(200));
-		assertThat(config2.getStatusCode(), is(200));
-		assertThat(config2.getServerVersion(), is(notNullValue()));
-		assertThat(config2.getServerId(), is(notNullValue()));
-		assertThat(config2.getEndpoint(), is(notNullValue()));
-		assertThat(config2.getDatabase(), is("_system"));
-		assertThat(config2.getState().getRunning(), is(false));
-		assertThat(config2.getState().getLastAppliedContinuousTick(), is(nullValue()));
-		assertThat(config2.getState().getLastProcessedContinuousTick(), is(nullValue()));
-		assertThat(config2.getState().getLastAvailableContinuousTick(), is(nullValue()));
-		assertThat(config2.getState().getTime(), is(notNullValue()));
-		assertThat(config2.getState().getTotalRequests().longValue(), is(not(0L)));
-		assertThat(config2.getState().getTotalFailedConnects().longValue(), is(not(0L)));
-		assertThat(config2.getState().getTotalEvents(), is(notNullValue()));
+		ReplicationApplierStateEntity state2 = driver.stopReplicationApplier();
+		assertThat(state2.getStatusCode(), is(200));
+		assertThat(state2.getServerVersion(), is(notNullValue()));
+		assertThat(state2.getServerId(), is(notNullValue()));
+		assertThat(state2.getEndpoint(), is(notNullValue()));
+		assertThat(state2.getDatabase(), is("_system"));
+		assertThat(state2.getState().getRunning(), is(false));
+		assertThat(state2.getState().getLastAppliedContinuousTick(), is(nullValue()));
+		assertThat(state2.getState().getLastProcessedContinuousTick(), is(nullValue()));
+		assertThat(state2.getState().getLastAvailableContinuousTick(), is(nullValue()));
+		assertThat(state2.getState().getTime(), is(notNullValue()));
+		assertThat(state2.getState().getTotalRequests().longValue(), is(not(0L)));
+		assertThat(state2.getState().getTotalFailedConnects().longValue(), is(not(0L)));
+		assertThat(state2.getState().getTotalEvents(), is(notNullValue()));
 		
 	}
 
@@ -505,8 +504,28 @@ public class ArangoDriverReplicationTest extends BaseTest {
 		
 		assertThat(entity.getServerId(), is(notNullValue()));
 		assertThat(entity.getServerVersion(), is(notNullValue()));
-		assertThat(entity.getClients().size(), is(0)); // see another test-class
+		assertThat(entity.getClients().size(), is(0)); // see another test-class(scenario1)
 		
 	}
-	
+
+	@Test
+	public void test_applier_state() throws ArangoException {
+		
+		ReplicationApplierStateEntity state = driver.getReplicationApplierState();
+		assertThat(state.getStatusCode(), is(200));
+		assertThat(state.getServerVersion(), is(notNullValue()));
+		assertThat(state.getServerId(), is(notNullValue()));
+		assertThat(state.getEndpoint(), is(notNullValue()));
+		assertThat(state.getDatabase(), is("_system"));
+		assertThat(state.getState().getRunning(), is(false));
+		assertThat(state.getState().getLastAppliedContinuousTick(), is(nullValue()));
+		assertThat(state.getState().getLastProcessedContinuousTick(), is(nullValue()));
+		assertThat(state.getState().getLastAvailableContinuousTick(), is(nullValue()));
+		assertThat(state.getState().getTime(), is(notNullValue()));
+		assertThat(state.getState().getTotalRequests().longValue(), is(not(0L)));
+		assertThat(state.getState().getTotalFailedConnects().longValue(), is(not(0L)));
+		assertThat(state.getState().getTotalEvents(), is(notNullValue()));
+		
+	}
+
 }

@@ -165,7 +165,7 @@ public class InternalReplicationDriverImpl extends BaseArangoDriverImpl {
 		HttpResponseEntity res = httpManager.doGet(
 				createEndpointUrl(baseUrl, database, "/_api/replication/logger-config"));
 		
-		return createEntityImpl(res, ReplicationLoggerConfigEntity.class);
+		return createEntity(res, ReplicationLoggerConfigEntity.class);
 		
 	}
 
@@ -197,7 +197,7 @@ public class InternalReplicationDriverImpl extends BaseArangoDriverImpl {
 		HttpResponseEntity res = httpManager.doGet(
 				createEndpointUrl(baseUrl, database, "/_api/replication/logger-state"));
 		
-		return createEntityImpl(res, ReplicationLoggerStateEntity.class);
+		return createEntity(res, ReplicationLoggerStateEntity.class);
 
 	}
 
@@ -206,7 +206,7 @@ public class InternalReplicationDriverImpl extends BaseArangoDriverImpl {
 		HttpResponseEntity res = httpManager.doGet(
 				createEndpointUrl(baseUrl, database, "/_api/replication/applier-config"));
 		
-		return createEntityImpl(res, ReplicationApplierConfigEntity.class);
+		return createEntity(res, ReplicationApplierConfigEntity.class);
 
 	}
 	
@@ -277,6 +277,15 @@ public class InternalReplicationDriverImpl extends BaseArangoDriverImpl {
 		
 		return createEntity(res, ReplicationApplierStateEntity.class);
 		
+	}
+
+	public ReplicationApplierStateEntity getReplicationApplierState(String database) throws ArangoException {
+
+		HttpResponseEntity res = httpManager.doGet(
+				createEndpointUrl(baseUrl, database, "/_api/replication/applier-state"));
+		
+		return createEntity(res, ReplicationApplierStateEntity.class);
+
 	}
 
 }

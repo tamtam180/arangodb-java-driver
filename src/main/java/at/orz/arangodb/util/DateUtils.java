@@ -122,9 +122,11 @@ public class DateUtils {
 		}
 	};	
 	
+	private static TimeZone utcTimeZone = TimeZone.getTimeZone("UTC");
+	
 	public static Date parse(String text, String format) throws ParseException { 
 		
-		SimpleDateFormat dateFormat = dateFormats.get().getDateFormat(format, Locale.US, TimeZone.getDefault());
+		SimpleDateFormat dateFormat = dateFormats.get().getDateFormat(format, Locale.US, utcTimeZone);
 		Date date = dateFormat.parse(text);
 		return date;
 		

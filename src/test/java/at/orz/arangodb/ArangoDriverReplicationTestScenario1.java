@@ -253,6 +253,8 @@ public class ArangoDriverReplicationTestScenario1 {
 		assertThat(state2.getClients().get(0).getLastServedTick(), is(0L));
 		assertThat(state2.getClients().get(0).getTime(), is(notNullValue()));
 		
+		System.out.println(state2.getClients().get(0).getTime());
+		
 	}
 	
 }

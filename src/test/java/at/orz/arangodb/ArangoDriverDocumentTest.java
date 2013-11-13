@@ -20,8 +20,6 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.ListIterator;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -322,6 +320,15 @@ public class ArangoDriverDocumentTest extends BaseTest {
 		
 	}
 
+	/**
+	 * Mapで取得した時に特別なキー(_id, _rev, _key)はEntityに入ってこないこと
+	 * TODO: アノテーションで設定できるようにしようかな。。
+	 * @throws ArangoException
+	 */
+	@Test
+	public void test_get_as_map() throws ArangoException {
+		
+	}
 	
 	// TODO Delete
 //	@Test

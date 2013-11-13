@@ -44,6 +44,7 @@ import at.orz.arangodb.entity.ReplicationApplierConfigEntity;
 import at.orz.arangodb.entity.ReplicationApplierStateEntity;
 import at.orz.arangodb.entity.ReplicationInventoryEntity;
 import at.orz.arangodb.entity.ReplicationLoggerConfigEntity;
+import at.orz.arangodb.entity.ReplicationLoggerStateEntity;
 import at.orz.arangodb.entity.ReplicationSyncEntity;
 import at.orz.arangodb.entity.RestrictType;
 import at.orz.arangodb.entity.ScalarExampleEntity;
@@ -961,6 +962,16 @@ public class ArangoDriver extends BaseArangoDriver {
 		return replicationDriver.stopReplicationLogger(getDefaultDatabase());
 	}
 
+	/**
+	 * 
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public ReplicationLoggerStateEntity getReplicationLoggerState() throws ArangoException {
+		return replicationDriver.getReplicationLoggerState(getDefaultDatabase());
+	}
+	
 	/**
 	 * 
 	 * @return

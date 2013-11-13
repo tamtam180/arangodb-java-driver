@@ -34,6 +34,7 @@ import at.orz.arangodb.entity.ReplicationApplierState.LastError;
 import at.orz.arangodb.entity.ReplicationApplierState.Progress;
 import at.orz.arangodb.entity.ReplicationInventoryEntity.Collection;
 import at.orz.arangodb.entity.ReplicationInventoryEntity.CollectionParameter;
+import at.orz.arangodb.entity.ReplicationLoggerStateEntity.Client;
 import at.orz.arangodb.entity.StatisticsDescriptionEntity.Figure;
 import at.orz.arangodb.entity.StatisticsDescriptionEntity.Group;
 import at.orz.arangodb.entity.StatisticsEntity.FigureValue;
@@ -1465,5 +1466,59 @@ public class EntityDeserializers {
 		}
 	}
 
-	
+	public static class ReplicationLoggerStateEntityDeserializer implements JsonDeserializer<ReplicationLoggerStateEntity> {
+		private Type clientsType = new TypeToken<List<Client>>(){}.getType();
+		public ReplicationLoggerStateEntity deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			
+			if (json.isJsonNull()) {
+				return null;
+			}
+			
+			JsonObject obj = json.getAsJsonObject();
+			ReplicationLoggerStateEntity entity = deserializeBaseParameter(obj, new ReplicationLoggerStateEntity());
+			
+			if (obj.has("state")) {
+				entity.state = context.deserialize(obj.get("state"), ReplicationState.class);
+			}
+			
+			if (obj.has("server")) {
+				JsonObject server = obj.getAsJsonObject("server");
+				entity.serverVersion = server.getAsJsonPrimitive("version").getAsString();
+				entity.serverId = server.getAsJsonPrimitive("serverId").getAsString();
+			}
+			
+			if (obj.has("clients")) {
+				entity.clients = context.deserialize(obj.getAsJsonArray("clients"), clientsType);
+			}
+
+			return entity;
+		}
+	}
+
+	public static class ReplicationLoggerStateEntityClientDeserializer implements JsonDeserializer<ReplicationLoggerStateEntity.Client> {
+		public ReplicationLoggerStateEntity.Client deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			
+			if (json.isJsonNull()) {
+				return null;
+			}
+			
+			JsonObject obj = json.getAsJsonObject();
+			Client client = new Client();
+			
+			if (obj.has("serverId")) {
+				client.serverId = obj.getAsJsonPrimitive("serverId").getAsString();
+			}
+			
+			if (obj.has("lastServedTick")) {
+				client.lastServedTick = obj.getAsJsonPrimitive("lastServedTick").getAsLong();
+			}
+			
+			if (obj.has("time")) {
+				client.time = DateUtils.parse(obj.getAsJsonPrimitive("time").getAsString());
+			}
+			
+			return client;
+		}
+	}
+
 }

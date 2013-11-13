@@ -32,6 +32,7 @@ import at.orz.arangodb.entity.ReplicationDumpHeader;
 import at.orz.arangodb.entity.ReplicationDumpRecord;
 import at.orz.arangodb.entity.ReplicationInventoryEntity;
 import at.orz.arangodb.entity.ReplicationLoggerConfigEntity;
+import at.orz.arangodb.entity.ReplicationLoggerStateEntity;
 import at.orz.arangodb.entity.ReplicationSyncEntity;
 import at.orz.arangodb.entity.RestrictType;
 import at.orz.arangodb.entity.StreamEntity;
@@ -189,6 +190,15 @@ public class InternalReplicationDriverImpl extends BaseArangoDriverImpl {
 		
 		return createEntity(res, ReplicationLoggerConfigEntity.class);
 		
+	}
+	
+	public ReplicationLoggerStateEntity getReplicationLoggerState(String database) throws ArangoException {
+
+		HttpResponseEntity res = httpManager.doGet(
+				createEndpointUrl(baseUrl, database, "/_api/replication/logger-state"));
+		
+		return createEntityImpl(res, ReplicationLoggerStateEntity.class);
+
 	}
 
 	public ReplicationApplierConfigEntity getReplicationApplierConfig(String database) throws ArangoException {

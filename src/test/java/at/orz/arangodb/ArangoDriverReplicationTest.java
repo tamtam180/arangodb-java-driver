@@ -31,6 +31,7 @@ import at.orz.arangodb.entity.ReplicationApplierStateEntity;
 import at.orz.arangodb.entity.ReplicationDumpHeader;
 import at.orz.arangodb.entity.ReplicationDumpRecord;
 import at.orz.arangodb.entity.ReplicationInventoryEntity;
+import at.orz.arangodb.entity.ReplicationLoggerStateEntity;
 import at.orz.arangodb.entity.ReplicationInventoryEntity.Collection;
 import at.orz.arangodb.entity.ReplicationLoggerConfigEntity;
 import at.orz.arangodb.util.DumpHandler;
@@ -489,6 +490,22 @@ public class ArangoDriverReplicationTest extends BaseTest {
 		assertThat(config2.getState().getTotalRequests().longValue(), is(not(0L)));
 		assertThat(config2.getState().getTotalFailedConnects().longValue(), is(not(0L)));
 		assertThat(config2.getState().getTotalEvents(), is(notNullValue()));
+		
+	}
+
+	@Test
+	public void test_logger_state() throws ArangoException {
+		
+		ReplicationLoggerStateEntity entity = driver.getReplicationLoggerState();
+		
+		assertThat(entity.getState().isRunning(), is(false));
+		assertThat(entity.getState().getLastLogTick(), is(not(0L)));
+		assertThat(entity.getState().getTotalEvents(), is(not(0L)));
+		assertThat(entity.getState().getTime(), is(notNullValue()));
+		
+		assertThat(entity.getServerId(), is(notNullValue()));
+		assertThat(entity.getServerVersion(), is(notNullValue()));
+		assertThat(entity.getClients().size(), is(0)); // see another test-class
 		
 	}
 	

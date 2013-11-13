@@ -33,6 +33,8 @@ import com.google.gson.reflect.TypeToken;
 import at.orz.arangodb.entity.BooleanResultEntity;
 import at.orz.arangodb.entity.CollectionEntity;
 import at.orz.arangodb.entity.DocumentEntity;
+import at.orz.arangodb.entity.ImportResultEntity;
+import at.orz.arangodb.entity.ReplicationLoggerStateEntity;
 import at.orz.arangodb.entity.ReplicationSyncEntity;
 import at.orz.arangodb.util.MapBuilder;
 
@@ -113,12 +115,13 @@ public class ArangoDriverReplicationTestScenario1 {
 		// [Master] turn on replication logger
 		masterDriver.startReplicationLogger();
 		
-		// [Master] get logger state
-		//masterDriver.getReplicationLoggerState();
-
 		// [Slave] turn off replication applier
 		slaveDriver.stopReplicationApplier();
-		
+
+		// [Master] get logger state
+		ReplicationLoggerStateEntity state1 = masterDriver.getReplicationLoggerState();
+		assertThat(state1.getClients().size(), is(0));
+
 		// [Slave] sync
 		ReplicationSyncEntity syncResult = slaveDriver.syncReplication(masterConfigure.getEndpoint(), database, null, null, null, null);
 		System.out.println(syncResult.getLastLogTick());
@@ -142,7 +145,8 @@ public class ArangoDriverReplicationTestScenario1 {
 		for (int i = 10; i < 300; i++) {
 			values.add(new MapBuilder().put("my-key" + i, 1234567).get());
 		}
-		masterDriver.importDocuments(collectionName1, false, values);
+		ImportResultEntity importResult = masterDriver.importDocuments(collectionName1, false, values);
+		assertThat(importResult.getCreated(), is(290));
 		
 		// wait
 		TimeUnit.SECONDS.sleep(2);
@@ -234,6 +238,20 @@ public class ArangoDriverReplicationTestScenario1 {
 			assertThat(e.getCode(), is(404));
 		}
 
+		// [Master] logger state
+		ReplicationLoggerStateEntity state2 = masterDriver.getReplicationLoggerState();
+		assertThat(state2.getState().isRunning(), is(true));
+		assertThat(state2.getState().getLastLogTick(), is(not(0L)));
+		assertThat(state2.getState().getTotalEvents(), is(307L));
+		assertThat(state2.getState().getTime(), is(notNullValue()));
+
+		assertThat(state2.getServerVersion(), is(notNullValue()));
+		assertThat(state2.getServerId(), is(masterDriver.getReplicationServerId()));
+		
+		assertThat(state2.getClients().size(), is(1));
+		assertThat(state2.getClients().get(0).getServerId(), is(slaveDriver.getReplicationServerId()));
+		assertThat(state2.getClients().get(0).getLastServedTick(), is(0L));
+		assertThat(state2.getClients().get(0).getTime(), is(notNullValue()));
 		
 	}
 	

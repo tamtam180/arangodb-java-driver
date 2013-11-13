@@ -1247,7 +1247,7 @@ public class EntityDeserializers {
 	}
 
 	public static class ReplicationSyncEntityDeserializer implements JsonDeserializer<ReplicationSyncEntity> {
-		Type collectionsType = new TypeToken<List<String>>(){}.getType();
+		Type collectionsType = new TypeToken<List<CollectionEntity>>(){}.getType();
 		public ReplicationSyncEntity deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
 			
 			if (json.isJsonNull()) {

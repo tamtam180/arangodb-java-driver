@@ -24,16 +24,16 @@ import java.util.List;
  */
 public class ReplicationSyncEntity extends BaseEntity {
 
-	List<String> collections;
+	List<CollectionEntity> collections;
 	long lastLogTick;
-
-	public List<String> getCollections() {
+	
+	public List<CollectionEntity> getCollections() {
 		return collections;
 	}
 	public long getLastLogTick() {
 		return lastLogTick;
 	}
-	public void setCollections(List<String> collections) {
+	public void setCollections(List<CollectionEntity> collections) {
 		this.collections = collections;
 	}
 	public void setLastLogTick(long lastLogTick) {

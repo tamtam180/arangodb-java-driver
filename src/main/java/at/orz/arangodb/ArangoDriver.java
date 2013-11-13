@@ -928,7 +928,7 @@ public class ArangoDriver extends BaseArangoDriver {
 			String username, String password, 
 			RestrictType restrictType, String... restrictCollections
 			) throws ArangoException {
-		return replicationDriver.syncReplication(endpoint, database, username, password, restrictType, restrictCollections);
+		return replicationDriver.syncReplication(getDefaultDatabase(), endpoint, database, username, password, restrictType, restrictCollections);
 	}
 	
 	/**
@@ -948,7 +948,7 @@ public class ArangoDriver extends BaseArangoDriver {
 	 * @since 1.4.0
 	 */
 	public boolean startReplicationLogger() throws ArangoException {
-		return replicationDriver.startReplicationLogger();
+		return replicationDriver.startReplicationLogger(getDefaultDatabase());
 	}
 	
 	/**
@@ -958,7 +958,7 @@ public class ArangoDriver extends BaseArangoDriver {
 	 * @since 1.4.0
 	 */
 	public boolean stopReplicationLogger() throws ArangoException {
-		return replicationDriver.stopReplicationLogger();
+		return replicationDriver.stopReplicationLogger(getDefaultDatabase());
 	}
 
 	/**
@@ -968,7 +968,7 @@ public class ArangoDriver extends BaseArangoDriver {
 	 * @since 1.4.0
 	 */
 	public ReplicationLoggerConfigEntity getReplicationLoggerConfig() throws ArangoException {
-		return replicationDriver.getReplicationLoggerConfig();
+		return replicationDriver.getReplicationLoggerConfig(getDefaultDatabase());
 	}
 	
 	/**
@@ -987,7 +987,7 @@ public class ArangoDriver extends BaseArangoDriver {
 			Long maxEvents,
 			Long maxEventsSize
 			) throws ArangoException {
-		return replicationDriver.setReplicationLoggerConfig(autoStart, logRemoteChanges, maxEvents, maxEventsSize);
+		return replicationDriver.setReplicationLoggerConfig(getDefaultDatabase(), autoStart, logRemoteChanges, maxEvents, maxEventsSize);
 	}
 	
 	/**
@@ -997,7 +997,7 @@ public class ArangoDriver extends BaseArangoDriver {
 	 * @since 1.4.0
 	 */
 	public ReplicationApplierConfigEntity getReplicationApplierConfig() throws ArangoException {
-		return replicationDriver.getReplicationApplierConfig();
+		return replicationDriver.getReplicationApplierConfig(getDefaultDatabase());
 	}
 	
 	/**
@@ -1028,7 +1028,7 @@ public class ArangoDriver extends BaseArangoDriver {
 			Boolean autoStart,
 			Boolean adaptivePolling
 			) throws ArangoException {
-		return replicationDriver.setReplicationApplierConfig(endpoint, database, username, password, maxConnectRetries, connectTimeout, requestTimeout, chunkSize, autoStart, adaptivePolling);
+		return replicationDriver.setReplicationApplierConfig(getDefaultDatabase(), endpoint, database, username, password, maxConnectRetries, connectTimeout, requestTimeout, chunkSize, autoStart, adaptivePolling);
 	}
 	
 
@@ -1042,7 +1042,7 @@ public class ArangoDriver extends BaseArangoDriver {
 	public ReplicationApplierConfigEntity setReplicationApplierConfig(
 			ReplicationApplierConfigEntity param
 			) throws ArangoException {
-		return replicationDriver.setReplicationApplierConfig(param);
+		return replicationDriver.setReplicationApplierConfig(getDefaultDatabase(), param);
 	}
 
 	/**
@@ -1053,7 +1053,7 @@ public class ArangoDriver extends BaseArangoDriver {
 	 * @since 1.4.0
 	 */
 	public ReplicationApplierStateEntity startReplicationApplier(Long from) throws ArangoException {
-		return replicationDriver.startReplicationApplier(from);
+		return replicationDriver.startReplicationApplier(getDefaultDatabase(), from);
 	}
 	
 	/**
@@ -1063,7 +1063,7 @@ public class ArangoDriver extends BaseArangoDriver {
 	 * @since 1.4.0
 	 */
 	public ReplicationApplierStateEntity stopReplicationApplier() throws ArangoException {
-		return replicationDriver.stopReplicationApplier();
+		return replicationDriver.stopReplicationApplier(getDefaultDatabase());
 	}
 	
 	// ---------------------------------------- end of replication ----------------------------------------

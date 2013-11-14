@@ -54,9 +54,11 @@ import at.orz.arangodb.util.StringJoinTest;
 	ArangoDriverImportTest.class,
 	//ArangoDriverSimpleGeoTest.class,
 	//ArangoDriverKeyValueTest.class,
+	ArangoDriverGraphTest.class,
 	ArangoDriverStoryTest.class,
 	ArangoDriverReplicationTest.class,
 	ArangoDriverReplicationTestScenario1.class
+	
 })
 public class ArangoTestSuite {
 	

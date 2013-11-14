@@ -62,4 +62,7 @@ public class ImplFactory {
 	public static InternalReplicationDriverImpl createReplicationDriver(ArangoConfigure configure) {
 		return new InternalReplicationDriverImpl(configure);
 	}
+	public static InternalGraphDriverImpl createGraphDriver(ArangoConfigure configure) {
+		return new InternalGraphDriverImpl(configure);
+	}
 }

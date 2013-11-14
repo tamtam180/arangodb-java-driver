@@ -35,6 +35,7 @@ import at.orz.arangodb.entity.DocumentEntity;
 import at.orz.arangodb.entity.DocumentResultEntity;
 import at.orz.arangodb.entity.Endpoint;
 import at.orz.arangodb.entity.ExplainEntity;
+import at.orz.arangodb.entity.GraphEntity;
 import at.orz.arangodb.entity.ImportResultEntity;
 import at.orz.arangodb.entity.IndexEntity;
 import at.orz.arangodb.entity.IndexType;
@@ -61,6 +62,7 @@ import at.orz.arangodb.impl.InternalCursorDriverImpl;
 import at.orz.arangodb.impl.InternalDatabaseDriverImpl;
 import at.orz.arangodb.impl.InternalDocumentDriverImpl;
 import at.orz.arangodb.impl.InternalEndpointDriverImpl;
+import at.orz.arangodb.impl.InternalGraphDriverImpl;
 import at.orz.arangodb.impl.InternalImportDriverImpl;
 import at.orz.arangodb.impl.InternalIndexDriverImpl;
 import at.orz.arangodb.impl.InternalReplicationDriverImpl;
@@ -97,6 +99,7 @@ public class ArangoDriver extends BaseArangoDriver {
 	private InternalDatabaseDriverImpl databaseDriver;
 	private InternalEndpointDriverImpl endpointDriver;
 	private InternalReplicationDriverImpl replicationDriver;
+	private InternalGraphDriverImpl graphDriver;
 	
 	private String database;
 	
@@ -129,6 +132,8 @@ public class ArangoDriver extends BaseArangoDriver {
 
 		this.endpointDriver = ImplFactory.createEndpointDriver(configure);
 		this.replicationDriver = ImplFactory.createReplicationDriver(configure);
+		
+		this.graphDriver = ImplFactory.createGraphDriver(configure);
 		
 	}
 	
@@ -1088,6 +1093,26 @@ public class ArangoDriver extends BaseArangoDriver {
 	}
 	
 	// ---------------------------------------- end of replication ----------------------------------------
+
+	// ---------------------------------------- start of graph ----------------------------------------
+	
+	/**
+	 * 
+	 * @param documentKey
+	 * @param vertices
+	 * @param edges
+	 * @param waitForSync
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public GraphEntity createGraph(
+			String documentKey, String vertices, String edges,
+			Boolean waitForSync) throws ArangoException {
+		return graphDriver.createGraph(getDefaultDatabase(), documentKey, vertices, edges, waitForSync);
+	}
+	
+	// ---------------------------------------- end of graph ----------------------------------------
 
 	
 	// ---------------------------------------- start of xxx ----------------------------------------

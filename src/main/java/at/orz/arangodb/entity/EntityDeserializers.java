@@ -488,7 +488,7 @@ public class EntityDeserializers {
 				entity.documentKey = obj.getAsJsonPrimitive("_key").getAsString();
 			}
 			
-			// 他のフィールドはリフレクションで。
+			// 他のフィールドはリフレクションで。 (TODO: Annotationのサポートと上記パラメータを弾く)
 			Class<?> clazz = getParameterized();
 			if (clazz != null) {
 				entity.entity = context.deserialize(obj, clazz);
@@ -1518,6 +1518,42 @@ public class EntityDeserializers {
 			}
 			
 			return client;
+		}
+	}
+
+	
+	public static class GraphEntityDeserializer implements JsonDeserializer<GraphEntity> {
+		public GraphEntity deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			
+			if (json.isJsonNull()) {
+				return null;
+			}
+			
+			JsonObject obj = json.getAsJsonObject();
+			GraphEntity entity = deserializeBaseParameter(obj, new GraphEntity());
+			
+			if (obj.has("_rev")) {
+				entity.documentRevision = obj.getAsJsonPrimitive("_rev").getAsLong();
+			}
+			
+			if (obj.has("_id")) {
+				entity.documentHandle = obj.getAsJsonPrimitive("_id").getAsString();
+			}
+			
+			if (obj.has("_key")) {
+				entity.documentKey = obj.getAsJsonPrimitive("_key").getAsString();
+			}
+			
+			if (obj.has("edges")) {
+				entity.edges = obj.getAsJsonPrimitive("edges").getAsString();
+			}
+			
+			if (obj.has("vertices")) {
+				entity.vertices = obj.getAsJsonPrimitive("vertices").getAsString();
+			}
+			
+			return entity;
+			
 		}
 	}
 

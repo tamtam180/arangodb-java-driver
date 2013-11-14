@@ -188,6 +188,9 @@ public class HttpManager {
 	public HttpResponseEntity doDelete(String url, Map<String, Object> params) throws ArangoException {
 		return doHeadGetDelete(RequestType.DELETE, url, null, params);
 	}
+	public HttpResponseEntity doDelete(String url, Map<String, Object> headers, Map<String, Object> params) throws ArangoException {
+		return doHeadGetDelete(RequestType.DELETE, url, headers, params);
+	}
 	public HttpResponseEntity doHeadGetDelete(RequestType type, String url, Map<String, Object> headers, Map<String, Object> params) throws ArangoException {
 		HttpRequestEntity requestEntity = new HttpRequestEntity();
 		requestEntity.type = type;

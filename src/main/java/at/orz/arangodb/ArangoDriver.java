@@ -35,6 +35,7 @@ import at.orz.arangodb.entity.DocumentEntity;
 import at.orz.arangodb.entity.DocumentResultEntity;
 import at.orz.arangodb.entity.Endpoint;
 import at.orz.arangodb.entity.ExplainEntity;
+import at.orz.arangodb.entity.GraphDeleteEntity;
 import at.orz.arangodb.entity.GraphEntity;
 import at.orz.arangodb.entity.GraphsEntity;
 import at.orz.arangodb.entity.ImportResultEntity;
@@ -1138,6 +1139,29 @@ public class ArangoDriver extends BaseArangoDriver {
 		return graphDriver.getGraph(getDefaultDatabase(), name);
 	}
 	
+	/**
+	 * 
+	 * @param name
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public GraphDeleteEntity deleteGraph(String name) throws ArangoException {
+		return graphDriver.deleteGraph(getDefaultDatabase(), name, null);
+	}
+
+	/**
+	 * 
+	 * @param name
+	 * @param ifMatchRevision
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public GraphDeleteEntity deleteGraph(String name, Long ifMatchRevision) throws ArangoException {
+		return graphDriver.deleteGraph(getDefaultDatabase(), name, ifMatchRevision);
+	}
+
 	// ---------------------------------------- end of graph ----------------------------------------
 
 	

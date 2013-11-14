@@ -82,6 +82,7 @@ public class EntityFactory {
 			.registerTypeAdapter(ReplicationLoggerStateEntity.Client.class, new EntityDeserializers.ReplicationLoggerStateEntityClientDeserializer())
 			.registerTypeAdapter(GraphEntity.class, new EntityDeserializers.GraphEntityDeserializer())
 			.registerTypeAdapter(GraphsEntity.class, new EntityDeserializers.GraphsEntityDeserializer())
+			.registerTypeAdapter(GraphDeleteEntity.class, new EntityDeserializers.GraphDeleteEntityDeserializer())
 			;
 	}
 	static {

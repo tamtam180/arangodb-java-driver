@@ -1579,5 +1579,24 @@ public class EntityDeserializers {
 		}
 	}
 	
+	public static class GraphDeleteEntityDeserializer implements JsonDeserializer<GraphDeleteEntity> {
+		public GraphDeleteEntity deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+
+			if (json.isJsonNull()) {
+				return null;
+			}
+			
+			JsonObject obj = json.getAsJsonObject();
+			GraphDeleteEntity entity = deserializeBaseParameter(obj, new GraphDeleteEntity());
+
+			if (obj.has("deleted")) {
+				entity.deleted = obj.getAsJsonPrimitive("deleted").getAsBoolean();
+			}
+			
+			return entity;
+			
+		}
+	}
+	
 	
 }

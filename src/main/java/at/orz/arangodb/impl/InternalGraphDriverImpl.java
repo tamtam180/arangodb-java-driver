@@ -16,11 +16,10 @@
 
 package at.orz.arangodb.impl;
 
-import org.apache.http.client.utils.URIUtils;
-
 import at.orz.arangodb.ArangoConfigure;
 import at.orz.arangodb.ArangoException;
 import at.orz.arangodb.entity.EntityFactory;
+import at.orz.arangodb.entity.GraphDeleteEntity;
 import at.orz.arangodb.entity.GraphEntity;
 import at.orz.arangodb.entity.GraphsEntity;
 import at.orz.arangodb.http.HttpResponseEntity;
@@ -66,11 +65,25 @@ public class InternalGraphDriverImpl extends BaseArangoDriverImpl {
 
 	public GraphEntity getGraph(String database, String name) throws ArangoException {
 		
+		// TODO: If-Non-Match, If-Match Header
+		
 		validateCollectionName(name);
 		HttpResponseEntity res = httpManager.doGet(
 				createEndpointUrl(baseUrl, database, "/_api/graph", StringUtils.encodeUrl(name)));
 		
 		return createEntity(res, GraphEntity.class);
+		
+	}
+
+	public GraphDeleteEntity deleteGraph(String database, String name, Long ifMatchRevision) throws ArangoException {
+		
+		validateCollectionName(name);
+		HttpResponseEntity res = httpManager.doDelete(
+				createEndpointUrl(baseUrl, database, "/_api/graph", StringUtils.encodeUrl(name)), 
+				new MapBuilder().put("If-Match", ifMatchRevision, true).get(),
+				null);
+		
+		return createEntity(res, GraphDeleteEntity.class);
 		
 	}
 

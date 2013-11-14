@@ -23,8 +23,10 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
+import at.orz.arangodb.entity.GraphDeleteEntity;
 import at.orz.arangodb.entity.GraphEntity;
 import at.orz.arangodb.entity.GraphsEntity;
 
@@ -175,5 +177,58 @@ public class ArangoDriverGraphTest extends BaseTest {
 
 	}
 
+	@Test
+	public void test_delete_graph() throws ArangoException {
+		
+		GraphEntity g1 = driver.createGraph("g1", "v1", "e1", false);
+		assertThat(g1.getCode(), is(201));
+		
+		GraphDeleteEntity del = driver.deleteGraph("g1");
+		assertThat(del.getCode(), is(200));
+		assertThat(del.getDeleted(), is(true));
+		
+	}
+	
+	@Test
+	public void test_delete_graph_404() throws ArangoException {
+		
+		try {
+			driver.deleteGraph("g1");
+			fail();
+		} catch (ArangoException e) {
+			assertThat(e.getCode(), is(404));
+			assertThat(e.getErrorNumber(), is(1901));
+		}
+		
+	}
+	
+	@Test
+	public void test_delete_graph_ifmatch_ok() throws ArangoException {
+
+		GraphEntity g1 = driver.createGraph("g1", "v1", "e1", false);
+		assertThat(g1.getCode(), is(201));
+
+		GraphDeleteEntity del = driver.deleteGraph("g1", g1.getDocumentRevision());
+		assertThat(del.getCode(), is(200));
+		assertThat(del.getDeleted(), is(true));
+		
+	}
+
+	@Test
+	public void test_delete_graph_ifmatch_ng_412() throws ArangoException {
+
+		GraphEntity g1 = driver.createGraph("g1", "v1", "e1", false);
+		assertThat(g1.getCode(), is(201));
+
+		try {
+			driver.deleteGraph("g1", 10L);
+			fail();
+		} catch (ArangoException e) {
+			assertThat(e.getCode(), is(412));
+			assertThat(e.getErrorNumber(), is(1901)); // wrong revision
+			assertThat(e.getMessage(), is("[1901]wrong revision"));
+		}
+		
+	}
 
 }

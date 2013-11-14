@@ -36,6 +36,7 @@ import at.orz.arangodb.entity.DocumentResultEntity;
 import at.orz.arangodb.entity.Endpoint;
 import at.orz.arangodb.entity.ExplainEntity;
 import at.orz.arangodb.entity.GraphEntity;
+import at.orz.arangodb.entity.GraphsEntity;
 import at.orz.arangodb.entity.ImportResultEntity;
 import at.orz.arangodb.entity.IndexEntity;
 import at.orz.arangodb.entity.IndexType;
@@ -1114,6 +1115,16 @@ public class ArangoDriver extends BaseArangoDriver {
 			String documentKey, String vertices, String edges,
 			Boolean waitForSync) throws ArangoException {
 		return graphDriver.createGraph(getDefaultDatabase(), documentKey, vertices, edges, waitForSync);
+	}
+	
+	/**
+	 * 
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public GraphsEntity getGraphs() throws ArangoException {
+		return graphDriver.getGraphs(getDefaultDatabase());
 	}
 	
 	// ---------------------------------------- end of graph ----------------------------------------

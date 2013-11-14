@@ -1532,24 +1532,26 @@ public class EntityDeserializers {
 			JsonObject obj = json.getAsJsonObject();
 			GraphEntity entity = deserializeBaseParameter(obj, new GraphEntity());
 			
-			if (obj.has("_rev")) {
-				entity.documentRevision = obj.getAsJsonPrimitive("_rev").getAsLong();
+			JsonObject graph = obj.has("graph") ? obj.getAsJsonObject("graph") : obj;
+				
+			if (graph.has("_rev")) {
+				entity.documentRevision = graph.getAsJsonPrimitive("_rev").getAsLong();
 			}
 			
-			if (obj.has("_id")) {
-				entity.documentHandle = obj.getAsJsonPrimitive("_id").getAsString();
+			if (graph.has("_id")) {
+				entity.documentHandle = graph.getAsJsonPrimitive("_id").getAsString();
 			}
 			
-			if (obj.has("_key")) {
-				entity.documentKey = obj.getAsJsonPrimitive("_key").getAsString();
+			if (graph.has("_key")) {
+				entity.documentKey = graph.getAsJsonPrimitive("_key").getAsString();
 			}
 			
-			if (obj.has("edges")) {
-				entity.edges = obj.getAsJsonPrimitive("edges").getAsString();
+			if (graph.has("edges")) {
+				entity.edges = graph.getAsJsonPrimitive("edges").getAsString();
 			}
 			
-			if (obj.has("vertices")) {
-				entity.vertices = obj.getAsJsonPrimitive("vertices").getAsString();
+			if (graph.has("vertices")) {
+				entity.vertices = graph.getAsJsonPrimitive("vertices").getAsString();
 			}
 			
 			return entity;
@@ -1557,4 +1559,25 @@ public class EntityDeserializers {
 		}
 	}
 
+	public static class GraphsEntityDeserializer implements JsonDeserializer<GraphsEntity> {
+		private Type graphsType = new TypeToken<List<GraphEntity>>(){}.getType();
+		public GraphsEntity deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+
+			if (json.isJsonNull()) {
+				return null;
+			}
+			
+			JsonObject obj = json.getAsJsonObject();
+			GraphsEntity entity = deserializeBaseParameter(obj, new GraphsEntity());
+
+			if (obj.has("graphs")) {
+				entity.graphs = context.deserialize(obj.get("graphs"), graphsType);
+			}
+			
+			return entity;
+			
+		}
+	}
+	
+	
 }

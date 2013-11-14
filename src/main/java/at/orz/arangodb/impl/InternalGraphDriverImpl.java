@@ -20,6 +20,7 @@ import at.orz.arangodb.ArangoConfigure;
 import at.orz.arangodb.ArangoException;
 import at.orz.arangodb.entity.EntityFactory;
 import at.orz.arangodb.entity.GraphEntity;
+import at.orz.arangodb.entity.GraphsEntity;
 import at.orz.arangodb.http.HttpResponseEntity;
 import at.orz.arangodb.util.MapBuilder;
 
@@ -48,6 +49,15 @@ public class InternalGraphDriverImpl extends BaseArangoDriverImpl {
 						.put("edges", edges).get()));
 		
 		return createEntity(res, GraphEntity.class);
+		
+	}
+	
+	public GraphsEntity getGraphs(String database) throws ArangoException {
+		
+		HttpResponseEntity res = httpManager.doGet(
+				createEndpointUrl(baseUrl, database, "/_api/graph"));
+		
+		return createEntity(res, GraphsEntity.class);
 		
 	}
 	

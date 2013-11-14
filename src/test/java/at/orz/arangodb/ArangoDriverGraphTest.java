@@ -146,9 +146,34 @@ public class ArangoDriverGraphTest extends BaseTest {
 		assertThat(g.getDocumentKey(), is("g3"));
 		assertThat(g.getVertices(), is("v3"));
 		assertThat(g.getEdges(), is("e3"));
-
 		
 	}
-	
+
+	@Test
+	public void test_get_graph() throws ArangoException {
+
+		driver.createGraph("g1", "v1", "e1", null);
+		GraphEntity g1 = driver.getGraph("g1");
+		assertThat(g1.getDocumentRevision(), is(not(0L)));
+		assertThat(g1.getDocumentHandle(), is("_graphs/g1"));
+		assertThat(g1.getDocumentKey(), is("g1"));
+		assertThat(g1.getVertices(), is("v1"));
+		assertThat(g1.getEdges(), is("e1"));
+
+	}
+
+	@Test
+	public void test_get_graph_404() throws ArangoException {
+
+		try {
+			driver.getGraph("g1");
+			fail();
+		} catch (ArangoException e) {
+			assertThat(e.getCode(), is(404));
+			assertThat(e.getErrorNumber(), is(1901));
+		}
+
+	}
+
 
 }

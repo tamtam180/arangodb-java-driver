@@ -16,6 +16,8 @@
 
 package at.orz.arangodb.impl;
 
+import org.apache.http.client.utils.URIUtils;
+
 import at.orz.arangodb.ArangoConfigure;
 import at.orz.arangodb.ArangoException;
 import at.orz.arangodb.entity.EntityFactory;
@@ -23,6 +25,7 @@ import at.orz.arangodb.entity.GraphEntity;
 import at.orz.arangodb.entity.GraphsEntity;
 import at.orz.arangodb.http.HttpResponseEntity;
 import at.orz.arangodb.util.MapBuilder;
+import at.orz.arangodb.util.StringUtils;
 
 /**
  * @author tamtam180 - kirscheless at gmail.com
@@ -60,5 +63,15 @@ public class InternalGraphDriverImpl extends BaseArangoDriverImpl {
 		return createEntity(res, GraphsEntity.class);
 		
 	}
-	
+
+	public GraphEntity getGraph(String database, String name) throws ArangoException {
+		
+		validateCollectionName(name);
+		HttpResponseEntity res = httpManager.doGet(
+				createEndpointUrl(baseUrl, database, "/_api/graph", StringUtils.encodeUrl(name)));
+		
+		return createEntity(res, GraphEntity.class);
+		
+	}
+
 }

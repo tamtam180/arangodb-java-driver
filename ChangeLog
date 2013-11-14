@@ -28,6 +28,7 @@ v1.4.0-SNAPSHOT(2013-11-xx)
 * add support API: POST /_admin/execute (executeScript)
 * add support API: POST /_api/graph (createGraph)
 * add support API: GET /_api/graph (getGraphs)
+* add support API: GET /_api/graph/{graph-name} (getGraph)
 * add attribute: CollectionEntity#checksum
 * add attribute: CollectionEntity#doCompact
 * add attribute: CollectionEntity#keyOptions

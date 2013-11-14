@@ -1127,6 +1127,17 @@ public class ArangoDriver extends BaseArangoDriver {
 		return graphDriver.getGraphs(getDefaultDatabase());
 	}
 	
+	/**
+	 * 
+	 * @param name
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public GraphEntity getGraph(String name) throws ArangoException {
+		return graphDriver.getGraph(getDefaultDatabase(), name);
+	}
+	
 	// ---------------------------------------- end of graph ----------------------------------------
 
 	

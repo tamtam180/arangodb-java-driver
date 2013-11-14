@@ -144,4 +144,45 @@ public class ArangoDriverAdminTest extends BaseTest {
 		
 	}
 
+	@Test
+	public void test_execute_do_nothing() throws ArangoException {
+		
+		DefaultEntity entity = driver.executeScript("");
+		assertThat(entity.isError(), is(false));
+		assertThat(entity.getCode(), is(200));
+		assertThat(entity.getStatusCode(), is(200));
+		
+	}
+
+	@Test
+	public void test_execute() throws ArangoException {
+		
+		DefaultEntity entity = driver.executeScript(
+				"cols = db._collections();\n" +
+				"len = cols.length;\n"
+				);
+		assertThat(entity.isError(), is(false));
+		assertThat(entity.getCode(), is(200));
+		assertThat(entity.getStatusCode(), is(200));
+		
+	}
+	
+	@Test
+	public void test_execute_error() throws ArangoException {
+		try {
+			driver.executeScript("xxx");
+			fail();
+		} catch (ArangoException e) {
+			String t = 
+				"JavaScript exception in file 'undefined' at 1,14: ReferenceError: xxx is not defined\n" +
+				"!(function() {xxx}());\n" +
+				"!             ^\n" +
+				"stacktrace: ReferenceError: xxx is not defined\n";
+			assertThat(e.getMessage(), startsWith(t));
+			assertThat(e.getEntity().getStatusCode(), is(500));
+		}
+		
+	}
+
+
 }

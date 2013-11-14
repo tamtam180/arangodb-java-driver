@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import at.orz.arangodb.entity.DefaultEntity;
 import at.orz.arangodb.entity.ReplicationDumpHeader;
 import at.orz.arangodb.entity.BaseEntity;
 import at.orz.arangodb.entity.EntityDeserializers;
@@ -200,6 +201,7 @@ public abstract class BaseArangoDriver {
 	}
 	
 	protected void validate(HttpResponseEntity res, BaseEntity entity) throws ArangoException {
+		
 		if (entity != null) {
 			if (entity.isError()) {
 				throw new ArangoException(entity);
@@ -208,27 +210,37 @@ public abstract class BaseArangoDriver {
 		
 		// Custom Error
 		if (res.getStatusCode() >= 400) {
-			entity.setErrorNumber(res.getStatusCode());
-			entity.setErrorMessage(res.getStatusPhrase());
-			switch (res.getStatusCode()) {
-			case 401:
-				entity.setErrorMessage("Unauthorized");
-				break;
-			case 403:
-				entity.setErrorMessage("Forbidden");
-				break;
-			default:
+			if (res.isTextResponse()) {
+				entity.setErrorNumber(0);
+				entity.setErrorMessage(res.getText());
+				//throw new ArangoException(res.getText());
+			} else {
+				entity.setErrorNumber(res.getStatusCode());
+				entity.setErrorMessage(res.getStatusPhrase());
+				switch (res.getStatusCode()) {
+				case 401:
+					entity.setErrorMessage("Unauthorized");
+					break;
+				case 403:
+					entity.setErrorMessage("Forbidden");
+					break;
+				default:
+				}
 			}
 			throw new ArangoException(entity);
 		}
 	}
 	
 	protected <T> T createEntityImpl(HttpResponseEntity res, Class<T> type) throws ArangoException {
-		if (StreamEntity.class.isAssignableFrom(type)) {
+		if (res.isJsonResponse()) {
+			T entity = EntityFactory.createEntity(res.getText(), type);
+			return entity;
+		}
+		if (res.isDumpResponse() && StreamEntity.class.isAssignableFrom(type)) {
 			return (T) new StreamEntity(res.getStream());
 		}
-		T entity = EntityFactory.createEntity(res.getText(), type);
-		return entity;
+		return null;
+		//throw new IllegalStateException("unknown response content-type:" + res.getContentType());
 	}
 	
 	protected String createEndpointUrl(String baseUrl, String database, Object...paths) throws ArangoException {

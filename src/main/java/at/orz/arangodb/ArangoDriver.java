@@ -545,7 +545,11 @@ public class ArangoDriver extends BaseArangoDriver {
 	public DefaultEntity reloadRouting() throws ArangoException {
 		return adminDriver.reloadRouting();
 	}
-	
+
+	public DefaultEntity executeScript(String jsCode) throws ArangoException {
+		return adminDriver.executeScript(getDefaultDatabase(), jsCode);
+	}
+
 	// ---------------------------------------- end of admin ----------------------------------------
 
 

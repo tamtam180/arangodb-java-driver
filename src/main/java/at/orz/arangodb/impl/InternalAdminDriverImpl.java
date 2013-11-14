@@ -130,4 +130,15 @@ public class InternalAdminDriverImpl extends BaseArangoDriverImpl {
 		return createEntity(res, DefaultEntity.class, null, false);
 	}
 	
+	public DefaultEntity executeScript(String database, String jsCode) throws ArangoException {
+		
+		HttpResponseEntity res = httpManager.doPost(
+				createEndpointUrl(baseUrl, database, "/_admin/execute"), 
+				null, 
+				jsCode);
+		
+		return createEntity(res, DefaultEntity.class);
+		
+	}
+	
 }

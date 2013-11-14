@@ -19,7 +19,6 @@ package at.orz.arangodb.http;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
@@ -331,11 +330,10 @@ public class HttpManager {
 			if (entity != null) {
 				Header contentType = entity.getContentType();
 				if (contentType != null) {
-					if (contentType.getValue() != null) {
-						if (contentType.getValue().toLowerCase(Locale.US).startsWith("application/x-arango-dump")) {
-							responseEntity.stream = entity.getContent();
-							logger.debug("[RES]http-{}: stream, {}", requestEntity.type, contentType.getValue());
-						}
+					responseEntity.contentType = contentType.getValue();
+					if (responseEntity.isDumpResponse()) {
+						responseEntity.stream = entity.getContent();
+						logger.debug("[RES]http-{}: stream, {}", requestEntity.type, contentType.getValue());
 					}
 				}
 				// Close stream in this method.

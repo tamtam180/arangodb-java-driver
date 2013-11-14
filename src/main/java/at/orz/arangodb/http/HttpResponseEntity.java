@@ -32,6 +32,32 @@ public class HttpResponseEntity {
 	long etag = -1;
 	Map<String, String> headers;
 	
+	String contentType;
+
+	/**
+	 * @return
+	 * @since 1.4.0
+	 */
+	public boolean isJsonResponse() {
+		return (contentType != null && contentType.startsWith("application/json"));
+	}
+	
+	/**
+	 * @return
+	 * @since 1.4.0
+	 */
+	public boolean isDumpResponse() {
+		return (contentType != null && contentType.startsWith("application/x-arango-dump"));
+	}
+	
+	/**
+	 * @return
+	 * @since 1.4.0
+	 */
+	public boolean isTextResponse() {
+		return (contentType != null && contentType.startsWith("text/plain"));
+	}
+	
 	public int getStatusCode() {
 		return statusCode;
 	}
@@ -67,6 +93,12 @@ public class HttpResponseEntity {
 	}
 	public void setHeaders(Map<String, String> headers) {
 		this.headers = headers;
+	}
+	public String getContentType() {
+		return contentType;
+	}
+	public void setContentType(String contentType) {
+		this.contentType = contentType;
 	}
 	
 }

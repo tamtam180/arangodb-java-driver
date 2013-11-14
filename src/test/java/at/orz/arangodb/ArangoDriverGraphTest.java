@@ -30,6 +30,11 @@ public class ArangoDriverGraphTest extends BaseTest {
 		super(configure, driver);
 	}
 
+	@Test
+	public void do_nothing() {
+		
+	}
+	
 //	@Test
 //	public void test_create_graph() throws ArangoException {
 //		

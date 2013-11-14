@@ -25,6 +25,7 @@ v1.4.0-SNAPSHOT(2013-11-xx)
 * add support API: PUT /_api/replication/applier-start (startReplicationApplier)
 * add support API: PUT /_api/replication/applier-stop (stopReplicationApplier)
 * add support API: GET /_api/replication/applier-state (getReplicationApplierState)
+* add support API: POST /_admin/execute (executeScript)
 * add attribute: CollectionEntity#checksum
 * add attribute: CollectionEntity#doCompact
 * add attribute: CollectionEntity#keyOptions

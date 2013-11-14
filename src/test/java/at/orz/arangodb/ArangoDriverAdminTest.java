@@ -166,7 +166,32 @@ public class ArangoDriverAdminTest extends BaseTest {
 		assertThat(entity.getStatusCode(), is(200));
 		
 	}
-	
+
+	@Test
+	public void test_execute_delete_collection() throws ArangoException {
+		
+		DefaultEntity entity1 = driver.executeScript("db._drop(\"" + "col-execute-delete-test" + "\")");
+		assertThat(entity1.isError(), is(false));
+		assertThat(entity1.getCode(), is(200));
+		assertThat(entity1.getStatusCode(), is(200));
+		
+		driver.createCollection("col-execute-delete-test");
+		driver.getCollection("col-execute-delete-test");
+
+		DefaultEntity entity2 = driver.executeScript("db._drop(\"" + "col-execute-delete-test" + "\")");
+		assertThat(entity2.isError(), is(false));
+		assertThat(entity2.getCode(), is(200));
+		assertThat(entity2.getStatusCode(), is(200));
+		
+		try {
+			driver.getCollection("col-execute-delete-test");
+			fail();
+		} catch (ArangoException e) {
+			assertThat(e.getCode(), is(404));
+			assertThat(e.getErrorNumber(), is(1203));
+		}
+	}
+
 	@Test
 	public void test_execute_error() throws ArangoException {
 		try {

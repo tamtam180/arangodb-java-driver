@@ -56,6 +56,7 @@ import at.orz.arangodb.entity.StatisticsDescriptionEntity;
 import at.orz.arangodb.entity.StatisticsEntity;
 import at.orz.arangodb.entity.StringsResultEntity;
 import at.orz.arangodb.entity.UserEntity;
+import at.orz.arangodb.entity.VertexEntity;
 import at.orz.arangodb.http.HttpManager;
 import at.orz.arangodb.impl.ImplFactory;
 import at.orz.arangodb.impl.InternalAdminDriverImpl;
@@ -1175,8 +1176,19 @@ public class ArangoDriver extends BaseArangoDriver {
 		return graphDriver.deleteGraph(getDefaultDatabase(), name, ifMatchRevision);
 	}
 	
+	/**
+	 * 
+	 * @param graphName
+	 * @param vertex
+	 * @param waitForSync
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public <T> VertexEntity<T> createVertex(String graphName, Object vertex, Boolean waitForSync) throws ArangoException {
+		return graphDriver.createVertex(getDefaultDatabase(), graphName, vertex, waitForSync);
+	}
 	
-
 	// ---------------------------------------- end of graph ----------------------------------------
 
 	

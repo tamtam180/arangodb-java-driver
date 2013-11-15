@@ -21,8 +21,6 @@ import java.util.List;
 
 import at.orz.arangodb.util.CollectionUtils;
 
-import com.google.gson.JsonArray;
-
 /**
  * @author tamtam180 - kirscheless at gmail.com
  *

@@ -18,10 +18,12 @@ package at.orz.arangodb.impl;
 
 import at.orz.arangodb.ArangoConfigure;
 import at.orz.arangodb.ArangoException;
+import at.orz.arangodb.entity.DocumentEntity;
 import at.orz.arangodb.entity.EntityFactory;
 import at.orz.arangodb.entity.GraphDeleteEntity;
 import at.orz.arangodb.entity.GraphEntity;
 import at.orz.arangodb.entity.GraphsEntity;
+import at.orz.arangodb.entity.VertexEntity;
 import at.orz.arangodb.http.HttpResponseEntity;
 import at.orz.arangodb.util.MapBuilder;
 import at.orz.arangodb.util.StringUtils;
@@ -87,6 +89,15 @@ public class InternalGraphDriverImpl extends BaseArangoDriverImpl {
 		
 		return createEntity(res, GraphDeleteEntity.class);
 		
+	}
+	
+	public <T> VertexEntity<T> createVertex(String database, String graphName, Object vertex, Boolean waitForSync) throws ArangoException {
+		validateCollectionName(graphName);
+		HttpResponseEntity res = httpManager.doPost(
+				createEndpointUrl(baseUrl, database, "/_api/graph", StringUtils.encodeUrl(graphName), "vertex"), 
+				new MapBuilder().put("waitForSync", waitForSync).get(),
+				EntityFactory.toJsonString(vertex));
+		return createEntity(res, VertexEntity.class, vertex.getClass());
 	}
 
 }

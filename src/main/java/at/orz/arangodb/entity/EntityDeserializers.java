@@ -1598,5 +1598,21 @@ public class EntityDeserializers {
 		}
 	}
 	
-	
+	public static class VertexEntityDeserializer implements JsonDeserializer<VertexEntity<?>> {
+		public VertexEntity<?> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			
+			if (json.isJsonNull()) {
+				return null;
+			}
+			
+			JsonObject obj = json.getAsJsonObject();
+			VertexEntity<?> entity = deserializeBaseParameter(obj, new VertexEntity<Object>());
+			
+			if (obj.has("vertex")) {
+				entity.vertex = context.deserialize(obj.get("vertex"), DocumentEntity.class);
+			}
+			
+			return entity;
+		}
+	}
 }

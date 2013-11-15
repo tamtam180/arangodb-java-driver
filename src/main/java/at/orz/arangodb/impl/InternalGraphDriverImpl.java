@@ -63,13 +63,15 @@ public class InternalGraphDriverImpl extends BaseArangoDriverImpl {
 		
 	}
 
-	public GraphEntity getGraph(String database, String name) throws ArangoException {
+	public GraphEntity getGraph(String database, String name, Long IfNoneMatchRevision, Long ifMatchRevision) throws ArangoException {
 		
 		// TODO: If-Non-Match, If-Match Header
 		
 		validateCollectionName(name);
 		HttpResponseEntity res = httpManager.doGet(
-				createEndpointUrl(baseUrl, database, "/_api/graph", StringUtils.encodeUrl(name)));
+				createEndpointUrl(baseUrl, database, "/_api/graph", StringUtils.encodeUrl(name)),
+				new MapBuilder().put("If-None-Match", IfNoneMatchRevision, true).put("If-Match", ifMatchRevision).get(),
+				null);
 		
 		return createEntity(res, GraphEntity.class);
 		

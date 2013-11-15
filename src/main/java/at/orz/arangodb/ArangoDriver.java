@@ -1136,9 +1136,22 @@ public class ArangoDriver extends BaseArangoDriver {
 	 * @since 1.4.0
 	 */
 	public GraphEntity getGraph(String name) throws ArangoException {
-		return graphDriver.getGraph(getDefaultDatabase(), name);
+		return graphDriver.getGraph(getDefaultDatabase(), name, null, null);
 	}
-	
+
+	/**
+	 * 
+	 * @param name
+	 * @param IfNoneMatchRevision
+	 * @param ifMatchRevision
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public GraphEntity getGraph(String name, Long IfNoneMatchRevision, Long ifMatchRevision) throws ArangoException {
+		return graphDriver.getGraph(getDefaultDatabase(), name, IfNoneMatchRevision, ifMatchRevision);
+	}
+
 	/**
 	 * 
 	 * @param name
@@ -1161,6 +1174,8 @@ public class ArangoDriver extends BaseArangoDriver {
 	public GraphDeleteEntity deleteGraph(String name, Long ifMatchRevision) throws ArangoException {
 		return graphDriver.deleteGraph(getDefaultDatabase(), name, ifMatchRevision);
 	}
+	
+	
 
 	// ---------------------------------------- end of graph ----------------------------------------
 

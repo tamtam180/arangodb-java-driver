@@ -90,44 +90,6 @@ public class EntityFactory {
 		gsonNull = getBuilder().serializeNulls().create();
 	}
 
-//	public static <T> CursorEntity<T> createResult(CursorEntity<T> entity, Class<T> clazz) {
-//		if (entity._array == null) {
-//			entity.results = Collections.emptyList();
-//		} else if (entity._array.isJsonNull() || entity._array.size() == 0) {
-//			entity.results = Collections.emptyList();
-//			entity._array = null;
-//		} else {
-//			ArrayList<T> list = new ArrayList<T>(entity._array.size());
-//			for (JsonElement elem : entity._array) {
-//				list.add(gson.fromJson(elem, clazz));
-//			}
-//			entity.results = list;
-//			entity._array = null;
-//		}
-//		return entity;
-//	}
-
-//	public static <T> CursorEntity<DocumentEntity<T>> createDocumentResult(CursorEntity<DocumentEntity<T>> entity, Class<T> clazz) {
-//		if (entity._array == null) {
-//			entity.results = Collections.emptyList();
-//		} else if (entity._array.isJsonNull() || entity._array.size() == 0) {
-//			entity.results = Collections.emptyList();
-//			entity._array = null;
-//		} else {
-//			ArrayList<DocumentEntity<T>> list = new ArrayList<DocumentEntity<T>>(entity._array.size());
-//			for (JsonElement elem : entity._array) {
-//				DocumentEntity<T> doc = gson.fromJson(elem, DocumentEntity.class);
-//				if (doc != null) {
-//					doc.setEntity(gson.fromJson(elem, clazz));
-//				}
-//				list.add(doc);
-//			}
-//			entity.results = list;
-//			entity._array = null;
-//		}
-//		return entity;
-//	}
-
 	public static <T> T createEntity(String jsonText, Type type) {
 		return gson.fromJson(jsonText, type);
 	}

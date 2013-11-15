@@ -24,6 +24,7 @@ import java.util.Iterator;
 import at.orz.arangodb.annotations.Exclude;
 import at.orz.arangodb.entity.CollectionEntity.Figures;
 import at.orz.arangodb.entity.EntityDeserializers.CollectionKeyOptionDeserializer;
+import at.orz.arangodb.entity.marker.VertexEntity;
 import at.orz.arangodb.http.JsonSequenceEntity;
 
 import com.google.gson.ExclusionStrategy;

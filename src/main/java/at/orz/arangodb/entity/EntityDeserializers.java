@@ -38,6 +38,7 @@ import at.orz.arangodb.entity.ReplicationLoggerStateEntity.Client;
 import at.orz.arangodb.entity.StatisticsDescriptionEntity.Figure;
 import at.orz.arangodb.entity.StatisticsDescriptionEntity.Group;
 import at.orz.arangodb.entity.StatisticsEntity.FigureValue;
+import at.orz.arangodb.entity.marker.VertexEntity;
 import at.orz.arangodb.util.DateUtils;
 
 import com.google.gson.JsonArray;
@@ -1598,19 +1599,23 @@ public class EntityDeserializers {
 		}
 	}
 	
-	public static class VertexEntityDeserializer implements JsonDeserializer<VertexEntity<?>> {
-		public VertexEntity<?> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+	public static class VertexEntityDeserializer implements JsonDeserializer<DocumentEntity<?>> {
+		public DocumentEntity<?> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
 			
 			if (json.isJsonNull()) {
 				return null;
 			}
 			
 			JsonObject obj = json.getAsJsonObject();
-			VertexEntity<?> entity = deserializeBaseParameter(obj, new VertexEntity<Object>());
 			
+			DocumentEntity<?> entity;
 			if (obj.has("vertex")) {
-				entity.vertex = context.deserialize(obj.get("vertex"), DocumentEntity.class);
+				entity = context.deserialize(obj.get("vertex"), DocumentEntity.class);
+			} else {
+				entity = new DocumentEntity<Object>();
 			}
+			
+			entity = deserializeBaseParameter(obj, entity);
 			
 			return entity;
 		}

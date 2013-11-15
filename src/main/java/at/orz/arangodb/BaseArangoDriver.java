@@ -28,6 +28,7 @@ import at.orz.arangodb.entity.EntityDeserializers;
 import at.orz.arangodb.entity.EntityFactory;
 import at.orz.arangodb.entity.KeyValueEntity;
 import at.orz.arangodb.entity.StreamEntity;
+import at.orz.arangodb.entity.marker.MissingInstanceCreater;
 import at.orz.arangodb.http.HttpResponseEntity;
 import at.orz.arangodb.util.DateUtils;
 import at.orz.arangodb.util.ReflectionUtils;
@@ -156,13 +157,14 @@ public abstract class BaseArangoDriver {
 	 * @return
 	 * @throws ArangoException
 	 */
-	protected <T extends BaseEntity> T createEntity(HttpResponseEntity res, Class<T> clazz, Class<?>[] pclazz, boolean validate) throws ArangoException {
+	protected <T extends BaseEntity> T createEntity(HttpResponseEntity res, Class<? extends BaseEntity> clazz, Class<?>[] pclazz, boolean validate) throws ArangoException {
 		try {
 			EntityDeserializers.setParameterized(pclazz);
 			
 			T entity = createEntityImpl(res, clazz);
 			if (entity == null) {
-				entity = ReflectionUtils.newInstance(clazz);
+				Class<?> c = MissingInstanceCreater.getMissingClass(clazz);
+				entity = ReflectionUtils.newInstance(c);
 			}
 			setStatusCode(res, entity);
 			if (validate) {
@@ -187,7 +189,7 @@ public abstract class BaseArangoDriver {
 		return createEntity(res, clazz, null, true);
 	}
 
-	protected <T extends BaseEntity> T createEntity(HttpResponseEntity res, Class<T> clazz, Class<?>... pclazz) throws ArangoException {
+	protected <T extends BaseEntity> T createEntity(HttpResponseEntity res, Class<? extends BaseEntity> clazz, Class<?>... pclazz) throws ArangoException {
 		return createEntity(res, clazz, pclazz, true);
 	}
 
@@ -231,7 +233,7 @@ public abstract class BaseArangoDriver {
 		}
 	}
 	
-	protected <T> T createEntityImpl(HttpResponseEntity res, Class<T> type) throws ArangoException {
+	protected <T> T createEntityImpl(HttpResponseEntity res, Class<?> type) throws ArangoException {
 		if (res.isJsonResponse()) {
 			T entity = EntityFactory.createEntity(res.getText(), type);
 			return entity;

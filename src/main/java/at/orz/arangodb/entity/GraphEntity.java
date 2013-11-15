@@ -35,10 +35,6 @@ public class GraphEntity extends BaseEntity {
 	String edges;
 	String vertices;
 
-	public boolean isNotModified() {
-		return statusCode == 304; //HttpStatus.SC_NOT_MODIFIED;
-	}
-	
 	public long getDocumentRevision() {
 		return documentRevision;
 	}

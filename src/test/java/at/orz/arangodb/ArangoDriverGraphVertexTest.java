@@ -16,18 +16,15 @@
 
 package at.orz.arangodb;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.isA;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import at.orz.arangodb.entity.DocumentEntity;
 import at.orz.arangodb.entity.GraphEntity;
-import at.orz.arangodb.entity.VertexEntity;
+import at.orz.arangodb.entity.marker.VertexEntity;
 
 /**
  * @author tamtam180 - kirscheless at gmail.com
@@ -61,8 +58,7 @@ public class ArangoDriverGraphVertexTest extends BaseTest {
 		
 		GraphEntity g1 = driver.createGraph("g1","v1", "e1", null);
 		
-		VertexEntity<TestComplexEntity01> v = driver.createVertex("g1", new TestComplexEntity01("xxx", "yyy", 10), null);
-		DocumentEntity<TestComplexEntity01> vertex = v.getVertex();
+		DocumentEntity<TestComplexEntity01> vertex = driver.createVertex("g1", new TestComplexEntity01("xxx", "yyy", 10), null);
 		assertThat(vertex.getDocumentHandle(), is(notNullValue()));
 		assertThat(vertex.getDocumentRevision(), is(not(0L)));
 		assertThat(vertex.getDocumentKey(), is(notNullValue()));
@@ -76,5 +72,162 @@ public class ArangoDriverGraphVertexTest extends BaseTest {
 	// TODO: create with _key
 	// TODO: create with _key and duplication error
 	
+	@Test
+	public void test_get_vertex() throws ArangoException {
+		
+		GraphEntity g1 = driver.createGraph("g1","v1", "e1", null);
+		DocumentEntity<TestComplexEntity01> v1 = driver.createVertex("g1", new TestComplexEntity01("xxx", "yyy", 10), null);
+		
+		DocumentEntity<TestComplexEntity01> vertex = driver.getVertex("g1", v1.getDocumentKey(), TestComplexEntity01.class);
+		assertThat(vertex.getCode(), is(200));
+		assertThat(vertex.isError(), is(false));
+		assertThat(vertex.getDocumentHandle(), is(notNullValue()));
+		assertThat(vertex.getDocumentRevision(), is(not(0L)));
+		assertThat(vertex.getDocumentKey(), is(notNullValue()));
+		assertThat(vertex.getEntity(), isA(TestComplexEntity01.class));
+		assertThat(vertex.getEntity().getUser(), is("xxx"));
+		assertThat(vertex.getEntity().getDesc(), is("yyy"));
+		assertThat(vertex.getEntity().getAge(), is(10));
+		
+	}
+
+	@Test
+	public void test_get_vertex_rev_eq() throws ArangoException {
+		
+		GraphEntity g1 = driver.createGraph("g1","v1", "e1", null);
+		DocumentEntity<TestComplexEntity01> v1 = driver.createVertex("g1", new TestComplexEntity01("xxx", "yyy", 10), null);
+		
+		DocumentEntity<TestComplexEntity01> vertex = driver.getVertex("g1", v1.getDocumentKey(), TestComplexEntity01.class, 
+				v1.getDocumentRevision(), null, null);
+		assertThat(vertex.getCode(), is(200));
+		assertThat(vertex.isError(), is(false));
+		assertThat(vertex.getDocumentHandle(), is(notNullValue()));
+		assertThat(vertex.getDocumentRevision(), is(not(0L)));
+		assertThat(vertex.getDocumentKey(), is(notNullValue()));
+		assertThat(vertex.getEntity(), isA(TestComplexEntity01.class));
+		assertThat(vertex.getEntity().getUser(), is("xxx"));
+		assertThat(vertex.getEntity().getDesc(), is("yyy"));
+		assertThat(vertex.getEntity().getAge(), is(10));
+		
+	}
+
+	@Test
+	public void test_get_vertex_rev_ne() throws ArangoException {
+		
+		GraphEntity g1 = driver.createGraph("g1","v1", "e1", null);
+		DocumentEntity<TestComplexEntity01> v1 = driver.createVertex("g1", new TestComplexEntity01("xxx", "yyy", 10), null);
+		
+		try {
+			driver.getVertex("g1", v1.getDocumentKey(), TestComplexEntity01.class, 
+					v1.getDocumentRevision() -1, null, null);
+			fail();
+		} catch (ArangoException e) {
+			assertThat(e.getCode(), is(412));
+			assertThat(e.getErrorNumber(), is(1903)); // wrong revision
+		}
+		
+	}
+
+	@Test
+	public void test_get_vertex_none_match_eq() throws ArangoException {
+		
+		GraphEntity g1 = driver.createGraph("g1","v1", "e1", null);
+		DocumentEntity<TestComplexEntity01> v1 = driver.createVertex("g1", new TestComplexEntity01("xxx", "yyy", 10), null);
+		
+		DocumentEntity<TestComplexEntity01> vertex = driver.getVertex("g1", v1.getDocumentKey(), TestComplexEntity01.class, 
+				null, v1.getDocumentRevision(), null);
+		
+		assertThat(vertex.getStatusCode(), is(304));
+		assertThat(vertex.isNotModified(), is(true));
+		
+	}
+
+	@Test
+	public void test_get_vertex_none_match_ne() throws ArangoException {
+		
+		GraphEntity g1 = driver.createGraph("g1","v1", "e1", null);
+		DocumentEntity<TestComplexEntity01> v1 = driver.createVertex("g1", new TestComplexEntity01("xxx", "yyy", 10), null);
+		
+		DocumentEntity<TestComplexEntity01> vertex = driver.getVertex("g1", v1.getDocumentKey(), TestComplexEntity01.class, 
+				null, v1.getDocumentRevision() + 1, null);
+		
+		assertThat(vertex.getCode(), is(200));
+		assertThat(vertex.isError(), is(false));
+		assertThat(vertex.getDocumentHandle(), is(notNullValue()));
+		assertThat(vertex.getDocumentRevision(), is(not(0L)));
+		assertThat(vertex.getDocumentKey(), is(notNullValue()));
+		assertThat(vertex.getEntity(), isA(TestComplexEntity01.class));
+		assertThat(vertex.getEntity().getUser(), is("xxx"));
+		assertThat(vertex.getEntity().getDesc(), is("yyy"));
+		assertThat(vertex.getEntity().getAge(), is(10));
+		
+	}
+
+	
+	@Test
+	public void test_get_vertex_match_eq() throws ArangoException {
+		
+		GraphEntity g1 = driver.createGraph("g1","v1", "e1", null);
+		DocumentEntity<TestComplexEntity01> v1 = driver.createVertex("g1", new TestComplexEntity01("xxx", "yyy", 10), null);
+		
+		DocumentEntity<TestComplexEntity01> vertex = driver.getVertex("g1", v1.getDocumentKey(), TestComplexEntity01.class, 
+				null, null, v1.getDocumentRevision());
+		
+		assertThat(vertex.getCode(), is(200));
+		assertThat(vertex.isError(), is(false));
+		assertThat(vertex.getDocumentHandle(), is(notNullValue()));
+		assertThat(vertex.getDocumentRevision(), is(not(0L)));
+		assertThat(vertex.getDocumentKey(), is(notNullValue()));
+		assertThat(vertex.getEntity(), isA(TestComplexEntity01.class));
+		assertThat(vertex.getEntity().getUser(), is("xxx"));
+		assertThat(vertex.getEntity().getDesc(), is("yyy"));
+		assertThat(vertex.getEntity().getAge(), is(10));
+		
+	}
+
+	@Test
+	public void test_get_vertex_match_ne() throws ArangoException {
+		
+		GraphEntity g1 = driver.createGraph("g1","v1", "e1", null);
+		DocumentEntity<TestComplexEntity01> v1 = driver.createVertex("g1", new TestComplexEntity01("xxx", "yyy", 10), null);
+		
+		try {
+			driver.getVertex("g1", v1.getDocumentKey(), TestComplexEntity01.class, 
+				null, null, v1.getDocumentRevision() + 1);
+			fail();
+		} catch (ArangoException e) {
+			assertThat(e.getCode(), is(412));
+			assertThat(e.getErrorNumber(), is(1903));
+		}
+		
+	}
+
+	@Test
+	public void test_get_vertex_graph_not_found() throws ArangoException {
+
+		try {
+			driver.getVertex("g1", "gkey1", TestComplexEntity01.class);
+			fail();
+		} catch (ArangoException e) {
+			assertThat(e.getCode(), is(404));
+			assertThat(e.getErrorNumber(), is(1901));
+		}
+		
+	}
+
+	@Test
+	public void test_get_vertex_not_found() throws ArangoException {
+
+		GraphEntity g1 = driver.createGraph("g1","v1", "e1", null);
+
+		try {
+			driver.createVertex("g2", new TestComplexEntity01("xxx", "yyy", 10), null);
+			fail();
+		} catch (ArangoException e) {
+			assertThat(e.getCode(), is(404));
+			assertThat(e.getErrorNumber(), is(1901));
+		}
+		
+	}
 
 }

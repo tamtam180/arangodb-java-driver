@@ -24,9 +24,9 @@ import at.orz.arangodb.ArangoException;
  */
 public class ReflectionUtils {
 	
-	public static <T> T newInstance(Class<T> clazz) throws ArangoException {
+	public static <T> T newInstance(Class<?> clazz) throws ArangoException {
 		try {
-			return clazz.newInstance();
+			return (T) clazz.newInstance();
 		} catch (InstantiationException e) {
 			throw new ArangoException(e);
 		} catch (IllegalAccessException e) {

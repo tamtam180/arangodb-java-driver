@@ -56,7 +56,7 @@ import at.orz.arangodb.entity.StatisticsDescriptionEntity;
 import at.orz.arangodb.entity.StatisticsEntity;
 import at.orz.arangodb.entity.StringsResultEntity;
 import at.orz.arangodb.entity.UserEntity;
-import at.orz.arangodb.entity.VertexEntity;
+import at.orz.arangodb.entity.marker.VertexEntity;
 import at.orz.arangodb.http.HttpManager;
 import at.orz.arangodb.impl.ImplFactory;
 import at.orz.arangodb.impl.InternalAdminDriverImpl;
@@ -1185,8 +1185,39 @@ public class ArangoDriver extends BaseArangoDriver {
 	 * @throws ArangoException
 	 * @since 1.4.0
 	 */
-	public <T> VertexEntity<T> createVertex(String graphName, Object vertex, Boolean waitForSync) throws ArangoException {
+	public <T> DocumentEntity<T> createVertex(String graphName, Object vertex, Boolean waitForSync) throws ArangoException {
 		return graphDriver.createVertex(getDefaultDatabase(), graphName, vertex, waitForSync);
+	}
+
+	/**
+	 * 
+	 * @param graphName
+	 * @param key
+	 * @param clazz
+	 * @return
+	 */
+	public <T> DocumentEntity<T> getVertex(
+			String graphName, String key, Class<?> clazz
+			) throws ArangoException {
+		return graphDriver.getVertex(getDefaultDatabase(), graphName, key, clazz, null, null, null);
+	}
+
+	/**
+	 * 
+	 * @param graphName
+	 * @param key
+	 * @param clazz
+	 * @param rev
+	 * @param IfNoneMatchRevision
+	 * @param IfMatchRevision
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public <T> DocumentEntity<T> getVertex(
+			String graphName, String key, Class<?> clazz, 
+			Long rev, Long IfNoneMatchRevision, Long IfMatchRevision) throws ArangoException {
+		return graphDriver.getVertex(getDefaultDatabase(), graphName, key, clazz, rev, IfNoneMatchRevision, IfMatchRevision);
 	}
 	
 	// ---------------------------------------- end of graph ----------------------------------------

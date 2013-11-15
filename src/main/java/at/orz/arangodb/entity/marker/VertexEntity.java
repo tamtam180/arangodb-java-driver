@@ -14,22 +14,15 @@
  * limitations under the License.
  */
 
-package at.orz.arangodb.entity;
+package at.orz.arangodb.entity.marker;
+
+import at.orz.arangodb.entity.BaseEntity;
+
 
 /**
  * @author tamtam180 - kirscheless at gmail.com
- *
+ * @since 1.4.0
  */
 public class VertexEntity<T> extends BaseEntity {
-
-	public DocumentEntity<T> getVertex() {
-		return vertex;
-	}
-
-	public void setVertex(DocumentEntity<T> vertex) {
-		this.vertex = vertex;
-	}
-
-	DocumentEntity<T> vertex;
-	
+	private VertexEntity(){}
 }

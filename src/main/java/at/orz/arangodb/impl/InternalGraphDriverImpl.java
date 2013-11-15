@@ -23,7 +23,7 @@ import at.orz.arangodb.entity.EntityFactory;
 import at.orz.arangodb.entity.GraphDeleteEntity;
 import at.orz.arangodb.entity.GraphEntity;
 import at.orz.arangodb.entity.GraphsEntity;
-import at.orz.arangodb.entity.VertexEntity;
+import at.orz.arangodb.entity.marker.VertexEntity;
 import at.orz.arangodb.http.HttpResponseEntity;
 import at.orz.arangodb.util.MapBuilder;
 import at.orz.arangodb.util.StringUtils;
@@ -91,7 +91,7 @@ public class InternalGraphDriverImpl extends BaseArangoDriverImpl {
 		
 	}
 	
-	public <T> VertexEntity<T> createVertex(String database, String graphName, Object vertex, Boolean waitForSync) throws ArangoException {
+	public <T> DocumentEntity<T> createVertex(String database, String graphName, Object vertex, Boolean waitForSync) throws ArangoException {
 		validateCollectionName(graphName);
 		HttpResponseEntity res = httpManager.doPost(
 				createEndpointUrl(baseUrl, database, "/_api/graph", StringUtils.encodeUrl(graphName), "vertex"), 
@@ -100,4 +100,19 @@ public class InternalGraphDriverImpl extends BaseArangoDriverImpl {
 		return createEntity(res, VertexEntity.class, vertex.getClass());
 	}
 
+	public <T> DocumentEntity<T> getVertex(
+			String database, 
+			String graphName, String key, Class<?> clazz, 
+			Long rev, Long IfNoneMatchRevision, Long IfMatchRevision) throws ArangoException {
+		
+		validateCollectionName(graphName);
+		HttpResponseEntity res = httpManager.doGet(
+				createEndpointUrl(baseUrl, database, "/_api/graph", StringUtils.encodeUrl(graphName), "vertex", StringUtils.encodeUrl(key)),
+				new MapBuilder().put("If-None-Match", IfNoneMatchRevision, true).put("If-Match", IfMatchRevision).get(), 
+				new MapBuilder().put("rev", rev).get());
+		
+		return createEntity(res, VertexEntity.class, clazz);
+		
+	}
+	
 }

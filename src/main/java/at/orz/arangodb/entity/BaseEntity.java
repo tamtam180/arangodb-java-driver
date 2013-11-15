@@ -39,6 +39,10 @@ public abstract class BaseEntity implements Serializable {
 	@Exclude(deserialize=false)
 	long etag;
 	
+	public boolean isNotModified() {
+		return statusCode == 304; //HttpStatus.SC_NOT_MODIFIED;
+	}
+
 	public boolean isError() {
 		return error;
 	}

@@ -16,11 +16,18 @@
 
 package at.orz.arangodb.impl;
 
+import java.util.Collection;
+import java.util.Map;
+
 import at.orz.arangodb.ArangoConfigure;
 import at.orz.arangodb.ArangoException;
+import at.orz.arangodb.CursorResultSet;
+import at.orz.arangodb.entity.CursorEntity;
+import at.orz.arangodb.entity.DeletedEntity;
+import at.orz.arangodb.entity.Direction;
 import at.orz.arangodb.entity.DocumentEntity;
 import at.orz.arangodb.entity.EntityFactory;
-import at.orz.arangodb.entity.DeletedEntity;
+import at.orz.arangodb.entity.FilterCondition;
 import at.orz.arangodb.entity.GraphEntity;
 import at.orz.arangodb.entity.GraphsEntity;
 import at.orz.arangodb.entity.marker.VertexEntity;
@@ -32,12 +39,12 @@ import at.orz.arangodb.util.StringUtils;
  * @author tamtam180 - kirscheless at gmail.com
  * @since 1.4.0
  */
-public class InternalGraphDriverImpl extends BaseArangoDriverImpl {
+public class InternalGraphDriverImpl extends BaseArangoDriverWithCursorImpl {
 
-	InternalGraphDriverImpl(ArangoConfigure configure) {
-		super(configure);
+	InternalGraphDriverImpl(ArangoConfigure configure, InternalCursorDriverImpl cursorDriver) {
+		super(configure, cursorDriver);
 	}
-	
+
 	public GraphEntity createGraph(
 			String database, 
 			String documentKey, String vertices, String edges,
@@ -165,5 +172,44 @@ public class InternalGraphDriverImpl extends BaseArangoDriverImpl {
 		return createEntity(res, VertexEntity.class, vertex.getClass());
 		
 	}
-	
+
+	public <T> CursorEntity<DocumentEntity<T>> getVertices(
+			String database,
+			String graphName, Class<?> clazz,
+			Integer batchSize, Integer limit, Boolean count,
+			Direction direction, Collection<String> labels, FilterCondition... properties
+			) throws ArangoException {
+		
+		validateCollectionName(graphName);
+		
+		Map<String, Object> filter = new MapBuilder().put("direction", direction).put("labels", labels).put("properties", properties).get();
+		
+		HttpResponseEntity res = httpManager.doPost(
+				createEndpointUrl(baseUrl, database, "/_api/graph", StringUtils.encodeUrl(graphName), "vertices"),
+				null,
+				EntityFactory.toJsonString(
+						new MapBuilder()
+						.put("batchSize", batchSize)
+						.put("limit", limit)
+						.put("count", count)
+						.put("filter", filter)
+						.get())
+				);
+
+		return createEntity(res, CursorEntity.class, DocumentEntity.class, clazz);
+		
+	}
+
+	public <T> CursorResultSet<DocumentEntity<T>> getVerticesWithResultSet(
+			String database,
+			String graphName, Class<?> clazz,
+			Integer batchSize, Integer limit, Boolean count,
+			Direction direction, Collection<String> labels, FilterCondition... properties
+			) throws ArangoException {
+		
+		CursorEntity<DocumentEntity<T>> entity = getVertices(database, graphName, clazz, batchSize, limit, count, direction, labels, properties);
+		CursorResultSet<DocumentEntity<T>> rs = new CursorResultSet<DocumentEntity<T>>(database, cursorDriver, entity, DocumentEntity.class, clazz);
+		return rs;
+	}
+
 }

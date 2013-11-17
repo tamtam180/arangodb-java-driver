@@ -58,6 +58,7 @@ import at.orz.arangodb.util.StringJoinTest;
 	ArangoDriverGraphVertexTest.class,
 	ArangoDriverGraphVertexReplaceTest.class,
 	ArangoDriverGraphVertexUpdateTest.class,
+	ArangoDriverGraphVerticesTest.class,
 	ArangoDriverStoryTest.class,
 	ArangoDriverReplicationTest.class,
 	ArangoDriverReplicationTestScenario1.class

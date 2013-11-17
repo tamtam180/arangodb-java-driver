@@ -19,39 +19,20 @@ package at.orz.arangodb;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import at.orz.arangodb.entity.DeletedEntity;
 import at.orz.arangodb.entity.DocumentEntity;
 import at.orz.arangodb.entity.GraphEntity;
-import at.orz.arangodb.entity.marker.VertexEntity;
 
 /**
  * @author tamtam180 - kirscheless at gmail.com
  *
  */
-public class ArangoDriverGraphVertexTest extends BaseTest {
+public class ArangoDriverGraphVertexTest extends BaseGraphTest {
 
 	public ArangoDriverGraphVertexTest(ArangoConfigure configure, ArangoDriver driver) {
 		super(configure, driver);
-	}
-	
-	@Before
-	public void before() throws ArangoException {
-
-		String deleteAllCollectionAndGraphCode = 
-				"var Graph = require('org/arangodb/graph').Graph;\n" +
-				"Graph.getAll().forEach(function(g){\n" +
-				"  new Graph(g._key).drop();\n" +
-				"});\n" +
-				"db._collections().forEach(function(col){\n" +
-				"  var name = col.name();\n" +
-				"  if (name.indexOf('_') != 0) col.drop();\n" +
-				"});\n"
-				;
-		driver.executeScript(deleteAllCollectionAndGraphCode);
-
 	}
 
 	@Test
@@ -353,4 +334,37 @@ public class ArangoDriverGraphVertexTest extends BaseTest {
 
 	}
 
+	
+	@Test
+	public void test_vertex_update() throws ArangoException {
+
+		// create graph
+		GraphEntity g1 = driver.createGraph("g1","v1", "e1", null);
+		// create vertex
+		DocumentEntity<TestComplexEntity01> v1 = driver.createVertex("g1", new TestComplexEntity01("xxx", "yyy", 10), null);
+		// check exists vertex
+		DocumentEntity<TestComplexEntity01> vertex = driver.getVertex("g1", v1.getDocumentKey(), TestComplexEntity01.class, 
+				null, null, null);
+		assertThat(vertex.getCode(), is(200));
+		
+		DocumentEntity<TestComplexEntity02> updatedVertex = driver.replaceVertex("g1", v1.getDocumentKey(), new TestComplexEntity02(1,2,3));
+		assertThat(updatedVertex.getCode(), is(202));
+		assertThat(updatedVertex.isError(), is(false));
+		
+		assertThat(updatedVertex.getDocumentHandle(), is(v1.getDocumentHandle()));
+		assertThat(updatedVertex.getDocumentRevision(), is(not(v1.getDocumentRevision())));
+		assertThat(updatedVertex.getDocumentRevision(), is(not(0L)));
+		assertThat(updatedVertex.getDocumentKey(), is(v1.getDocumentKey()));
+		
+		assertThat(updatedVertex.getEntity().getX(), is(1));
+		assertThat(updatedVertex.getEntity().getY(), is(2));
+		assertThat(updatedVertex.getEntity().getZ(), is(3));
+		
+		// check count
+		assertThat(driver.getCollectionCount("v1").getCount(), is(1L));
+		
+	}
+
+	
+	
 }

@@ -33,6 +33,7 @@ v1.4.0-SNAPSHOT(2013-11-xx)
 * add support API: POST /_api/graph/{graph-name}/vertex (createVertex)
 * add support API: GET /_api/graph/{graph-name}/vertex/{document-key} (getVertex)
 * add support API: DELETE /_api/graph/{graph-name}/vertex/{document-key} (deleteVertex)
+* add support API: PUT /_api/graph/{graph-name}/vertex/{document-key} (replaceVertex)
 * add attribute: CollectionEntity#checksum
 * add attribute: CollectionEntity#doCompact
 * add attribute: CollectionEntity#keyOptions

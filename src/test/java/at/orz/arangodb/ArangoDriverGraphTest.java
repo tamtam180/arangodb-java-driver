@@ -22,8 +22,6 @@ import static org.junit.Assert.*;
 import java.util.Collections;
 import java.util.Comparator;
 
-import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import at.orz.arangodb.entity.DeletedEntity;
@@ -34,29 +32,12 @@ import at.orz.arangodb.entity.GraphsEntity;
  * @author tamtam180 - kirscheless at gmail.com
  *
  */
-public class ArangoDriverGraphTest extends BaseTest {
+public class ArangoDriverGraphTest extends BaseGraphTest {
 
 	public ArangoDriverGraphTest(ArangoConfigure configure, ArangoDriver driver) {
 		super(configure, driver);
 	}
 	
-	@Before
-	public void before() throws ArangoException {
-
-		String deleteAllCollectionAndGraphCode = 
-				"var Graph = require('org/arangodb/graph').Graph;\n" +
-				"Graph.getAll().forEach(function(g){\n" +
-				"  new Graph(g._key).drop();\n" +
-				"});\n" +
-				"db._collections().forEach(function(col){\n" +
-				"  var name = col.name();\n" +
-				"  if (name.indexOf('_') != 0) col.drop();\n" +
-				"});\n"
-				;
-		driver.executeScript(deleteAllCollectionAndGraphCode);
-
-	}
-
 	@Test
 	public void test_create_graph() throws ArangoException {
 

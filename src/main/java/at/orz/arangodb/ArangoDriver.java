@@ -1267,6 +1267,42 @@ public class ArangoDriver extends BaseArangoDriver {
 			) throws ArangoException {
 		return graphDriver.deleteVertex(getDefaultDatabase(), graphName, key, waitForSync, rev, ifMatchRevision);
 	}
+
+	/**
+	 * 
+	 * @param graphName
+	 * @param key
+	 * @param vertex
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public <T> DocumentEntity<T> replaceVertex(
+			String graphName, String key, Object vertex
+			) throws ArangoException {
+		return graphDriver.replaceVertex(getDefaultDatabase(), graphName, key, vertex, null, null, null);
+	}
+
+	/**
+	 * 
+	 * @param graphName
+	 * @param key
+	 * @param vertex
+	 * @param waitForSync
+	 * @param rev
+	 * @param ifMatchRevision
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public <T> DocumentEntity<T> replaceVertex(
+			String graphName, String key, Object vertex,
+			Boolean waitForSync, Long rev, Long ifMatchRevision
+			) throws ArangoException {
+		return graphDriver.replaceVertex(getDefaultDatabase(), graphName, key, vertex, waitForSync, rev, ifMatchRevision);
+	}
+
+
 	
 	// ---------------------------------------- end of graph ----------------------------------------
 

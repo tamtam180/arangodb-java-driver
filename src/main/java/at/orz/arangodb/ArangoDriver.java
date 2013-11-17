@@ -35,7 +35,7 @@ import at.orz.arangodb.entity.DocumentEntity;
 import at.orz.arangodb.entity.DocumentResultEntity;
 import at.orz.arangodb.entity.Endpoint;
 import at.orz.arangodb.entity.ExplainEntity;
-import at.orz.arangodb.entity.GraphDeleteEntity;
+import at.orz.arangodb.entity.DeletedEntity;
 import at.orz.arangodb.entity.GraphEntity;
 import at.orz.arangodb.entity.GraphsEntity;
 import at.orz.arangodb.entity.ImportResultEntity;
@@ -1160,7 +1160,7 @@ public class ArangoDriver extends BaseArangoDriver {
 	 * @throws ArangoException
 	 * @since 1.4.0
 	 */
-	public GraphDeleteEntity deleteGraph(String name) throws ArangoException {
+	public DeletedEntity deleteGraph(String name) throws ArangoException {
 		return graphDriver.deleteGraph(getDefaultDatabase(), name, null);
 	}
 
@@ -1172,7 +1172,7 @@ public class ArangoDriver extends BaseArangoDriver {
 	 * @throws ArangoException
 	 * @since 1.4.0
 	 */
-	public GraphDeleteEntity deleteGraph(String name, Long ifMatchRevision) throws ArangoException {
+	public DeletedEntity deleteGraph(String name, Long ifMatchRevision) throws ArangoException {
 		return graphDriver.deleteGraph(getDefaultDatabase(), name, ifMatchRevision);
 	}
 	
@@ -1218,6 +1218,54 @@ public class ArangoDriver extends BaseArangoDriver {
 			String graphName, String key, Class<?> clazz, 
 			Long rev, Long IfNoneMatchRevision, Long IfMatchRevision) throws ArangoException {
 		return graphDriver.getVertex(getDefaultDatabase(), graphName, key, clazz, rev, IfNoneMatchRevision, IfMatchRevision);
+	}
+
+	/**
+	 * 
+	 * @param graphName
+	 * @param key
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public DeletedEntity deleteVertex(
+			String graphName, String key
+			) throws ArangoException {
+		return graphDriver.deleteVertex(getDefaultDatabase(), graphName, key, null, null, null);
+	}
+
+	/**
+	 * 
+	 * @param graphName
+	 * @param key
+	 * @param waitForSync
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public DeletedEntity deleteVertex(
+			String graphName, String key,
+			Boolean waitForSync
+			) throws ArangoException {
+		return graphDriver.deleteVertex(getDefaultDatabase(), graphName, key, waitForSync, null, null);
+	}
+
+	/**
+	 * 
+	 * @param graphName
+	 * @param key
+	 * @param waitForSync
+	 * @param rev
+	 * @param ifMatchRevision
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public DeletedEntity deleteVertex(
+			String graphName, String key,
+			Boolean waitForSync, Long rev, Long ifMatchRevision
+			) throws ArangoException {
+		return graphDriver.deleteVertex(getDefaultDatabase(), graphName, key, waitForSync, rev, ifMatchRevision);
 	}
 	
 	// ---------------------------------------- end of graph ----------------------------------------

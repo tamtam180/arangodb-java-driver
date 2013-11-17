@@ -20,7 +20,7 @@ package at.orz.arangodb.entity;
  * @author tamtam180 - kirscheless at gmail.com
  *
  */
-public class GraphDeleteEntity extends DefaultEntity {
+public class DeletedEntity extends DefaultEntity {
 
 	Boolean deleted;
 

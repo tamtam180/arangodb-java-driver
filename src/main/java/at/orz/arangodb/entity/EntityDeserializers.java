@@ -38,7 +38,6 @@ import at.orz.arangodb.entity.ReplicationLoggerStateEntity.Client;
 import at.orz.arangodb.entity.StatisticsDescriptionEntity.Figure;
 import at.orz.arangodb.entity.StatisticsDescriptionEntity.Group;
 import at.orz.arangodb.entity.StatisticsEntity.FigureValue;
-import at.orz.arangodb.entity.marker.VertexEntity;
 import at.orz.arangodb.util.DateUtils;
 
 import com.google.gson.JsonArray;
@@ -1580,15 +1579,15 @@ public class EntityDeserializers {
 		}
 	}
 	
-	public static class GraphDeleteEntityDeserializer implements JsonDeserializer<GraphDeleteEntity> {
-		public GraphDeleteEntity deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+	public static class DeleteEntityDeserializer implements JsonDeserializer<DeletedEntity> {
+		public DeletedEntity deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
 
 			if (json.isJsonNull()) {
 				return null;
 			}
 			
 			JsonObject obj = json.getAsJsonObject();
-			GraphDeleteEntity entity = deserializeBaseParameter(obj, new GraphDeleteEntity());
+			DeletedEntity entity = deserializeBaseParameter(obj, new DeletedEntity());
 
 			if (obj.has("deleted")) {
 				entity.deleted = obj.getAsJsonPrimitive("deleted").getAsBoolean();

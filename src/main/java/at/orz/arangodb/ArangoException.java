@@ -55,6 +55,10 @@ public class ArangoException extends Exception {
 		return (entity == null) ? 0: entity.getCode();
 	}
 	
+	public String getErrorMessage() {
+		return (entity == null) ? getMessage() : entity.getErrorMessage();
+	}
+	
 	public <T extends BaseEntity> T getEntity() {
 		return (T) entity;
 	}

@@ -20,7 +20,7 @@ import at.orz.arangodb.ArangoConfigure;
 import at.orz.arangodb.ArangoException;
 import at.orz.arangodb.entity.DocumentEntity;
 import at.orz.arangodb.entity.EntityFactory;
-import at.orz.arangodb.entity.GraphDeleteEntity;
+import at.orz.arangodb.entity.DeletedEntity;
 import at.orz.arangodb.entity.GraphEntity;
 import at.orz.arangodb.entity.GraphsEntity;
 import at.orz.arangodb.entity.marker.VertexEntity;
@@ -79,7 +79,7 @@ public class InternalGraphDriverImpl extends BaseArangoDriverImpl {
 		
 	}
 
-	public GraphDeleteEntity deleteGraph(String database, String name, Long ifMatchRevision) throws ArangoException {
+	public DeletedEntity deleteGraph(String database, String name, Long ifMatchRevision) throws ArangoException {
 		
 		validateCollectionName(name);
 		HttpResponseEntity res = httpManager.doDelete(
@@ -87,7 +87,7 @@ public class InternalGraphDriverImpl extends BaseArangoDriverImpl {
 				new MapBuilder().put("If-Match", ifMatchRevision, true).get(),
 				null);
 		
-		return createEntity(res, GraphDeleteEntity.class);
+		return createEntity(res, DeletedEntity.class);
 		
 	}
 	
@@ -103,15 +103,31 @@ public class InternalGraphDriverImpl extends BaseArangoDriverImpl {
 	public <T> DocumentEntity<T> getVertex(
 			String database, 
 			String graphName, String key, Class<?> clazz, 
-			Long rev, Long IfNoneMatchRevision, Long IfMatchRevision) throws ArangoException {
+			Long rev, Long ifNoneMatchRevision, Long ifMatchRevision) throws ArangoException {
 		
 		validateCollectionName(graphName);
 		HttpResponseEntity res = httpManager.doGet(
 				createEndpointUrl(baseUrl, database, "/_api/graph", StringUtils.encodeUrl(graphName), "vertex", StringUtils.encodeUrl(key)),
-				new MapBuilder().put("If-None-Match", IfNoneMatchRevision, true).put("If-Match", IfMatchRevision).get(), 
+				new MapBuilder().put("If-None-Match", ifNoneMatchRevision, true).put("If-Match", ifMatchRevision, true).get(), 
 				new MapBuilder().put("rev", rev).get());
 		
 		return createEntity(res, VertexEntity.class, clazz);
+		
+	}
+	
+	public DeletedEntity deleteVertex(
+			String database,
+			String graphName, String key,
+			Boolean waitForSync, Long rev, Long ifMatchRevision
+			) throws ArangoException {
+		
+		validateCollectionName(graphName);
+		HttpResponseEntity res = httpManager.doDelete(
+				createEndpointUrl(baseUrl, database, "/_api/graph", StringUtils.encodeUrl(graphName), "vertex", StringUtils.encodeUrl(key)),
+				new MapBuilder().put("If-Match", ifMatchRevision, true).get(), 
+				new MapBuilder().put("waitForSync", waitForSync).put("rev", rev).get());
+		
+		return createEntity(res, DeletedEntity.class);
 		
 	}
 	

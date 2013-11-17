@@ -26,7 +26,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import at.orz.arangodb.entity.GraphDeleteEntity;
+import at.orz.arangodb.entity.DeletedEntity;
 import at.orz.arangodb.entity.GraphEntity;
 import at.orz.arangodb.entity.GraphsEntity;
 
@@ -239,7 +239,7 @@ public class ArangoDriverGraphTest extends BaseTest {
 		GraphEntity g1 = driver.createGraph("g1", "v1", "e1", false);
 		assertThat(g1.getCode(), is(201));
 		
-		GraphDeleteEntity del = driver.deleteGraph("g1");
+		DeletedEntity del = driver.deleteGraph("g1");
 		assertThat(del.getCode(), is(200));
 		assertThat(del.getDeleted(), is(true));
 		
@@ -264,7 +264,7 @@ public class ArangoDriverGraphTest extends BaseTest {
 		GraphEntity g1 = driver.createGraph("g1", "v1", "e1", false);
 		assertThat(g1.getCode(), is(201));
 
-		GraphDeleteEntity del = driver.deleteGraph("g1", g1.getDocumentRevision());
+		DeletedEntity del = driver.deleteGraph("g1", g1.getDocumentRevision());
 		assertThat(del.getCode(), is(200));
 		assertThat(del.getDeleted(), is(true));
 		

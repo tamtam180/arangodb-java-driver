@@ -147,5 +147,23 @@ public class InternalGraphDriverImpl extends BaseArangoDriverImpl {
 		return createEntity(res, VertexEntity.class, vertex.getClass());
 		
 	}
+
+	public <T> DocumentEntity<T> updateVertex(
+			String database,
+			String graphName, String key, Object vertex, Boolean keepNull, 
+			Boolean waitForSync, Long rev, Long ifMatchRevision
+			) throws ArangoException {
+		
+		validateCollectionName(graphName);
+		HttpResponseEntity res = httpManager.doPatch(
+				createEndpointUrl(baseUrl, database, "/_api/graph", StringUtils.encodeUrl(graphName), "vertex", StringUtils.encodeUrl(key)),
+				new MapBuilder().put("If-Match", ifMatchRevision, true).get(), 
+				new MapBuilder().put("keepNull", keepNull).put("waitForSync", waitForSync).put("rev", rev).get(),
+				EntityFactory.toJsonString(vertex, keepNull != null && !keepNull)
+				);
+				
+		return createEntity(res, VertexEntity.class, vertex.getClass());
+		
+	}
 	
 }

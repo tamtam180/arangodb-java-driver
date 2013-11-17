@@ -31,11 +31,11 @@ import at.orz.arangodb.entity.CollectionsEntity;
 import at.orz.arangodb.entity.CursorEntity;
 import at.orz.arangodb.entity.DatabaseEntity;
 import at.orz.arangodb.entity.DefaultEntity;
+import at.orz.arangodb.entity.DeletedEntity;
 import at.orz.arangodb.entity.DocumentEntity;
 import at.orz.arangodb.entity.DocumentResultEntity;
 import at.orz.arangodb.entity.Endpoint;
 import at.orz.arangodb.entity.ExplainEntity;
-import at.orz.arangodb.entity.DeletedEntity;
 import at.orz.arangodb.entity.GraphEntity;
 import at.orz.arangodb.entity.GraphsEntity;
 import at.orz.arangodb.entity.ImportResultEntity;
@@ -56,7 +56,6 @@ import at.orz.arangodb.entity.StatisticsDescriptionEntity;
 import at.orz.arangodb.entity.StatisticsEntity;
 import at.orz.arangodb.entity.StringsResultEntity;
 import at.orz.arangodb.entity.UserEntity;
-import at.orz.arangodb.entity.marker.VertexEntity;
 import at.orz.arangodb.http.HttpManager;
 import at.orz.arangodb.impl.ImplFactory;
 import at.orz.arangodb.impl.InternalAdminDriverImpl;
@@ -1302,7 +1301,41 @@ public class ArangoDriver extends BaseArangoDriver {
 		return graphDriver.replaceVertex(getDefaultDatabase(), graphName, key, vertex, waitForSync, rev, ifMatchRevision);
 	}
 
+	/**
+	 * 
+	 * @param graphName
+	 * @param key
+	 * @param vertex
+	 * @param keepNull
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public <T> DocumentEntity<T> updateVertex(
+			String graphName, String key, Object vertex, Boolean keepNull
+			) throws ArangoException {
+		return graphDriver.updateVertex(getDefaultDatabase(), graphName, key, vertex, keepNull, null, null, null);
+	}
 
+	/**
+	 * 
+	 * @param graphName
+	 * @param key
+	 * @param vertex
+	 * @param keepNull
+	 * @param waitForSync
+	 * @param rev
+	 * @param ifMatchRevision
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public <T> DocumentEntity<T> updateVertex(
+			String graphName, String key, Object vertex, Boolean keepNull, 
+			Boolean waitForSync, Long rev, Long ifMatchRevision
+			) throws ArangoException {
+		return graphDriver.updateVertex(getDefaultDatabase(), graphName, key, vertex, keepNull, waitForSync, rev, ifMatchRevision);
+	}
 	
 	// ---------------------------------------- end of graph ----------------------------------------
 

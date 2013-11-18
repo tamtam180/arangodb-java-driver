@@ -1502,6 +1502,54 @@ public class ArangoDriver extends BaseArangoDriver {
 		return graphDriver.getEdge(getDefaultDatabase(), graphName, key, clazz, null, null, null);
 	}
 
+	/**
+	 * 
+	 * @param graphName
+	 * @param key
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public DeletedEntity deleteEdge(
+			String graphName, String key
+			) throws ArangoException {
+		return graphDriver.deleteEdge(getDefaultDatabase(), graphName, key, null, null, null);
+	}
+	
+	/**
+	 * 
+	 * @param graphName
+	 * @param key
+	 * @param waitForSync
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public DeletedEntity deleteEdge(
+			String graphName, String key,
+			Boolean waitForSync
+			) throws ArangoException {
+		return graphDriver.deleteEdge(getDefaultDatabase(), graphName, key, waitForSync, null, null);
+	}
+	
+	/**
+	 * 
+	 * @param graphName
+	 * @param key
+	 * @param waitForSync
+	 * @param rev
+	 * @param ifMatchRevision
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public DeletedEntity deleteEdge(
+			String graphName, String key,
+			Boolean waitForSync, Long rev, Long ifMatchRevision
+			) throws ArangoException {
+		return graphDriver.deleteEdge(getDefaultDatabase(), graphName, key, waitForSync, rev, ifMatchRevision);
+	}
+	
 	// ---------------------------------------- start of xxx ----------------------------------------
 
 	// ---------------------------------------- end of xxx ----------------------------------------

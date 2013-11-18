@@ -264,4 +264,20 @@ public class InternalGraphDriverImpl extends BaseArangoDriverWithCursorImpl {
 		
 	}
 	
+	public DeletedEntity deleteEdge(
+			String database,
+			String graphName, String key,
+			Boolean waitForSync, Long rev, Long ifMatchRevision
+			) throws ArangoException {
+		
+		validateCollectionName(graphName);
+		HttpResponseEntity res = httpManager.doDelete(
+				createEndpointUrl(baseUrl, database, "/_api/graph", StringUtils.encodeUrl(graphName), "edge", StringUtils.encodeUrl(key)),
+				new MapBuilder().put("If-Match", ifMatchRevision, true).get(), 
+				new MapBuilder().put("waitForSync", waitForSync).put("rev", rev).get());
+		
+		return createEntity(res, DeletedEntity.class);
+		
+	}
+	
 }

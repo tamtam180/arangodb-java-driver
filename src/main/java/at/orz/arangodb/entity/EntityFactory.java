@@ -55,8 +55,6 @@ public class EntityFactory {
 			.registerTypeAdapter(CursorEntity.class, new EntityDeserializers.CursorEntityDeserializer())
 			.registerTypeAdapter(IndexEntity.class, new EntityDeserializers.IndexEntityDeserializer())
 			.registerTypeAdapter(IndexesEntity.class, new EntityDeserializers.IndexesEntityDeserializer())
-			.registerTypeAdapter(EdgeEntity.class, new EntityDeserializers.EdgeEntityDeserializer())
-			.registerTypeAdapter(EdgesEntity.class, new EntityDeserializers.EdgesEntityDeserializer())
 			.registerTypeAdapter(ScalarExampleEntity.class, new EntityDeserializers.ScalarExampleEntityDeserializer())
 			.registerTypeAdapter(SimpleByResultEntity.class, new EntityDeserializers.SimpleByResultEntityDeserializer())
 			.registerTypeAdapter(AdminLogEntity.class, new EntityDeserializers.AdminLogEntryEntityDeserializer())

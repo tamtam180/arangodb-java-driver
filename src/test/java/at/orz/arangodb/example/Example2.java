@@ -24,8 +24,6 @@ import at.orz.arangodb.ArangoException;
 import at.orz.arangodb.entity.CollectionType;
 import at.orz.arangodb.entity.Direction;
 import at.orz.arangodb.entity.DocumentEntity;
-import at.orz.arangodb.entity.EdgeEntity;
-import at.orz.arangodb.entity.EdgesEntity;
 
 /**
  * Graph Example.

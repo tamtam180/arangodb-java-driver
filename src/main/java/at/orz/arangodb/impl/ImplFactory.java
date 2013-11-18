@@ -35,9 +35,6 @@ public class ImplFactory {
 	public static InternalKVSDriverImpl createKVSDriver(ArangoConfigure configure) {
 		return new InternalKVSDriverImpl(configure);
 	}
-	public static InternalEdgeDriverImpl createEdgeDriver(ArangoConfigure configure) {
-		return new InternalEdgeDriverImpl(configure);
-	}
 	public static InternalSimpleDriverImpl createSimpleDriver(ArangoConfigure configure, InternalCursorDriverImpl cursorDriver) {
 		return new InternalSimpleDriverImpl(configure, cursorDriver);
 	}

@@ -37,6 +37,7 @@ v1.4.0-SNAPSHOT(2013-11-xx)
 * add support API: PATCH /_api/graph/{graph-name}/vertex/{document-key} (updateVertex)
 * add support API: POST /_api/graph/{graph-name}/vertices (getVertices)
 * add support API: POST /_api/graph/{graph-name}/edge (createEdge)
+* add support API: GET /_api/graph/{graph-name}/edge/{edge-key} (getEdge)
 * add attribute: CollectionEntity#checksum
 * add attribute: CollectionEntity#doCompact
 * add attribute: CollectionEntity#keyOptions

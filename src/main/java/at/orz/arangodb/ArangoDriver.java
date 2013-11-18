@@ -1434,6 +1434,74 @@ public class ArangoDriver extends BaseArangoDriver {
 		return graphDriver.createEdge(getDefaultDatabase(), graphName, key, fromHandle, toHandle, value, label, waitForSync);
 	}
 	
+	/**
+	 * 
+	 * @param graphName
+	 * @param key
+	 * @param fromHandle
+	 * @param toHandle
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public <T> EdgeEntity<T> createEdge(
+			String graphName, String key, String fromHandle, String toHandle
+			) throws ArangoException {
+		return graphDriver.createEdge(getDefaultDatabase(), graphName, key, fromHandle, toHandle, null, null, null);
+	}
+	
+	/**
+	 * 
+	 * @param graphName
+	 * @param key
+	 * @param fromHandle
+	 * @param toHandle
+	 * @param value
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public <T> EdgeEntity<T> createEdge(
+			String graphName, String key, String fromHandle, String toHandle, 
+			Object value
+			) throws ArangoException {
+		return graphDriver.createEdge(getDefaultDatabase(), graphName, key, fromHandle, toHandle, value, null, null);
+	}
+
+	/**
+	 * 
+	 * @param graphName
+	 * @param key
+	 * @param clazz
+	 * @param rev
+	 * @param ifNoneMatchRevision
+	 * @param ifMatchRevision
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public <T> EdgeEntity<T> getEdge(
+			String graphName, String key, Class<?> clazz,
+			Long rev, Long ifNoneMatchRevision, Long ifMatchRevision
+			) throws ArangoException {
+		return graphDriver.getEdge(getDefaultDatabase(), graphName, key, clazz, rev, ifNoneMatchRevision, ifMatchRevision);
+	}
+	
+	/**
+	 * 
+	 * @param graphName
+	 * @param key
+	 * @param clazz
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public <T> EdgeEntity<T> getEdge(
+			String graphName, String key, Class<?> clazz
+			) throws ArangoException {
+		return graphDriver.getEdge(getDefaultDatabase(), graphName, key, clazz, null, null, null);
+	}
+
 	// ---------------------------------------- start of xxx ----------------------------------------
 
 	// ---------------------------------------- end of xxx ----------------------------------------

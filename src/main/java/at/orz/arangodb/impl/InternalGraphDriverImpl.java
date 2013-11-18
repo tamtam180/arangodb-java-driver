@@ -17,11 +17,7 @@
 package at.orz.arangodb.impl;
 
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.Map;
-
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
 import at.orz.arangodb.ArangoConfigure;
 import at.orz.arangodb.ArangoException;
@@ -39,6 +35,9 @@ import at.orz.arangodb.entity.marker.VertexEntity;
 import at.orz.arangodb.http.HttpResponseEntity;
 import at.orz.arangodb.util.MapBuilder;
 import at.orz.arangodb.util.StringUtils;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 /**
  * @author tamtam180 - kirscheless at gmail.com
@@ -246,6 +245,22 @@ public class InternalGraphDriverImpl extends BaseArangoDriverWithCursorImpl {
 				EntityFactory.toJsonString(obj));
 		
 		return createEntity(res, EdgeEntity.class, value == null ? null : value.getClass());
+		
+	}
+	
+	public <T> EdgeEntity<T> getEdge(
+			String database,
+			String graphName, String key, Class<?> clazz,
+			Long rev, Long ifNoneMatchRevision, Long ifMatchRevision
+			) throws ArangoException {
+		
+		validateCollectionName(graphName);
+		HttpResponseEntity res = httpManager.doGet(
+				createEndpointUrl(baseUrl, database, "/_api/graph", StringUtils.encodeUrl(graphName), "edge", StringUtils.encodeUrl(key)),
+				new MapBuilder().put("If-None-Match", ifNoneMatchRevision, true).put("If-Match", ifMatchRevision, true).get(), 
+				new MapBuilder().put("rev", rev).get());
+		
+		return createEntity(res, EdgeEntity.class, clazz);
 		
 	}
 	

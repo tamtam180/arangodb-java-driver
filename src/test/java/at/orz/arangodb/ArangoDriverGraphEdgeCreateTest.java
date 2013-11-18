@@ -31,9 +31,9 @@ import at.orz.arangodb.entity.GraphEntity;
  * @author tamtam180 - kirscheless at gmail.com
  *
  */
-public class ArangoDriverGraphEdgeTest extends BaseGraphTest {
+public class ArangoDriverGraphEdgeCreateTest extends BaseGraphTest {
 
-	public ArangoDriverGraphEdgeTest(ArangoConfigure configure, ArangoDriver driver) {
+	public ArangoDriverGraphEdgeCreateTest(ArangoConfigure configure, ArangoDriver driver) {
 		super(configure, driver);
 	}
 	

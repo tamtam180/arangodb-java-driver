@@ -17,7 +17,11 @@
 package at.orz.arangodb.impl;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.Map;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 import at.orz.arangodb.ArangoConfigure;
 import at.orz.arangodb.ArangoException;
@@ -26,6 +30,7 @@ import at.orz.arangodb.entity.CursorEntity;
 import at.orz.arangodb.entity.DeletedEntity;
 import at.orz.arangodb.entity.Direction;
 import at.orz.arangodb.entity.DocumentEntity;
+import at.orz.arangodb.entity.EdgeEntity;
 import at.orz.arangodb.entity.EntityFactory;
 import at.orz.arangodb.entity.FilterCondition;
 import at.orz.arangodb.entity.GraphEntity;
@@ -212,4 +217,36 @@ public class InternalGraphDriverImpl extends BaseArangoDriverWithCursorImpl {
 		return rs;
 	}
 
+	public <T> EdgeEntity<T> createEdge(
+			String database,
+			String graphName, String key, String fromHandle, String toHandle, 
+			Object value, String label, Boolean waitForSync
+			) throws ArangoException {
+
+		JsonObject obj;
+		if (value == null) {
+			obj = new JsonObject();
+		} else {
+			JsonElement elem = EntityFactory.toJsonElement(value, false);
+			if (elem.isJsonObject()) {
+				obj = elem.getAsJsonObject();
+			} else {
+				throw new IllegalArgumentException("value need object type(not support array, primitive, etc..).");
+			}
+		}
+		obj.addProperty("_key", key);
+		obj.addProperty("_from", fromHandle);
+		obj.addProperty("_to", toHandle);
+		obj.addProperty("$label", label);
+		
+		validateCollectionName(graphName);
+		HttpResponseEntity res = httpManager.doPost(
+				createEndpointUrl(baseUrl, database, "/_api/graph", StringUtils.encodeUrl(graphName) , "/edge"),
+				new MapBuilder().put("waitForSync", waitForSync).get(),
+				EntityFactory.toJsonString(obj));
+		
+		return createEntity(res, EdgeEntity.class, value == null ? null : value.getClass());
+		
+	}
+	
 }

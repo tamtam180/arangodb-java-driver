@@ -23,7 +23,7 @@ import com.google.gson.annotations.SerializedName;
  * @author tamtam180 - kirscheless at gmail.com
  * @since 1.4.0
  */
-public class GraphEntity extends BaseEntity {
+public class GraphEntity extends BaseEntity implements DocumentHolder {
 
 	@SerializedName("_rev")
 	long documentRevision;

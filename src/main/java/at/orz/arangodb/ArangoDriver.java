@@ -35,6 +35,7 @@ import at.orz.arangodb.entity.DeletedEntity;
 import at.orz.arangodb.entity.Direction;
 import at.orz.arangodb.entity.DocumentEntity;
 import at.orz.arangodb.entity.DocumentResultEntity;
+import at.orz.arangodb.entity.EdgeEntity;
 import at.orz.arangodb.entity.Endpoint;
 import at.orz.arangodb.entity.ExplainEntity;
 import at.orz.arangodb.entity.FilterCondition;
@@ -1411,6 +1412,26 @@ public class ArangoDriver extends BaseArangoDriver {
 			) throws ArangoException {
 		
 		return graphDriver.getVerticesWithResultSet(getDefaultDatabase(), graphName, clazz, batchSize, limit, count, direction, labels, properties);
+	}
+
+	/**
+	 * 
+	 * @param graphName
+	 * @param key
+	 * @param fromHandle
+	 * @param toHandle
+	 * @param value
+	 * @param label
+	 * @param waitForSync
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public <T> EdgeEntity<T> createEdge(
+			String graphName, String key, String fromHandle, String toHandle, 
+			Object value, String label, Boolean waitForSync
+			) throws ArangoException {
+		return graphDriver.createEdge(getDefaultDatabase(), graphName, key, fromHandle, toHandle, value, label, waitForSync);
 	}
 	
 	// ---------------------------------------- start of xxx ----------------------------------------

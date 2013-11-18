@@ -31,6 +31,7 @@ import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 
 /**
  * @author tamtam180 - kirscheless at gmail.com
@@ -83,6 +84,7 @@ public class EntityFactory {
 			.registerTypeAdapter(GraphsEntity.class, new EntityDeserializers.GraphsEntityDeserializer())
 			.registerTypeAdapter(DeletedEntity.class, new EntityDeserializers.DeleteEntityDeserializer())
 			.registerTypeAdapter(VertexEntity.class, new EntityDeserializers.VertexEntityDeserializer())
+			.registerTypeAdapter(EdgeEntity.class, new EntityDeserializers.EdgeEntityDeserializer())
 			;
 	}
 	static {
@@ -116,6 +118,16 @@ public class EntityFactory {
 		return includeNullValue ? gsonNull.toJson(obj) : gson.toJson(obj);
 	}
 
+	/**
+	 * 
+	 * @param obj
+	 * @param includeNullValue
+	 * @return
+	 * @since 1.4.0
+	 */
+	public static <T> JsonElement toJsonElement(T obj, boolean includeNullValue) {
+		return includeNullValue ? gsonNull.toJsonTree(obj) : gson.toJsonTree(obj);
+	}
 	
 	/**
 	 * 

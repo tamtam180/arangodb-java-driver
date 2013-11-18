@@ -155,6 +155,21 @@ public class EntityDeserializers {
 		return entity;
 	}
 	
+	private static <T extends DocumentHolder> T deserializeDocumentParameter(JsonObject obj, T entity) {
+
+		if (obj.has("_rev")) {
+			entity.setDocumentRevision(obj.getAsJsonPrimitive("_rev").getAsLong());
+		}
+		if (obj.has("_id")) {
+			entity.setDocumentHandle(obj.getAsJsonPrimitive("_id").getAsString());
+		}
+		if (obj.has("_key")) {
+			entity.setDocumentKey(obj.getAsJsonPrimitive("_key").getAsString());
+		}
+
+		return entity;
+	}
+	
 	public static class DefaultEntityDeserializer implements JsonDeserializer<DefaultEntity> {
 		public DefaultEntity deserialize(JsonElement json, Type typeOfT,
 				JsonDeserializationContext context) throws JsonParseException {
@@ -475,18 +490,7 @@ public class EntityDeserializers {
 			
 			JsonObject obj = json.getAsJsonObject();
 			DocumentEntity<?> entity = deserializeBaseParameter(obj, new DocumentEntity<Object>());
-			
-			if (obj.has("_rev")) {
-				entity.documentRevision = obj.getAsJsonPrimitive("_rev").getAsLong();
-			}
-			
-			if (obj.has("_id")) {
-				entity.documentHandle = obj.getAsJsonPrimitive("_id").getAsString();
-			}
-			
-			if (obj.has("_key")) {
-				entity.documentKey = obj.getAsJsonPrimitive("_key").getAsString();
-			}
+			deserializeDocumentParameter(obj, entity);
 			
 			// 他のフィールドはリフレクションで。 (TODO: Annotationのサポートと上記パラメータを弾く)
 			Class<?> clazz = getParameterized();
@@ -1458,18 +1462,7 @@ public class EntityDeserializers {
 			GraphEntity entity = deserializeBaseParameter(obj, new GraphEntity());
 			
 			JsonObject graph = obj.has("graph") ? obj.getAsJsonObject("graph") : obj;
-				
-			if (graph.has("_rev")) {
-				entity.documentRevision = graph.getAsJsonPrimitive("_rev").getAsLong();
-			}
-			
-			if (graph.has("_id")) {
-				entity.documentHandle = graph.getAsJsonPrimitive("_id").getAsString();
-			}
-			
-			if (graph.has("_key")) {
-				entity.documentKey = graph.getAsJsonPrimitive("_key").getAsString();
-			}
+			deserializeDocumentParameter(graph, entity);
 			
 			if (graph.has("edges")) {
 				entity.edges = graph.getAsJsonPrimitive("edges").getAsString();
@@ -1544,4 +1537,40 @@ public class EntityDeserializers {
 			return entity;
 		}
 	}
+	
+	public static class EdgeEntityDeserializer implements JsonDeserializer<EdgeEntity<?>> {
+		public EdgeEntity<?> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			
+			if (json.isJsonNull()) {
+				return null;
+			}
+			
+			JsonObject obj = json.getAsJsonObject();
+			EdgeEntity<?> entity = deserializeBaseParameter(obj, new EdgeEntity<Object>());
+
+			JsonObject edge = obj.has("edge") ? obj.getAsJsonObject("edge") : obj;
+			deserializeDocumentParameter(edge, entity);
+
+			if (edge.has("_from")) {
+				entity.fromVertexHandle = edge.getAsJsonPrimitive("_from").getAsString();
+			}
+			if (edge.has("_to")) {
+				entity.toVertexHandle = edge.getAsJsonPrimitive("_to").getAsString();
+			}
+			if (edge.has("$label") && !edge.get("$label").isJsonNull()) {
+				entity.edgeLabel = edge.getAsJsonPrimitive("$label").getAsString();
+			}
+			
+			// 他のフィールドはリフレクションで。 (TODO: Annotationのサポートと上記パラメータを弾く)
+			Class<?> clazz = getParameterized();
+			if (clazz != null) {
+				entity.entity = context.deserialize(edge, clazz);
+			}
+			
+			return entity;
+		}
+		
+	}
+	
+	
 }

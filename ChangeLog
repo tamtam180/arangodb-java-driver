@@ -2,7 +2,7 @@
 v1.4.0-SNAPSHOT(2013-11-xx)
 ---------------------------
 * support database (for 1.4 feature)
-* stop the API of edge *temporarily* in version 1.4.0
+* stop the API of edge, edges in version 1.4.0
 * stop the API of kvs(/_api/key) in version 1.4.0(because server does not support yet.)
 * add support API: /_api/database/*
 * add configure: defaultDatabase
@@ -36,6 +36,7 @@ v1.4.0-SNAPSHOT(2013-11-xx)
 * add support API: PUT /_api/graph/{graph-name}/vertex/{document-key} (replaceVertex)
 * add support API: PATCH /_api/graph/{graph-name}/vertex/{document-key} (updateVertex)
 * add support API: POST /_api/graph/{graph-name}/vertices (getVertices)
+* add support API: POST /_api/graph/{graph-name}/edge (createEdge)
 * add attribute: CollectionEntity#checksum
 * add attribute: CollectionEntity#doCompact
 * add attribute: CollectionEntity#keyOptions

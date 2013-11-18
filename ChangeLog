@@ -39,6 +39,7 @@ v1.4.0-SNAPSHOT(2013-11-xx)
 * add support API: POST /_api/graph/{graph-name}/edge (createEdge)
 * add support API: GET /_api/graph/{graph-name}/edge/{edge-key} (getEdge)
 * add support API: DELETE /_api/graph/{graph-name}/edge/{edge-key} (deleteEdge)
+* add support API: PUT /_api/graph/{graph-name}/edge/{edge-key} (replaceEdge)
 * add attribute: CollectionEntity#checksum
 * add attribute: CollectionEntity#doCompact
 * add attribute: CollectionEntity#keyOptions

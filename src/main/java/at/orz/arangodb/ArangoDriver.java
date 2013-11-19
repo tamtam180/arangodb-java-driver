@@ -1351,7 +1351,7 @@ public class ArangoDriver extends BaseArangoDriver {
 	public <T> CursorEntity<DocumentEntity<T>> getVertices(
 			String graphName, Class<?> clazz
 			) throws ArangoException {
-		return graphDriver.getVertices(getDefaultDatabase(), graphName, clazz, null, null, null, null, null, (FilterCondition[])null);
+		return graphDriver.getVertices(getDefaultDatabase(), graphName, clazz, null, null, null, null, null);
 	}
 	
 	/**
@@ -1388,7 +1388,7 @@ public class ArangoDriver extends BaseArangoDriver {
 			String graphName, Class<?> clazz
 			) throws ArangoException {
 		
-		return graphDriver.getVerticesWithResultSet(getDefaultDatabase(), graphName, clazz, null, null, null, null, null, (FilterCondition[])null);
+		return graphDriver.getVerticesWithResultSet(getDefaultDatabase(), graphName, clazz, null, null, null, null, null);
 	}
 
 	/**
@@ -1586,7 +1586,227 @@ public class ArangoDriver extends BaseArangoDriver {
 		return graphDriver.replaceEdge(getDefaultDatabase(), graphName, key, value, waitForSync, rev, ifMatchRevision);
 	}
 
+	/**
+	 * 
+	 * @param graphName
+	 * @param clazz
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public <T> CursorEntity<EdgeEntity<T>> getEdges(
+			String graphName, Class<?> clazz
+			) throws ArangoException {
+		return graphDriver.getEdges(getDefaultDatabase(), graphName, null, clazz, null, null, null, null, null);
+	}
+	
+	/**
+	 * 
+	 * @param graphName
+	 * @param clazz
+	 * @param batchSize
+	 * @param limit
+	 * @param count
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public <T> CursorEntity<EdgeEntity<T>> getEdges(
+			String graphName, Class<?> clazz,
+			Integer batchSize, Integer limit, Boolean count
+			) throws ArangoException {
+		return graphDriver.getEdges(getDefaultDatabase(), graphName, null, clazz, batchSize, limit, count, null, null);
+	}
+	
+	/**
+	 * 
+	 * @param graphName
+	 * @param clazz
+	 * @param batchSize
+	 * @param limit
+	 * @param count
+	 * @param labels
+	 * @param properties
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public <T> CursorEntity<EdgeEntity<T>> getEdges(
+			String graphName, Class<?> clazz,
+			Integer batchSize, Integer limit, Boolean count,
+			Collection<String> labels, FilterCondition... properties
+			) throws ArangoException {
+		return graphDriver.getEdges(getDefaultDatabase(), graphName, null, clazz, batchSize, limit, count, null, labels, properties);
+	}
+	
+	/**
+	 * 
+	 * @param graphName
+	 * @param clazz
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public <T> CursorResultSet<EdgeEntity<T>> getEdgesWithResultSet(
+			String graphName, Class<?> clazz
+			) throws ArangoException {
+		return graphDriver.getEdgesWithResultSet(getDefaultDatabase(), graphName, null, clazz, null, null, null, null, null);
+	}
+	
+	/**
+	 * 
+	 * @param graphName
+	 * @param clazz
+	 * @param batchSize
+	 * @param limit
+	 * @param count
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public <T> CursorResultSet<EdgeEntity<T>> getEdgesWithResultSet(
+			String graphName, Class<?> clazz,
+			Integer batchSize, Integer limit, Boolean count
+			) throws ArangoException {
+		return graphDriver.getEdgesWithResultSet(getDefaultDatabase(), graphName, null, clazz, batchSize, limit, count, null, null);
+	}
+	
+	/**
+	 * 
+	 * @param graphName
+	 * @param clazz
+	 * @param batchSize
+	 * @param limit
+	 * @param count
+	 * @param labels
+	 * @param properties
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public <T> CursorResultSet<EdgeEntity<T>> getEdgesWithResultSet(
+			String graphName, Class<?> clazz,
+			Integer batchSize, Integer limit, Boolean count,
+			Collection<String> labels, FilterCondition... properties
+			) throws ArangoException {
+		return graphDriver.getEdgesWithResultSet(getDefaultDatabase(), graphName, null, clazz, batchSize, limit, count, null, labels, properties);
+	}
+	
+	/**
+	 * 
+	 * @param graphName
+	 * @param vertexKey
+	 * @param clazz
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public <T> CursorEntity<EdgeEntity<T>> getEdges(
+			String graphName, String vertexKey, Class<?> clazz
+			) throws ArangoException {
+		return graphDriver.getEdges(getDefaultDatabase(), graphName, vertexKey, clazz, null, null, null, null, null);
+	}
+	
+	/**
+	 * 
+	 * @param graphName
+	 * @param vertexKey
+	 * @param clazz
+	 * @param batchSize
+	 * @param limit
+	 * @param count
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public <T> CursorEntity<EdgeEntity<T>> getEdges(
+			String graphName, String vertexKey, Class<?> clazz,
+			Integer batchSize, Integer limit, Boolean count
+			) throws ArangoException {
+		return graphDriver.getEdges(getDefaultDatabase(), graphName, vertexKey, clazz, batchSize, limit, count, null, null);
+	}
+	
+	/**
+	 * 
+	 * @param graphName
+	 * @param vertexKey
+	 * @param clazz
+	 * @param batchSize
+	 * @param limit
+	 * @param count
+	 * @param direction
+	 * @param labels
+	 * @param properties
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public <T> CursorEntity<EdgeEntity<T>> getEdges(
+			String graphName, String vertexKey, Class<?> clazz,
+			Integer batchSize, Integer limit, Boolean count,
+			Direction direction, Collection<String> labels, FilterCondition... properties
+			) throws ArangoException {
+		return graphDriver.getEdges(getDefaultDatabase(), graphName, vertexKey, clazz, batchSize, limit, count, direction, labels, properties);
+	}
 
+	/**
+	 * 
+	 * @param graphName
+	 * @param vertexKey
+	 * @param clazz
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public <T> CursorResultSet<EdgeEntity<T>> getEdgesWithResultSet(
+			String graphName, String vertexKey, Class<?> clazz
+			) throws ArangoException {
+		return graphDriver.getEdgesWithResultSet(getDefaultDatabase(), graphName, vertexKey, clazz, null, null, null, null, null);
+	}
+
+	/**
+	 * 
+	 * @param graphName
+	 * @param vertexKey
+	 * @param clazz
+	 * @param batchSize
+	 * @param limit
+	 * @param count
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public <T> CursorResultSet<EdgeEntity<T>> getEdgesWithResultSet(
+			String graphName, String vertexKey, Class<?> clazz,
+			Integer batchSize, Integer limit, Boolean count
+			) throws ArangoException {
+		return graphDriver.getEdgesWithResultSet(getDefaultDatabase(), graphName, vertexKey, clazz, batchSize, limit, count, null, null);
+	}
+
+	/**
+	 * 
+	 * @param graphName
+	 * @param vertexKey
+	 * @param clazz
+	 * @param batchSize
+	 * @param limit
+	 * @param count
+	 * @param direction
+	 * @param labels
+	 * @param properties
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.0
+	 */
+	public <T> CursorResultSet<EdgeEntity<T>> getEdgesWithResultSet(
+			String graphName, String vertexKey, Class<?> clazz,
+			Integer batchSize, Integer limit, Boolean count,
+			Direction direction, Collection<String> labels, FilterCondition... properties
+			) throws ArangoException {
+		return graphDriver.getEdgesWithResultSet(getDefaultDatabase(), graphName, vertexKey, clazz, batchSize, limit, count, direction, labels, properties);
+	}
+
+	
 	// ---------------------------------------- start of xxx ----------------------------------------
 
 	// ---------------------------------------- end of xxx ----------------------------------------

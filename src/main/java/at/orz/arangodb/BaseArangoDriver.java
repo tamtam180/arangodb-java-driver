@@ -257,7 +257,9 @@ public abstract class BaseArangoDriver {
 			list.add(database);
 		}
 		for (Object path: paths) {
-			list.add(path.toString());
+			if (path != null) {
+				list.add(path.toString());
+			}
 		}
 		return baseUrl + StringUtils.join(false, list);
 	}

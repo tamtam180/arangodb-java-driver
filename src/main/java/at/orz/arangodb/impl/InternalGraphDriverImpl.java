@@ -17,6 +17,7 @@
 package at.orz.arangodb.impl;
 
 import java.util.Collection;
+import java.util.Locale;
 import java.util.Map;
 
 import at.orz.arangodb.ArangoConfigure;
@@ -47,6 +48,13 @@ public class InternalGraphDriverImpl extends BaseArangoDriverWithCursorImpl {
 
 	InternalGraphDriverImpl(ArangoConfigure configure, InternalCursorDriverImpl cursorDriver) {
 		super(configure, cursorDriver);
+	}
+	
+	private String toLower(Enum<?> e) {
+		if (e == null) {
+			return null;
+		}
+		return e.name().toLowerCase(Locale.US);
 	}
 
 	public GraphEntity createGraph(
@@ -186,7 +194,7 @@ public class InternalGraphDriverImpl extends BaseArangoDriverWithCursorImpl {
 		
 		validateCollectionName(graphName);
 		
-		Map<String, Object> filter = new MapBuilder().put("direction", direction).put("labels", labels).put("properties", properties).get();
+		Map<String, Object> filter = new MapBuilder().put("direction", toLower(direction)).put("labels", labels).put("properties", properties).get();
 		
 		HttpResponseEntity res = httpManager.doPost(
 				createEndpointUrl(baseUrl, database, "/_api/graph", StringUtils.encodeUrl(graphName), "vertices"),
@@ -297,5 +305,86 @@ public class InternalGraphDriverImpl extends BaseArangoDriverWithCursorImpl {
 		return createEntity(res, EdgeEntity.class, value == null ? null : value.getClass());
 
 	}
+
+//	public <T> CursorEntity<EdgeEntity<T>> getEdges(
+//			String database,
+//			String graphName, Class<?> clazz,
+//			Integer batchSize, Integer limit, Boolean count,
+//			Collection<String> labels, FilterCondition... properties
+//			) throws ArangoException {
+//		
+//		return getEdges
+//		
+//		validateCollectionName(graphName);
+//		//Map<String, Object> filter = new MapBuilder().put("direction", toLower(direction)).put("labels", labels).put("properties", properties).get();
+//		Map<String, Object> filter = new MapBuilder().put("labels", labels).put("properties", properties).get();
+//		
+//		HttpResponseEntity res = httpManager.doPost(
+//				createEndpointUrl(baseUrl, database, "/_api/graph", StringUtils.encodeUrl(graphName), "edges"),
+//				null,
+//				EntityFactory.toJsonString(
+//						new MapBuilder()
+//						.put("batchSize", batchSize)
+//						.put("limit", limit)
+//						.put("count", count)
+//						.put("filter", filter)
+//						.get())
+//				);
+//
+//		return createEntity(res, CursorEntity.class, EdgeEntity.class, clazz);
+//		
+//	}
+//
+//	public <T> CursorResultSet<EdgeEntity<T>> getEdgesWithResultSet(
+//			String database,
+//			String graphName, Class<?> clazz,
+//			Integer batchSize, Integer limit, Boolean count,
+//			Collection<String> labels, FilterCondition... properties
+//			) throws ArangoException {
+//		
+//		CursorEntity<EdgeEntity<T>> entity = getEdges(database, graphName, clazz, batchSize, limit, count, labels, properties);
+//		CursorResultSet<EdgeEntity<T>> rs = new CursorResultSet<EdgeEntity<T>>(database, cursorDriver, entity, EdgeEntity.class, clazz);
+//		return rs;
+//	}
+
+	public <T> CursorEntity<EdgeEntity<T>> getEdges(
+			String database,
+			String graphName, String vertexKey, Class<?> clazz,
+			Integer batchSize, Integer limit, Boolean count,
+			Direction direction, Collection<String> labels, FilterCondition... properties
+			) throws ArangoException {
+		
+		validateCollectionName(graphName);
+		
+		Map<String, Object> filter = new MapBuilder().put("direction", toLower(direction)).put("labels", labels).put("properties", properties).get();
+		
+		HttpResponseEntity res = httpManager.doPost(
+				createEndpointUrl(baseUrl, database, "/_api/graph", StringUtils.encodeUrl(graphName), "edges", StringUtils.encodeUrl(vertexKey)),
+				null,
+				EntityFactory.toJsonString(
+						new MapBuilder()
+						.put("batchSize", batchSize)
+						.put("limit", limit)
+						.put("count", count)
+						.put("filter", filter)
+						.get())
+				);
+
+		return createEntity(res, CursorEntity.class, EdgeEntity.class, clazz);
+		
+	}
+
+	public <T> CursorResultSet<EdgeEntity<T>> getEdgesWithResultSet(
+			String database,
+			String graphName, String vertexKey, Class<?> clazz,
+			Integer batchSize, Integer limit, Boolean count,
+			Direction direction, Collection<String> labels, FilterCondition... properties
+			) throws ArangoException {
+		
+		CursorEntity<EdgeEntity<T>> entity = getEdges(database, graphName, vertexKey, clazz, batchSize, limit, count, direction, labels, properties);
+		CursorResultSet<EdgeEntity<T>> rs = new CursorResultSet<EdgeEntity<T>>(database, cursorDriver, entity, EdgeEntity.class, clazz);
+		return rs;
+	}
+
 	
 }

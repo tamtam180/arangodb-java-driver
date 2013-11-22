@@ -50,6 +50,8 @@ v1.4.0-SNAPSHOT(2013-11-xx)
 * add doCompact to argument of createCollection 
 * remove attribute: CollectionEntity#createOptions
 * getDocuments was changed to return document-handle
+* rename method: updateDocument -> replaceDocument
+* rename method: partialUpdateDocument -> updateDocument
 * changed the version API endpoint. (/_admin/version -> /_api/version)
 * changed into createOptions to keyOptions of collection API
 * fixed ArangoUnixTime bug.

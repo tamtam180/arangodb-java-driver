@@ -327,13 +327,13 @@ public class ArangoDriver extends BaseArangoDriver {
 		return documentDriver.checkDocument(getDefaultDatabase(), documentHandle);
 	}
 
-	public <T> DocumentEntity<T> getDocument(long collectionId, long documentId, Class<T> clazz) throws ArangoException {
+	public <T> DocumentEntity<T> getDocument(long collectionId, long documentId, Class<?> clazz) throws ArangoException {
 		return getDocument(createDocumentHandle(collectionId, documentId), clazz);
 	}
-	public <T> DocumentEntity<T> getDocument(String collectionName, long documentId, Class<T> clazz) throws ArangoException {
+	public <T> DocumentEntity<T> getDocument(String collectionName, long documentId, Class<?> clazz) throws ArangoException {
 		return getDocument(createDocumentHandle(collectionName, documentId), clazz);
 	}
-	public <T> DocumentEntity<T> getDocument(String documentHandle, Class<T> clazz) throws ArangoException {
+	public <T> DocumentEntity<T> getDocument(String documentHandle, Class<?> clazz) throws ArangoException {
 		return documentDriver.getDocument(getDefaultDatabase(), documentHandle, clazz);
 	}
 
@@ -564,39 +564,39 @@ public class ArangoDriver extends BaseArangoDriver {
 		return simpleDriver.executeSimpleByExample(getDefaultDatabase(), collectionName, example, skip, limit, clazz);
 	}
 
-	public <T> CursorResultSet<T> executeSimpleByExampleWithResusltSet(String collectionName, Map<String, Object> example, int skip, int limit, Class<T> clazz) throws ArangoException {
+	public <T> CursorResultSet<T> executeSimpleByExampleWithResusltSet(String collectionName, Map<String, Object> example, int skip, int limit, Class<?> clazz) throws ArangoException {
 		return simpleDriver.executeSimpleByExampleWithResultSet(getDefaultDatabase(), collectionName, example, skip, limit, clazz);
 	}
 
-	public <T> CursorEntity<DocumentEntity<T>> executeSimpleByExampleWithDocument(String collectionName, Map<String, Object> example, int skip, int limit, Class<T> clazz) throws ArangoException {
+	public <T> CursorEntity<DocumentEntity<T>> executeSimpleByExampleWithDocument(String collectionName, Map<String, Object> example, int skip, int limit, Class<?> clazz) throws ArangoException {
 		return simpleDriver.executeSimpleByExampleWithDocument(getDefaultDatabase(), collectionName, example, skip, limit, clazz);
 	}
 
-	public <T> CursorResultSet<DocumentEntity<T>> executeSimpleByExampleWithDocumentResusltSet(String collectionName, Map<String, Object> example, int skip, int limit, Class<T> clazz) throws ArangoException {
+	public <T> CursorResultSet<DocumentEntity<T>> executeSimpleByExampleWithDocumentResusltSet(String collectionName, Map<String, Object> example, int skip, int limit, Class<?> clazz) throws ArangoException {
 		return simpleDriver.executeSimpleByExampleWithDocumentResultSet(getDefaultDatabase(), collectionName, example, skip, limit, clazz);
 	}
 	
-	public <T> CursorEntity<T> executeSimpleAll(String collectionName, int skip, int limit, Class<T> clazz) throws ArangoException {
+	public <T> CursorEntity<T> executeSimpleAll(String collectionName, int skip, int limit, Class<?> clazz) throws ArangoException {
 		return simpleDriver.executeSimpleAll(getDefaultDatabase(), collectionName, skip, limit, clazz);
 	}
 
-	public <T> CursorResultSet<T> executeSimpleAllWithResultSet(String collectionName, int skip, int limit, Class<T> clazz) throws ArangoException {
+	public <T> CursorResultSet<T> executeSimpleAllWithResultSet(String collectionName, int skip, int limit, Class<?> clazz) throws ArangoException {
 		return simpleDriver.executeSimpleAllWithResultSet(getDefaultDatabase(), collectionName, skip, limit, clazz);
 	}
 
-	public <T> CursorEntity<DocumentEntity<T>> executeSimpleAllWithDocument(String collectionName, int skip, int limit, Class<T> clazz) throws ArangoException {
+	public <T> CursorEntity<DocumentEntity<T>> executeSimpleAllWithDocument(String collectionName, int skip, int limit, Class<?> clazz) throws ArangoException {
 		return simpleDriver.executeSimpleAllWithDocument(getDefaultDatabase(), collectionName, skip, limit, clazz);
 	}
 
-	public <T> CursorResultSet<DocumentEntity<T>> executeSimpleAllWithDocumentResultSet(String collectionName, int skip, int limit, Class<T> clazz) throws ArangoException {
+	public <T> CursorResultSet<DocumentEntity<T>> executeSimpleAllWithDocumentResultSet(String collectionName, int skip, int limit, Class<?> clazz) throws ArangoException {
 		return simpleDriver.executeSimpleAllWithDocumentResultSet(getDefaultDatabase(), collectionName, skip, limit, clazz);
 	}
 
-	public <T> ScalarExampleEntity<T> executeSimpleFirstExample(String collectionName, Map<String, Object> example, Class<T> clazz) throws ArangoException {
+	public <T> ScalarExampleEntity<T> executeSimpleFirstExample(String collectionName, Map<String, Object> example, Class<?> clazz) throws ArangoException {
 		return simpleDriver.executeSimpleFirstExample(getDefaultDatabase(), collectionName, example, clazz);
 	}
 	
-	public <T> ScalarExampleEntity<T> executeSimpleAny(String collectionName, Class<T> clazz) throws ArangoException {
+	public <T> ScalarExampleEntity<T> executeSimpleAny(String collectionName, Class<?> clazz) throws ArangoException {
 		return simpleDriver.executeSimpleAny(getDefaultDatabase(), collectionName, clazz);
 	}
 	
@@ -605,7 +605,7 @@ public class ArangoDriver extends BaseArangoDriver {
 			String attribute,
 			Object left, Object right, Boolean closed,
 			int skip, int limit,
-			Class<T> clazz
+			Class<?> clazz
 			) throws ArangoException {
 		return simpleDriver.executeSimpleRange(getDefaultDatabase(), collectionName, attribute, left, right, closed, skip, limit, clazz);
 	}
@@ -615,7 +615,7 @@ public class ArangoDriver extends BaseArangoDriver {
 			String attribute,
 			Object left, Object right, Boolean closed,
 			int skip, int limit,
-			Class<T> clazz
+			Class<?> clazz
 			) throws ArangoException {
 		return simpleDriver.executeSimpleRangeWithResultSet(getDefaultDatabase(), collectionName, attribute, left, right, closed, skip, limit, clazz);
 	}
@@ -625,7 +625,7 @@ public class ArangoDriver extends BaseArangoDriver {
 			String attribute,
 			Object left, Object right, Boolean closed,
 			int skip, int limit,
-			Class<T> clazz
+			Class<?> clazz
 			) throws ArangoException {
 		return simpleDriver.executeSimpleRangeWithDocument(getDefaultDatabase(), collectionName, attribute, left, right, closed, skip, limit, clazz);
 	}
@@ -635,7 +635,7 @@ public class ArangoDriver extends BaseArangoDriver {
 			String attribute,
 			Object left, Object right, Boolean closed,
 			int skip, int limit,
-			Class<T> clazz
+			Class<?> clazz
 			) throws ArangoException {
 		return simpleDriver.executeSimpleRangeWithDocumentResultSet(getDefaultDatabase(), collectionName, attribute, left, right, closed, skip, limit, clazz);
 	}
@@ -645,7 +645,7 @@ public class ArangoDriver extends BaseArangoDriver {
 			String attribute, String query, 
 			int skip, int limit,
 			String index,
-			Class<T> clazz
+			Class<?> clazz
 			) throws ArangoException {
 		return simpleDriver.executeSimpleFulltext(getDefaultDatabase(), collectionName, attribute, query, skip, limit, index, clazz);
 	}
@@ -655,7 +655,7 @@ public class ArangoDriver extends BaseArangoDriver {
 			String attribute, String query, 
 			int skip, int limit,
 			String index,
-			Class<T> clazz
+			Class<?> clazz
 			) throws ArangoException {
 		return simpleDriver.executeSimpleFulltextWithResultSet(getDefaultDatabase(), collectionName, attribute, query, skip, limit, index, clazz);
 	}
@@ -665,7 +665,7 @@ public class ArangoDriver extends BaseArangoDriver {
 			String attribute, String query, 
 			int skip, int limit,
 			String index,
-			Class<T> clazz
+			Class<?> clazz
 			) throws ArangoException {
 		return simpleDriver.executeSimpleFulltextWithDocument(getDefaultDatabase(), collectionName, attribute, query, skip, limit, index, clazz);
 	}
@@ -675,7 +675,7 @@ public class ArangoDriver extends BaseArangoDriver {
 			String attribute, String query, 
 			int skip, int limit,
 			String index,
-			Class<T> clazz
+			Class<?> clazz
 			) throws ArangoException {
 		return simpleDriver.executeSimpleFulltextWithDocumentResultSet(getDefaultDatabase(), collectionName, attribute, query, skip, limit, index, clazz);
 	}
@@ -719,7 +719,7 @@ public class ArangoDriver extends BaseArangoDriver {
 	public <T> DocumentResultEntity<T> executeSimpleFirst(
 			String collectionName,
 			Integer count,
-			Class<T> clazz) throws ArangoException {
+			Class<?> clazz) throws ArangoException {
 		return simpleDriver.executeSimpleFirst(getDefaultDatabase(), collectionName, count, clazz);
 	}
 
@@ -735,7 +735,7 @@ public class ArangoDriver extends BaseArangoDriver {
 	public <T> DocumentResultEntity<T> executeSimpleLast(
 			String collectionName,
 			Integer count,
-			Class<T> clazz) throws ArangoException {
+			Class<?> clazz) throws ArangoException {
 		return simpleDriver.executeSimpleLast(getDefaultDatabase(), collectionName, count, clazz);
 	}
 

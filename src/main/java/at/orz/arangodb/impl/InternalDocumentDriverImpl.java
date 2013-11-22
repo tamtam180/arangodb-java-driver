@@ -135,7 +135,7 @@ public class InternalDocumentDriverImpl extends BaseArangoDriverImpl {
 		
 	}
 
-	public <T> DocumentEntity<T> getDocument(String database, String documentHandle, Class<T> clazz) throws ArangoException {
+	public <T> DocumentEntity<T> getDocument(String database, String documentHandle, Class<?> clazz) throws ArangoException {
 		
 		// TODO If-None-Match http-header
 		// TODO CAS

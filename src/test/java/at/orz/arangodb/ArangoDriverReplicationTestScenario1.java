@@ -106,9 +106,9 @@ public class ArangoDriverReplicationTestScenario1 {
 		
 		// [Master] add document
 		CollectionEntity col1 = masterDriver.createCollection(collectionName1);
-		DocumentEntity<Map> doc1 = masterDriver.createDocument(collectionName1, new MapBuilder().put("my-key1", "100").get(), false, false);
-		DocumentEntity<Map> doc2 = masterDriver.createDocument(collectionName1, new MapBuilder().put("my-key2", "255").get(), false, false);
-		DocumentEntity<Map> doc3 = masterDriver.createDocument(collectionName1, new MapBuilder().put("my-key3", 1234567).get(), false, false);
+		DocumentEntity<Map<String, Object>> doc1 = masterDriver.createDocument(collectionName1, new MapBuilder().put("my-key1", "100").get(), false, false);
+		DocumentEntity<Map<String, Object>> doc2 = masterDriver.createDocument(collectionName1, new MapBuilder().put("my-key2", "255").get(), false, false);
+		DocumentEntity<Map<String, Object>> doc3 = masterDriver.createDocument(collectionName1, new MapBuilder().put("my-key3", 1234567).get(), false, false);
 		
 		// [Master] logger property
 		masterDriver.setReplicationLoggerConfig(true, null, 1048576L, 0L);
@@ -195,7 +195,7 @@ public class ArangoDriverReplicationTestScenario1 {
 		CollectionEntity entity3 = slaveDriver.getCollectionCount(collectionName1);
 		assertThat(entity3.getCount(), is(302L));
 		
-		DocumentEntity<Map> doc2a = slaveDriver.getDocument(doc2.getDocumentHandle(), Map.class);
+		DocumentEntity<Map<String, Object>> doc2a = slaveDriver.getDocument(doc2.getDocumentHandle(), Map.class);
 		assertThat(doc2a.getDocumentHandle(), is(doc2a.getDocumentHandle()));
 		assertThat(doc2a.getEntity().size(), is(4)); // _id, _rev, _key
 		assertThat((String) doc2a.getEntity().get("updatedKey"), is("あいうえお"));
@@ -215,7 +215,7 @@ public class ArangoDriverReplicationTestScenario1 {
 		CollectionEntity entity4 = slaveDriver.getCollectionCount(collectionName1);
 		assertThat(entity4.getCount(), is(302L));
 		
-		DocumentEntity<Map> doc2b = slaveDriver.getDocument(doc2.getDocumentHandle(), Map.class);
+		DocumentEntity<Map<String, Object>> doc2b = slaveDriver.getDocument(doc2.getDocumentHandle(), Map.class);
 		assertThat(doc2b.getDocumentHandle(), is(doc2a.getDocumentHandle()));
 		assertThat(doc2b.getEntity().size(), is(5)); // _id, _rev, _key
 		assertThat((String) doc2b.getEntity().get("updatedKey"), is("あいうえお"));

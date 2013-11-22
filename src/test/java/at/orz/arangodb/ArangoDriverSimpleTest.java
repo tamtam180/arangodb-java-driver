@@ -363,9 +363,9 @@ public class ArangoDriverSimpleTest extends BaseTest {
 		assertThat(entity.getUpdated(), is(0));
 		
 		// Get Replaced Document
-		CursorResultSet<Map> rs = driver.executeSimpleByExampleWithResusltSet(collectionName, 
+		CursorResultSet<Map<String, Object>> rs = driver.executeSimpleByExampleWithResusltSet(collectionName, 
 				new MapBuilder().put("abc", "xxx").get(), 0, 0, Map.class);
-		List<Map> list = ResultSetUtils.toList(rs);
+		List<Map<String, Object>> list = ResultSetUtils.toList(rs);
 		
 		assertThat(list.size(), is(10));
 		for (Map<String, ?> map: list) {
@@ -391,9 +391,9 @@ public class ArangoDriverSimpleTest extends BaseTest {
 		assertThat(entity.getUpdated(), is(0));
 		
 		// Get Replaced Document
-		CursorResultSet<Map> rs = driver.executeSimpleByExampleWithResusltSet(collectionName, 
+		CursorResultSet<Map<String, Object>> rs = driver.executeSimpleByExampleWithResusltSet(collectionName, 
 				new MapBuilder().put("abc", "xxx").get(), 0, 0, Map.class);
-		List<Map> list = ResultSetUtils.toList(rs);
+		List<Map<String, Object>> list = ResultSetUtils.toList(rs);
 		
 		assertThat(list.size(), is(3));
 		for (Map<String, ?> map: list) {
@@ -420,9 +420,9 @@ public class ArangoDriverSimpleTest extends BaseTest {
 		assertThat(entity.getUpdated(), is(10));
 		
 		// Get Replaced Document
-		CursorResultSet<Map> rs = driver.executeSimpleByExampleWithResusltSet(collectionName, 
+		CursorResultSet<Map<String, Object>> rs = driver.executeSimpleByExampleWithResusltSet(collectionName, 
 				new MapBuilder().put("abc", "xxx").get(), 0, 0, Map.class);
-		List<Map> list = ResultSetUtils.toList(rs);
+		List<Map<String, Object>> list = ResultSetUtils.toList(rs);
 		
 		assertThat(list.size(), is(10));
 		for (Map<String, ?> map: list) {
@@ -452,9 +452,9 @@ public class ArangoDriverSimpleTest extends BaseTest {
 		assertThat(entity.getUpdated(), is(3));
 		
 		// Get Replaced Document
-		CursorResultSet<Map> rs = driver.executeSimpleByExampleWithResusltSet(collectionName, 
+		CursorResultSet<Map<String, Object>> rs = driver.executeSimpleByExampleWithResusltSet(collectionName, 
 				new MapBuilder().put("age", 999).get(), 0, 0, Map.class);
-		List<Map> list = ResultSetUtils.toList(rs);
+		List<Map<String, Object>> list = ResultSetUtils.toList(rs);
 		
 		assertThat(list.size(), is(3));
 		for (Map<String, ?> map: list) {
@@ -484,9 +484,9 @@ public class ArangoDriverSimpleTest extends BaseTest {
 		assertThat(entity.getUpdated(), is(10));
 		
 		// Get Replaced Document
-		CursorResultSet<Map> rs = driver.executeSimpleByExampleWithResusltSet(collectionName, 
+		CursorResultSet<Map<String, Object>> rs = driver.executeSimpleByExampleWithResusltSet(collectionName, 
 				new MapBuilder().put("abc", "xxx").get(), 0, 0, Map.class);
-		List<Map> list = ResultSetUtils.toList(rs);
+		List<Map<String, Object>> list = ResultSetUtils.toList(rs);
 		
 		assertThat(list.size(), is(10));
 		for (Map<String, ?> map: list) {

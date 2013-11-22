@@ -38,9 +38,9 @@ import at.orz.arangodb.entity.Policy;
  * @author tamtam180 - kirscheless at gmail.com
  *
  */
-public class ArangoDriverStoryTest {
+public class ArangoDriverThreadSafeTest {
 
-	private static Logger logger = LoggerFactory.getLogger(ArangoDriverStoryTest.class);
+	private static Logger logger = LoggerFactory.getLogger(ArangoDriverThreadSafeTest.class);
 	
 	@Test
 	public void story01() throws ArangoException, InterruptedException {

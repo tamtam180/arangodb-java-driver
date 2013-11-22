@@ -65,7 +65,7 @@ public class InternalDocumentDriverImpl extends BaseArangoDriverImpl {
 		return _createDocument(database, collectionName, rawJsonString, createCollection, waitForSync, true);
 	}
 
-	public <T> DocumentEntity<T> updateDocument(String database, String documentHandle, Object value, long rev, Policy policy, Boolean waitForSync) throws ArangoException {
+	public <T> DocumentEntity<T> replaceDocument(String database, String documentHandle, Object value, long rev, Policy policy, Boolean waitForSync) throws ArangoException {
 		
 		validateDocumentHandle(documentHandle);
 		HttpResponseEntity res = httpManager.doPut(
@@ -81,7 +81,7 @@ public class InternalDocumentDriverImpl extends BaseArangoDriverImpl {
 		
 	}
 
-	public <T> DocumentEntity<T> partialUpdateDocument(String database, String documentHandle, Object value, long rev, Policy policy, Boolean waitForSync, Boolean keepNull) throws ArangoException {
+	public <T> DocumentEntity<T> updateDocument(String database, String documentHandle, Object value, long rev, Policy policy, Boolean waitForSync, Boolean keepNull) throws ArangoException {
 		
 		validateDocumentHandle(documentHandle);
 		HttpResponseEntity res = httpManager.doPatch(

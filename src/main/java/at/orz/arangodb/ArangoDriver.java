@@ -283,24 +283,24 @@ public class ArangoDriver extends BaseArangoDriver {
 		return documentDriver.createDocument(getDefaultDatabase(), collectionName, value, createCollection, waitForSync);
 	}
 	
-	public DocumentEntity<?> updateDocument(long collectionId, long documentId, Object value, long rev, Policy policy, Boolean waitForSync) throws ArangoException {
-		return updateDocument(createDocumentHandle(collectionId, documentId), value, rev, policy, waitForSync);
+	public DocumentEntity<?> replaceDocument(long collectionId, long documentId, Object value, long rev, Policy policy, Boolean waitForSync) throws ArangoException {
+		return replaceDocument(createDocumentHandle(collectionId, documentId), value, rev, policy, waitForSync);
 	}
-	public DocumentEntity<?> updateDocument(String collectionName, long documentId, Object value, long rev, Policy policy, Boolean waitForSync) throws ArangoException {
-		return updateDocument(createDocumentHandle(collectionName, documentId), value, rev, policy, waitForSync);
+	public DocumentEntity<?> replaceDocument(String collectionName, long documentId, Object value, long rev, Policy policy, Boolean waitForSync) throws ArangoException {
+		return replaceDocument(createDocumentHandle(collectionName, documentId), value, rev, policy, waitForSync);
 	}
-	public <T> DocumentEntity<T> updateDocument(String documentHandle, Object value, long rev, Policy policy, Boolean waitForSync) throws ArangoException {
-		return documentDriver.updateDocument(getDefaultDatabase(), documentHandle, value, rev, policy, waitForSync);
+	public <T> DocumentEntity<T> replaceDocument(String documentHandle, Object value, long rev, Policy policy, Boolean waitForSync) throws ArangoException {
+		return documentDriver.replaceDocument(getDefaultDatabase(), documentHandle, value, rev, policy, waitForSync);
 	}
 
 	public DocumentEntity<?> updateDocument(long collectionId, long documentId, Object value, long rev, Policy policy, Boolean waitForSync, Boolean keepNull) throws ArangoException {
-		return partialUpdateDocument(createDocumentHandle(collectionId, documentId), value, rev, policy, waitForSync, keepNull);
+		return updateDocument(createDocumentHandle(collectionId, documentId), value, rev, policy, waitForSync, keepNull);
 	}
 	public DocumentEntity<?> updateDocument(String collectionName, long documentId, Object value, long rev, Policy policy, Boolean waitForSync, Boolean keepNull) throws ArangoException {
-		return partialUpdateDocument(createDocumentHandle(collectionName, documentId), value, rev, policy, waitForSync, keepNull);
+		return updateDocument(createDocumentHandle(collectionName, documentId), value, rev, policy, waitForSync, keepNull);
 	}
-	public <T> DocumentEntity<T> partialUpdateDocument(String documentHandle, Object value, long rev, Policy policy, Boolean waitForSync, Boolean keepNull) throws ArangoException {
-		return documentDriver.partialUpdateDocument(getDefaultDatabase(), documentHandle, value, rev, policy, waitForSync, keepNull);
+	public <T> DocumentEntity<T> updateDocument(String documentHandle, Object value, long rev, Policy policy, Boolean waitForSync, Boolean keepNull) throws ArangoException {
+		return documentDriver.updateDocument(getDefaultDatabase(), documentHandle, value, rev, policy, waitForSync, keepNull);
 	}
 	
 	public List<String> getDocuments(long collectionId) throws ArangoException {

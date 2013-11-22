@@ -156,7 +156,7 @@ public class ArangoDriverDocumentTest extends BaseTest {
 	}
 	
 	@Test
-	public void test_update() throws ArangoException {
+	public void test_replace() throws ArangoException {
 		
 		TestComplexEntity01 value = new TestComplexEntity01("test-user", "テスト☆ユーザー", 22);
 		
@@ -168,7 +168,7 @@ public class ArangoDriverDocumentTest extends BaseTest {
 		value.setUser(null);
 		value.setDesc("UpdatedDescription");
 		value.setAge(15);
-		DocumentEntity<TestComplexEntity01> doc2 = driver.updateDocument(doc.getDocumentHandle(), value, -1L, null, null);
+		DocumentEntity<TestComplexEntity01> doc2 = driver.replaceDocument(doc.getDocumentHandle(), value, -1L, null, null);
 		assertThat(doc2.getStatusCode(), is(202));
 		
 		// Get
@@ -182,12 +182,12 @@ public class ArangoDriverDocumentTest extends BaseTest {
 	}
 	
 	@Test
-	public void test_update_404() throws ArangoException {
+	public void test_replace_404() throws ArangoException {
 		
 		TestComplexEntity01 value = new TestComplexEntity01("test-user", "テスト☆ユーザー", 22);
 		// 存在しないコレクションに追加しようとする
 		try {
-			driver.updateDocument(collectionName404, 1, value, -1, null, null);
+			driver.replaceDocument(collectionName404, 1, value, -1, null, null);
 			fail("例外が発生しないといけないの");
 		} catch (ArangoException e) {
 			assertThat(e.getCode(), is(404));
@@ -197,12 +197,12 @@ public class ArangoDriverDocumentTest extends BaseTest {
 	}
 
 	@Test
-	public void test_update_404_2() throws ArangoException {
+	public void test_replace_404_2() throws ArangoException {
 		
 		TestComplexEntity01 value = new TestComplexEntity01("test-user", "テスト☆ユーザー", 22);
 		// 存在するコレクションだが、ドキュメントが存在しない
 		try {
-			driver.updateDocument(collectionName, 1, value, -1, null, null);
+			driver.replaceDocument(collectionName, 1, value, -1, null, null);
 			fail("例外が発生しないといけないの");
 		} catch (ArangoException e) {
 			assertThat(e.getCode(), is(404));
@@ -224,7 +224,7 @@ public class ArangoDriverDocumentTest extends BaseTest {
 		value.setUser(null);
 		value.setDesc("UpdatedDescription");
 		value.setAge(15);
-		DocumentEntity<TestComplexEntity01> doc2 = driver.partialUpdateDocument(doc.getDocumentHandle(), value, -1L, null, null, null);
+		DocumentEntity<TestComplexEntity01> doc2 = driver.updateDocument(doc.getDocumentHandle(), value, -1L, null, null, null);
 		assertThat(doc2.getStatusCode(), is(202));
 		
 		// Get
@@ -236,7 +236,7 @@ public class ArangoDriverDocumentTest extends BaseTest {
 		assertThat(doc3.getEntity().getAge(), is(15));
 		
 		// keepNull = false (NULLを渡すと削除)
-		DocumentEntity<TestComplexEntity01> doc4 = driver.partialUpdateDocument(doc.getDocumentHandle(), value, -1L, null, null, false);
+		DocumentEntity<TestComplexEntity01> doc4 = driver.updateDocument(doc.getDocumentHandle(), value, -1L, null, null, false);
 		assertThat(doc4.getStatusCode(), is(202));
 		
 		// Get

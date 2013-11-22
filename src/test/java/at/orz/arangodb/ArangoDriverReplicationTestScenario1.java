@@ -182,10 +182,10 @@ public class ArangoDriverReplicationTestScenario1 {
 
 		
 		// ------------------------------------------------------------
-		// Update
+		// Replace
 		// ------------------------------------------------------------
-		// [Master] update document
-		masterDriver.updateDocument(doc2.getDocumentHandle(), 
+		// [Master] replace document
+		masterDriver.replaceDocument(doc2.getDocumentHandle(), 
 				new MapBuilder().put("updatedKey", "あいうえお").get(), -1L, null, null);
 		
 		// wait
@@ -205,7 +205,7 @@ public class ArangoDriverReplicationTestScenario1 {
 		// Partial Update
 		// ------------------------------------------------------------
 		// [Master] update document
-		masterDriver.partialUpdateDocument(doc2.getDocumentHandle(), 
+		masterDriver.updateDocument(doc2.getDocumentHandle(), 
 				new MapBuilder().put("updatedKey2", "ABCDE").get(), -1L, null, null, null);
 
 		// wait

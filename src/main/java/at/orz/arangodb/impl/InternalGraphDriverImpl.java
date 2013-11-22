@@ -187,17 +187,16 @@ public class InternalGraphDriverImpl extends BaseArangoDriverWithCursorImpl {
 
 	public <T> CursorEntity<DocumentEntity<T>> getVertices(
 			String database,
-			String graphName, Class<?> clazz,
+			String graphName, String vertexKey, Class<?> clazz,
 			Integer batchSize, Integer limit, Boolean count,
 			Direction direction, Collection<String> labels, FilterCondition... properties
 			) throws ArangoException {
 		
 		validateCollectionName(graphName);
-		
 		Map<String, Object> filter = new MapBuilder().put("direction", toLower(direction)).put("labels", labels).put("properties", properties).get();
 		
 		HttpResponseEntity res = httpManager.doPost(
-				createEndpointUrl(baseUrl, database, "/_api/graph", StringUtils.encodeUrl(graphName), "vertices"),
+				createEndpointUrl(baseUrl, database, "/_api/graph", StringUtils.encodeUrl(graphName), "vertices", StringUtils.encodeUrl(vertexKey)),
 				null,
 				EntityFactory.toJsonString(
 						new MapBuilder()
@@ -214,12 +213,12 @@ public class InternalGraphDriverImpl extends BaseArangoDriverWithCursorImpl {
 
 	public <T> CursorResultSet<DocumentEntity<T>> getVerticesWithResultSet(
 			String database,
-			String graphName, Class<?> clazz,
+			String graphName, String vertexKey, Class<?> clazz,
 			Integer batchSize, Integer limit, Boolean count,
 			Direction direction, Collection<String> labels, FilterCondition... properties
 			) throws ArangoException {
 		
-		CursorEntity<DocumentEntity<T>> entity = getVertices(database, graphName, clazz, batchSize, limit, count, direction, labels, properties);
+		CursorEntity<DocumentEntity<T>> entity = getVertices(database, graphName, vertexKey, clazz, batchSize, limit, count, direction, labels, properties);
 		CursorResultSet<DocumentEntity<T>> rs = new CursorResultSet<DocumentEntity<T>>(database, cursorDriver, entity, DocumentEntity.class, clazz);
 		return rs;
 	}
@@ -305,47 +304,6 @@ public class InternalGraphDriverImpl extends BaseArangoDriverWithCursorImpl {
 		return createEntity(res, EdgeEntity.class, value == null ? null : value.getClass());
 
 	}
-
-//	public <T> CursorEntity<EdgeEntity<T>> getEdges(
-//			String database,
-//			String graphName, Class<?> clazz,
-//			Integer batchSize, Integer limit, Boolean count,
-//			Collection<String> labels, FilterCondition... properties
-//			) throws ArangoException {
-//		
-//		return getEdges
-//		
-//		validateCollectionName(graphName);
-//		//Map<String, Object> filter = new MapBuilder().put("direction", toLower(direction)).put("labels", labels).put("properties", properties).get();
-//		Map<String, Object> filter = new MapBuilder().put("labels", labels).put("properties", properties).get();
-//		
-//		HttpResponseEntity res = httpManager.doPost(
-//				createEndpointUrl(baseUrl, database, "/_api/graph", StringUtils.encodeUrl(graphName), "edges"),
-//				null,
-//				EntityFactory.toJsonString(
-//						new MapBuilder()
-//						.put("batchSize", batchSize)
-//						.put("limit", limit)
-//						.put("count", count)
-//						.put("filter", filter)
-//						.get())
-//				);
-//
-//		return createEntity(res, CursorEntity.class, EdgeEntity.class, clazz);
-//		
-//	}
-//
-//	public <T> CursorResultSet<EdgeEntity<T>> getEdgesWithResultSet(
-//			String database,
-//			String graphName, Class<?> clazz,
-//			Integer batchSize, Integer limit, Boolean count,
-//			Collection<String> labels, FilterCondition... properties
-//			) throws ArangoException {
-//		
-//		CursorEntity<EdgeEntity<T>> entity = getEdges(database, graphName, clazz, batchSize, limit, count, labels, properties);
-//		CursorResultSet<EdgeEntity<T>> rs = new CursorResultSet<EdgeEntity<T>>(database, cursorDriver, entity, EdgeEntity.class, clazz);
-//		return rs;
-//	}
 
 	public <T> CursorEntity<EdgeEntity<T>> getEdges(
 			String database,

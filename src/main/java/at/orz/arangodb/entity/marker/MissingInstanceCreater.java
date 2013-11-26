@@ -32,8 +32,6 @@ public class MissingInstanceCreater {
 		mapping.put(VertexEntity.class, DocumentEntity.class);
 	}
 	public static <T extends BaseEntity> Class<?> getMissingClass(Class<T> clazz) {
-		System.out.println(clazz.getName());
-		System.out.println(mapping.get(clazz));
 		Class<T> c = (Class<T>) mapping.get(clazz);
 		if (c == null) {
 			c = clazz;

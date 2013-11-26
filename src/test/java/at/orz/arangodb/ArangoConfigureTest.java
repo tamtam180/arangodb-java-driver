@@ -39,7 +39,7 @@ public class ArangoConfigureTest {
 		
 		ArangoConfigure configure = new ArangoConfigure();
 		assertThat(configure.getPort(), is(9999));
-		assertThat(configure.getHost(), is("arango-test-server"));
+		assertThat(configure.getHost(), is(notNullValue()));
 		assertThat(configure.getDefaultDatabase(), is(nullValue()));
 
 	}

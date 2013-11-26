@@ -17,16 +17,28 @@
 package at.orz.arangodb.entity;
 
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import at.orz.arangodb.entity.CollectionEntity.Figures;
 import at.orz.arangodb.entity.ExplainEntity.ExpressionEntity;
 import at.orz.arangodb.entity.ExplainEntity.PlanEntity;
-import at.orz.arangodb.util.JsonUtils;
+import at.orz.arangodb.entity.ReplicationApplierState.LastError;
+import at.orz.arangodb.entity.ReplicationApplierState.Progress;
+import at.orz.arangodb.entity.ReplicationInventoryEntity.Collection;
+import at.orz.arangodb.entity.ReplicationInventoryEntity.CollectionParameter;
+import at.orz.arangodb.entity.ReplicationLoggerStateEntity.Client;
+import at.orz.arangodb.entity.StatisticsDescriptionEntity.Figure;
+import at.orz.arangodb.entity.StatisticsDescriptionEntity.Group;
+import at.orz.arangodb.entity.StatisticsEntity.FigureValue;
+import at.orz.arangodb.util.DateUtils;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
@@ -42,6 +54,86 @@ import com.google.gson.reflect.TypeToken;
  */
 public class EntityDeserializers {
 	
+	private static class ClassHolder {
+		private Class<?>[] clazz;
+		private int idx;
+		ClassHolder(Class<?>... clazz) {
+			this.clazz = clazz;
+			this.idx = 0;
+		}
+		public boolean isEmpty() {
+			return clazz == null || clazz.length == 0;
+		}
+		public Class<?> get() {
+			if (isEmpty()) {
+				return null;
+			}
+			return clazz[idx];
+		}
+		public Class<?> next() {
+			if (isEmpty()) {
+				return null;
+			}
+			if (idx + 1 >= clazz.length) {
+				throw new IllegalStateException("idx max-over!! idx=" + (idx+1));
+			}
+			return clazz[++idx];
+		}
+		public boolean hasNext() {
+			if (isEmpty()) {
+				return false;
+			}
+			if (idx + 1 >= clazz.length) {
+				return false;
+			}
+			return true;
+		}
+		public Class<?> back() {
+			if (isEmpty()) {
+				return null;
+			}
+			if (idx - 1 < 0) {
+				throw new IllegalStateException("idx min-over!! idx=" + (idx-1));
+			}
+			return clazz[--idx];
+		}
+	}
+	private static ThreadLocal<ClassHolder> parameterizedBridger = new ThreadLocal<ClassHolder>();
+	public static void setParameterized(Class<?>... clazz) {
+		parameterizedBridger.set(new ClassHolder(clazz));
+	}
+	public static void removeParameterized() {
+		parameterizedBridger.remove();
+	}
+	private static Class<?> getParameterized() {
+		ClassHolder holder = parameterizedBridger.get();
+		if (holder == null) {
+			return null;
+		}
+		return holder.get();
+	}
+	private static boolean hasNextParameterized() {
+		ClassHolder holder = parameterizedBridger.get();
+		if (holder == null) {
+			return false;
+		}
+		return holder.hasNext();
+	}
+	private static Class<?> nextParameterized() {
+		ClassHolder holder = parameterizedBridger.get();
+		if (holder == null) {
+			return null;
+		}
+		return holder.next();
+	}
+	private static Class<?> backParameterized() {
+		ClassHolder holder = parameterizedBridger.get();
+		if (holder == null) {
+			return null;
+		}
+		return holder.back();
+	}
+
 	private static <T extends BaseEntity> T deserializeBaseParameter(JsonObject obj, T entity) {
 		
 		if (obj.has("error")) {
@@ -60,6 +152,21 @@ public class EntityDeserializers {
 			entity.etag = obj.getAsJsonPrimitive("etag").getAsLong();
 		}
 		
+		return entity;
+	}
+	
+	private static <T extends DocumentHolder> T deserializeDocumentParameter(JsonObject obj, T entity) {
+
+		if (obj.has("_rev")) {
+			entity.setDocumentRevision(obj.getAsJsonPrimitive("_rev").getAsLong());
+		}
+		if (obj.has("_id")) {
+			entity.setDocumentHandle(obj.getAsJsonPrimitive("_id").getAsString());
+		}
+		if (obj.has("_key")) {
+			entity.setDocumentKey(obj.getAsJsonPrimitive("_key").getAsString());
+		}
+
 		return entity;
 	}
 	
@@ -108,10 +215,12 @@ public class EntityDeserializers {
 			ArangoUnixTime entity = deserializeBaseParameter(obj, new ArangoUnixTime());
 
 			if (obj.has("time")) {
-				String time = obj.getAsJsonPrimitive("time").getAsString(); // 実際はlongだけど精度の問題が心配なので文字列で処理する。
-                entity.microsecond = Long.parseLong(time.replace(".", ""));
-                entity.millisecond = entity.microsecond / 1000;
-				entity.second = (int) (entity.millisecond / 1000);
+				entity.time = obj.getAsJsonPrimitive("time").getAsDouble();
+				String time = obj.getAsJsonPrimitive("time").getAsString(); // 実際はdoubleだけど精度の問題が心配なので文字列で処理する。
+                entity.second = (int) entity.time;
+                
+                int pos = time.indexOf('.');
+                entity.microsecond = (pos >= 0 && pos+1 != time.length()) ? Integer.parseInt(time.substring(pos+1)) : 0;
 			}
 
 			return entity;
@@ -145,12 +254,65 @@ public class EntityDeserializers {
 			if (obj.has("datafiles")) {
 				JsonObject datafiles = obj.getAsJsonObject("datafiles");
 				entity.datafileCount = datafiles.getAsJsonPrimitive("count").getAsLong();
+				entity.datafileFileSize = datafiles.getAsJsonPrimitive("fileSize").getAsLong();
 			}
 			
 			if (obj.has("journals")) {
 				JsonObject journals = obj.getAsJsonObject("journals");
 				entity.journalsCount = journals.getAsJsonPrimitive("count").getAsLong();
 				entity.journalsFileSize = journals.getAsJsonPrimitive("fileSize").getAsLong();
+			}
+			
+			if (obj.has("compactors")) {
+				JsonObject compactors = obj.getAsJsonObject("compactors");
+				entity.compactorsCount = compactors.getAsJsonPrimitive("count").getAsLong();
+				entity.compactorsFileSize = compactors.getAsJsonPrimitive("fileSize").getAsLong();
+			}
+			
+			if (obj.has("shapefiles")) {
+				JsonObject shapefiles = obj.getAsJsonObject("shapefiles");
+				entity.shapefilesCount = shapefiles.getAsJsonPrimitive("count").getAsLong();
+				entity.shapefilesFileSize = shapefiles.getAsJsonPrimitive("fileSize").getAsLong();
+			}
+			
+			if (obj.has("shapes")) {
+				JsonObject shapes = obj.getAsJsonObject("shapes");
+				entity.shapesCount = shapes.getAsJsonPrimitive("count").getAsLong();
+			}
+			
+			if (obj.has("attributes")) {
+				JsonObject attributes = obj.getAsJsonObject("attributes");
+				entity.attributesCount = attributes.getAsJsonPrimitive("count").getAsLong();
+			}
+			
+			return entity;
+		}
+	}
+	
+	public static class CollectionKeyOptionDeserializer implements JsonDeserializer<CollectionKeyOption> {
+		public CollectionKeyOption deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+
+			if (json.isJsonNull()) {
+				return null;
+			}
+
+			JsonObject obj = json.getAsJsonObject();
+			CollectionKeyOption entity = new CollectionKeyOption();
+
+			if (obj.has("type")) {
+				entity.type = obj.getAsJsonPrimitive("type").getAsString();
+			}
+			
+			if (obj.has("allowUserKeys")) {
+				entity.allowUserKeys = obj.getAsJsonPrimitive("allowUserKeys").getAsBoolean();
+			}
+			
+			if (obj.has("increment")) {
+				entity.increment = obj.getAsJsonPrimitive("increment").getAsLong();
+			}
+			
+			if (obj.has("offset")) {
+				entity.offset = obj.getAsJsonPrimitive("offset").getAsLong();
 			}
 			
 			return entity;
@@ -212,10 +374,18 @@ public class EntityDeserializers {
 				entity.type = CollectionType.valueOf(obj.getAsJsonPrimitive("type").getAsInt());
 			}
 			
-			if (obj.has("createOptions")) {
-				entity.createOptions = context.deserialize(obj.get("createOptions"), Map.class);
+			if (obj.has("keyOptions")) {
+				entity.keyOptions = context.deserialize(obj.get("keyOptions"), CollectionKeyOption.class);
+			}
+			
+			if (obj.has("checksum")) {
+				entity.checksum = obj.getAsJsonPrimitive("checksum").getAsLong();
 			}
 
+			if (obj.has("doCompact")) {
+				entity.doCompact = obj.getAsJsonPrimitive("doCompact").getAsBoolean();
+			}
+			
 			return entity;
 		}
 	}
@@ -255,11 +425,30 @@ public class EntityDeserializers {
 	
 			
 			JsonObject obj = json.getAsJsonObject();
-			CursorEntity<?> entity = deserializeBaseParameter(obj, new CursorEntity<Object>());
+			CursorEntity<Object> entity = deserializeBaseParameter(obj, new CursorEntity<Object>());
 			
-			// resultは処理しない。後で処理をする。
 			if (obj.has("result")) {
-				entity._array = obj.getAsJsonArray("result");
+				JsonArray array = obj.getAsJsonArray("result");
+				if (array == null || array.isJsonNull() || array.size() == 0) {
+					entity.results = Collections.emptyList();
+				} else {
+					Class<?> clazz = getParameterized();
+					boolean withDocument = DocumentEntity.class.isAssignableFrom(clazz);
+					if (withDocument) {
+						nextParameterized();
+					}
+					try {
+						List<Object> list = new ArrayList<Object>(array.size());
+						for (int i = 0, imax = array.size(); i < imax; i++) {
+							list.add(context.deserialize(array.get(i), clazz));
+						}
+						entity.results = list;
+					} finally {
+						if (withDocument) {
+							backParameterized();
+						}
+					}
+				}
 			}
 			
 			if (obj.has("hasMore")) {
@@ -301,20 +490,13 @@ public class EntityDeserializers {
 			
 			JsonObject obj = json.getAsJsonObject();
 			DocumentEntity<?> entity = deserializeBaseParameter(obj, new DocumentEntity<Object>());
+			deserializeDocumentParameter(obj, entity);
 			
-			if (obj.has("_rev")) {
-				entity.documentRevision = obj.getAsJsonPrimitive("_rev").getAsLong();
+			// 他のフィールドはリフレクションで。 (TODO: Annotationのサポートと上記パラメータを弾く)
+			Class<?> clazz = getParameterized();
+			if (clazz != null) {
+				entity.entity = context.deserialize(obj, clazz);
 			}
-			
-			if (obj.has("_id")) {
-				entity.documentHandle = obj.getAsJsonPrimitive("_id").getAsString();
-			}
-			
-			if (obj.has("_key")) {
-				entity.documentKey = obj.getAsJsonPrimitive("_key").getAsString();
-			}
-			
-			// 他のフィールドはリフレクションで。
 			
 			return entity;
 		}
@@ -423,57 +605,6 @@ public class EntityDeserializers {
 		
 	}
 
-	public static class EdgeEntityDeserializer implements JsonDeserializer<EdgeEntity<?>> {
-		public EdgeEntity<?> deserialize(JsonElement json, Type typeOfT,
-				JsonDeserializationContext context) throws JsonParseException {
-			
-			if (json.isJsonNull()) {
-				return null;
-			}
-	
-			JsonObject obj = json.getAsJsonObject();
-			EdgeEntity<?> entity = deserializeBaseParameter(obj, new EdgeEntity<Object>());
-			
-			if (obj.has("_rev")) {
-				entity.revision = obj.getAsJsonPrimitive("_rev").getAsLong();
-			}
-			
-			if (obj.has("_id")) {
-				entity.edgeHandle = obj.getAsJsonPrimitive("_id").getAsString();
-			}
-			
-			if (obj.has("_from")) {
-				entity.fromHandle = obj.getAsJsonPrimitive("_from").getAsString();
-			}
-			
-			if (obj.has("_to")) {
-				entity.toHandle = obj.getAsJsonPrimitive("_to").getAsString();
-			}
-			
-			// attributeは処理しない
-			
-			return entity;
-		}
-	}
-
-	public static class EdgesEntityDeserializer implements JsonDeserializer<EdgesEntity<?>> {
-		public EdgesEntity<?> deserialize(JsonElement json, Type typeOfT,
-				JsonDeserializationContext context) throws JsonParseException {
-			
-			if (json.isJsonNull()) {
-				return null;
-			}
-	
-			JsonObject obj = json.getAsJsonObject();
-			EdgesEntity<?> entity = deserializeBaseParameter(obj, new EdgesEntity<Object>());
-			if (obj.has("edges")) {
-				entity._edges = obj.getAsJsonArray("edges");
-			}
-			
-			return entity;
-		}
-	}
-
 	public static class AdminLogEntryEntityDeserializer implements JsonDeserializer<AdminLogEntity> {
 		public AdminLogEntity deserialize(JsonElement json, Type typeOfT,
 				JsonDeserializationContext context) throws JsonParseException {
@@ -513,8 +644,9 @@ public class EntityDeserializers {
 		}
 	}
 	
-	public static class AdminStatusEntityDeserializer implements JsonDeserializer<AdminStatusEntity> {
-		public AdminStatusEntity deserialize(JsonElement json, Type typeOfT,
+	public static class StatisticsEntityDeserializer implements JsonDeserializer<StatisticsEntity> {
+		Type countsType = new TypeToken<long[]>(){}.getType();
+		public StatisticsEntity deserialize(JsonElement json, Type typeOfT,
 				JsonDeserializationContext context) throws JsonParseException {
 			
 			if (json.isJsonNull()) {
@@ -522,39 +654,74 @@ public class EntityDeserializers {
 			}
 			
 			JsonObject obj = json.getAsJsonObject();
-			AdminStatusEntity entity = deserializeBaseParameter(obj, new AdminStatusEntity());
+			StatisticsEntity entity = deserializeBaseParameter(obj, new StatisticsEntity());
 			
 			if (obj.has("system")) {
+				StatisticsEntity.System sys = new StatisticsEntity.System();
+				entity.system = sys;
+
 				JsonObject system = obj.getAsJsonObject("system");
 				if (system.has("minorPageFaults")) {
-					entity.minorPageFaults = system.getAsJsonPrimitive("minorPageFaults").getAsLong();
+					sys.minorPageFaults = system.getAsJsonPrimitive("minorPageFaults").getAsLong();
 				}
 				if (system.has("majorPageFaults")) {
-					entity.majorPageFaults = system.getAsJsonPrimitive("majorPageFaults").getAsLong();
+					sys.majorPageFaults = system.getAsJsonPrimitive("majorPageFaults").getAsLong();
 				}
 				if (system.has("userTime")) {
-					entity.userTime = system.getAsJsonPrimitive("userTime").getAsDouble();
+					sys.userTime = system.getAsJsonPrimitive("userTime").getAsDouble();
 				}
 				if (system.has("systemTime")) {
-					entity.systemTime = system.getAsJsonPrimitive("systemTime").getAsDouble();
+					sys.systemTime = system.getAsJsonPrimitive("systemTime").getAsDouble();
 				}
-				if (system.has("numberThreads")) {
-					entity.numberThreads = system.getAsJsonPrimitive("numberThreads").getAsInt();
+				if (system.has("numberOfThreads")) {
+					sys.numberOfThreads = system.getAsJsonPrimitive("numberOfThreads").getAsInt();
 				}
 				if (system.has("residentSize")) {
-					entity.residentSize = system.getAsJsonPrimitive("residentSize").getAsLong();
+					sys.residentSize = system.getAsJsonPrimitive("residentSize").getAsLong();
 				}
 				if (system.has("virtualSize")) {
-					entity.virtualSize = system.getAsJsonPrimitive("virtualSize").getAsLong();
+					sys.virtualSize = system.getAsJsonPrimitive("virtualSize").getAsLong();
+				}
+			}
+			
+			if (obj.has("client")) {
+				StatisticsEntity.Client cli = new StatisticsEntity.Client();
+				cli.figures = new TreeMap<String, StatisticsEntity.FigureValue>();
+				entity.client = cli;
+
+				JsonObject client = obj.getAsJsonObject("client");
+				if (client.has("httpConnections")) {
+					cli.httpConnections = client.getAsJsonPrimitive("httpConnections").getAsInt();
+				}
+				for (Entry<String, JsonElement> ent : client.entrySet()) {
+					if (!ent.getKey().equals("httpConnections")) {
+						JsonObject f = ent.getValue().getAsJsonObject();
+						FigureValue fv = new FigureValue();
+						fv.sum = f.getAsJsonPrimitive("sum").getAsDouble();
+						fv.count = f.getAsJsonPrimitive("count").getAsLong();
+						fv.counts = context.deserialize(f.getAsJsonArray("counts"), countsType);
+						cli.figures.put(ent.getKey(), fv);
+					}
+				}
+			}
+			
+			if (obj.has("server")) {
+				JsonObject svr = obj.getAsJsonObject("server");
+				entity.server = new StatisticsEntity.Server();
+				
+				if (svr.has("uptime")) {
+					entity.server.uptime = svr.getAsJsonPrimitive("uptime").getAsDouble();
 				}
 			}
 			
 			return entity;
+			
 		}
 	}
 
-	public static class ConnectionStatisticsEntityDeserializer implements JsonDeserializer<ConnectionStatisticsEntity> {
-		public ConnectionStatisticsEntity deserialize(JsonElement json,
+	public static class StatisticsDescriptionEntityDeserializer implements JsonDeserializer<StatisticsDescriptionEntity> {
+		Type cutsTypes = new TypeToken<BigDecimal[]>(){}.getType();
+		public StatisticsDescriptionEntity deserialize(JsonElement json,
 				Type typeOfT, JsonDeserializationContext context)
 				throws JsonParseException {
 
@@ -563,109 +730,45 @@ public class EntityDeserializers {
 			}
 
 			JsonObject obj = json.getAsJsonObject();
-			ConnectionStatisticsEntity entity = deserializeBaseParameter(obj, new ConnectionStatisticsEntity());
-			
-			if (obj.has("resolution")) {
-				entity.resolution = obj.getAsJsonPrimitive("resolution").getAsInt();
-			}
-			
-			// length = currentでコールされた時は無いパラメータ
-			if (obj.has("length")) {
-				entity.length = obj.getAsJsonPrimitive("length").getAsInt();
-			}
-			if (obj.has("totalLength")) {
-				entity.totalLength = obj.getAsJsonPrimitive("totalLength").getAsInt();
-			}
+			StatisticsDescriptionEntity entity = deserializeBaseParameter(obj, new StatisticsDescriptionEntity());
 
-			if (obj.has("httpDuration")) {
-				JsonObject httpDuration = obj.getAsJsonObject("httpDuration");
-				if (httpDuration.has("cuts")) {
-					JsonArray cuts = httpDuration.getAsJsonArray("cuts");
-					entity.httpDurationCuts = new double[cuts.size()];
-					for (int i = 0; i < cuts.size(); i++) {
-						entity.httpDurationCuts[i] = cuts.get(i).getAsDouble();
-					}
+			if (obj.has("groups")) {
+				JsonArray groups = obj.getAsJsonArray("groups");
+				entity.groups = new ArrayList<StatisticsDescriptionEntity.Group>(groups.size());
+				for (int i = 0, imax = groups.size(); i < imax; i++) {
+					JsonObject g = groups.get(i).getAsJsonObject();
+					
+					Group group = new Group();
+					group.group = g.getAsJsonPrimitive("group").getAsString();
+					group.name = g.getAsJsonPrimitive("name").getAsString();
+					group.description = g.getAsJsonPrimitive("description").getAsString();
+					
+					entity.groups.add(group);
 				}
 			}
 			
-			// FIXME 項目が増えてきたら List<Map<String, Object>> として汎用的に処理してしまう。
-			// その時のキーは 階層.階層.階層 とする。
-			
-			// 型が変わる...
-			int len = entity.length == 0 ? 1: entity.length;
-			entity.statistics = new ConnectionStatisticsEntity.StatisticsEntity[len];
-			for (int i = 0; i < len; i++) {
-				entity.statistics[i] = new ConnectionStatisticsEntity.StatisticsEntity();
-				
-				if (obj.has("start")) {
-					JsonElement start = obj.get("start");
-					if (start.isJsonArray()) {
-						entity.statistics[i].start = start.getAsJsonArray().get(i).getAsInt();
-					} else {
-						entity.statistics[i].start = start.getAsInt();
+			if (obj.has("figures")) {
+				JsonArray figures = obj.getAsJsonArray("figures");
+				entity.figures = new ArrayList<StatisticsDescriptionEntity.Figure>(figures.size());
+				for (int i = 0, imax = figures.size(); i < imax; i++) {
+					JsonObject f = figures.get(i).getAsJsonObject();
+					
+					Figure figure = new Figure();
+					figure.group = f.getAsJsonPrimitive("group").getAsString();
+					figure.identifier = f.getAsJsonPrimitive("identifier").getAsString();
+					figure.name = f.getAsJsonPrimitive("name").getAsString();
+					figure.description = f.getAsJsonPrimitive("description").getAsString();
+					figure.type = f.getAsJsonPrimitive("type").getAsString();
+					figure.units = f.getAsJsonPrimitive("units").getAsString();
+					if (f.has("cuts")) {
+						figure.cuts = context.deserialize(f.getAsJsonArray("cuts"), cutsTypes);
 					}
+					
+					entity.figures.add(figure);
+					
 				}
-				
-				if (obj.has("httpConnections")) {
-					JsonObject httpConnections = obj.getAsJsonObject("httpConnections");
-					if (httpConnections.has("count")) {
-						JsonElement count = httpConnections.get("count");
-						if (count.isJsonArray()) {
-							entity.statistics[i].httpConnectionsCount = count.getAsJsonArray().get(i).getAsInt();
-						} else {
-							entity.statistics[i].httpConnectionsCount = count.getAsInt();
-						}
-					}
-					if (httpConnections.has("perSecond")) {
-						JsonElement perSecond = httpConnections.get("perSecond");
-						if (perSecond.isJsonArray()) {
-							entity.statistics[i].httpConnectionsPerSecond = JsonUtils.toDouble(perSecond.getAsJsonArray().get(i));
-						} else {
-							entity.statistics[i].httpConnectionsPerSecond = JsonUtils.toDouble(perSecond);
-						}
-					}
-				}
-				
-				if (obj.has("httpDuration")) {
-					JsonObject httpDuration = obj.getAsJsonObject("httpDuration");
-					if (httpDuration.has("count")) {
-						JsonElement count = httpDuration.get("count");
-						if (count.isJsonArray()) {
-							entity.statistics[i].httpDurationCount = count.getAsJsonArray().get(i).getAsInt();
-						} else {
-							entity.statistics[i].httpDurationCount = count.getAsInt();
-						}
-					}
-					if (httpDuration.has("mean")) {
-						JsonElement mean = httpDuration.get("mean");
-						if (mean.isJsonArray()) {
-							entity.statistics[i].httpDurationMean = JsonUtils.toDouble(mean.getAsJsonArray().get(i));
-						} else {
-							entity.statistics[i].httpDurationMean = JsonUtils.toDouble(mean);
-						}
-					}
-					if (httpDuration.has("min")) {
-						JsonElement min = httpDuration.get("min");
-						if (min.isJsonArray()) {
-							entity.statistics[i].httpDurationMin = JsonUtils.toDouble(min.getAsJsonArray().get(i));
-						} else {
-							entity.statistics[i].httpDurationMin = JsonUtils.toDouble(min);
-						}
-					}
-					if (httpDuration.has("distribution")) {
-						JsonArray distribution = httpDuration.getAsJsonArray("distribution");
-						if (distribution.size() > 0) {
-							if (distribution.get(0).isJsonArray()) {
-								entity.statistics[i].httpDurationDistribution = JsonUtils.toArray(distribution.get(i).getAsJsonArray());
-							} else {
-								entity.statistics[i].httpDurationDistribution = JsonUtils.toArray(distribution);
-							}
-						}
-					}
-				}
-				
 			}
-
+			
 			return entity;
 		}
 	}
@@ -682,9 +785,8 @@ public class EntityDeserializers {
 			JsonObject obj = json.getAsJsonObject();
 			ScalarExampleEntity<?> entity = deserializeBaseParameter(obj, new ScalarExampleEntity<Object>());
 			
-			// document属性は別のレイヤーで
 			if (obj.has("document")) {
-				entity._documentJson = obj.get("document");
+				entity.document = context.deserialize(obj.get("document"), DocumentEntity.class);
 			}
 			
 			return entity;
@@ -838,5 +940,637 @@ public class EntityDeserializers {
 		}
 	}
 
+	public static class DatabaseEntityDeserializer implements JsonDeserializer<DatabaseEntity> {
+		public DatabaseEntity deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			
+			if (json.isJsonNull()) {
+				return null;
+			}
+			
+			JsonObject obj = json.getAsJsonObject();
+			DatabaseEntity entity = deserializeBaseParameter(obj, new DatabaseEntity());
+			
+			if (obj.has("result")) {
+				JsonObject result = obj.getAsJsonObject("result");
+				if (result.has("name")) {
+					entity.name = result.getAsJsonPrimitive("name").getAsString();
+				}
+				if (result.has("id")) {
+					entity.id = result.getAsJsonPrimitive("id").getAsString();
+				}
+				if (result.has("path")) {
+					entity.path = result.getAsJsonPrimitive("path").getAsString();
+				}
+				if (result.has("isSystem")) {
+					entity.isSystem = result.getAsJsonPrimitive("isSystem").getAsBoolean();
+				}
+			}
+			
+			return entity;
+		}
+	}
+
+	public static class StringsResultEntityDeserializer implements JsonDeserializer<StringsResultEntity> {
+		Type resultType = new TypeToken<ArrayList<String>>(){}.getType();
+		public StringsResultEntity deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			
+			if (json.isJsonNull()) {
+				return null;
+			}
+			
+			JsonObject obj = json.getAsJsonObject();
+			StringsResultEntity entity = deserializeBaseParameter(obj, new StringsResultEntity());
+			
+			if (obj.has("result")) {
+				entity.result = context.deserialize(obj.get("result"), resultType);
+			}
+			
+			return entity;
+		}
+	}
+
+	public static class BooleanResultEntityDeserializer implements JsonDeserializer<BooleanResultEntity> {
+		public BooleanResultEntity deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			
+			if (json.isJsonNull()) {
+				return null;
+			}
+			
+			JsonObject obj = json.getAsJsonObject();
+			BooleanResultEntity entity = deserializeBaseParameter(obj, new BooleanResultEntity());
+			
+			if (obj.has("result")) {
+				entity.result = obj.getAsJsonPrimitive("result").getAsBoolean();
+			}
+			
+			return entity;
+		}
+	}
+
+	public static class EndpointDeserializer implements JsonDeserializer<Endpoint> {
+		Type databasesType = new TypeToken<List<String>>(){}.getType();
+		public Endpoint deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			
+			if (json.isJsonNull()) {
+				return null;
+			}
+			
+			JsonObject obj = json.getAsJsonObject();
+			
+			Endpoint entity = new Endpoint();
+			entity.databases = context.deserialize(obj.getAsJsonArray("databases"), databasesType);
+			entity.endpoint = obj.getAsJsonPrimitive("endpoint").getAsString();
+			
+			return entity;
+		}
+	}
+	
+	public static class DocumentResultEntityDeserializer implements JsonDeserializer<DocumentResultEntity<?>> {
+		Type documentsType = new TypeToken<List<DocumentEntity<?>>>(){}.getType();
+		public DocumentResultEntity<?> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			
+			if (json.isJsonNull()) {
+				return null;
+			}
+			
+			JsonObject obj = json.getAsJsonObject();
+			DocumentResultEntity<Object> entity = deserializeBaseParameter(obj, new DocumentResultEntity<Object>());
+			
+			if (obj.has("result")) {
+				JsonElement resultElem = obj.get("result");
+				if (resultElem.isJsonArray()) {
+					entity.result = context.deserialize(resultElem, documentsType);
+				} else if (resultElem.isJsonObject()) {
+					DocumentEntity<Object> doc = context.deserialize(resultElem, DocumentEntity.class);
+					List<DocumentEntity<Object>> list = new ArrayList<DocumentEntity<Object>>(1);
+					list.add(doc);
+					entity.result = list;
+				} else {
+					throw new IllegalStateException("result type is not array or object:" + resultElem);
+				}
+			}
+			
+			return entity;
+		}
+	}
+
+	public static class ReplicationStateDeserializer implements JsonDeserializer<ReplicationState> {
+		public ReplicationState deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+
+			if (json.isJsonNull()) {
+				return null;
+			}
+
+			JsonObject obj = json.getAsJsonObject();
+			ReplicationState entity = new ReplicationState();
+
+			entity.running = obj.getAsJsonPrimitive("running").getAsBoolean();
+			entity.lastLogTick = obj.getAsJsonPrimitive("lastLogTick").getAsLong();
+			entity.totalEvents = obj.getAsJsonPrimitive("totalEvents").getAsLong();
+			entity.time = DateUtils.parse(obj.getAsJsonPrimitive("time").getAsString());
+
+			return entity;
+		}
+	}
+	
+	public static class ReplicationInventoryEntityDeserializer implements JsonDeserializer<ReplicationInventoryEntity> {
+		private Type indexesType = new TypeToken<List<IndexEntity>>(){}.getType();
+		public ReplicationInventoryEntity deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			
+			if (json.isJsonNull()) {
+				return null;
+			}
+			
+			JsonObject obj = json.getAsJsonObject();
+			ReplicationInventoryEntity entity = deserializeBaseParameter(obj, new ReplicationInventoryEntity());
+			
+			if (obj.has("collections")) {
+				JsonArray collections = obj.getAsJsonArray("collections");
+				entity.collections = new ArrayList<ReplicationInventoryEntity.Collection>(collections.size());
+				for (int i = 0, imax = collections.size(); i < imax; i++) {
+					JsonObject elem = collections.get(i).getAsJsonObject();
+					Collection col = new Collection();
+					
+					if (elem.has("parameters")) {
+						JsonObject parameters = elem.getAsJsonObject("parameters");
+
+						col.parameter = new CollectionParameter();
+						if (parameters.has("version")) {
+							col.parameter.version = parameters.getAsJsonPrimitive("version").getAsInt();
+						}
+						if (parameters.has("type")) {
+							col.parameter.type = CollectionType.valueOf(parameters.getAsJsonPrimitive("type").getAsInt());
+						}
+						if (parameters.has("cid")) {
+							col.parameter.cid = parameters.getAsJsonPrimitive("cid").getAsLong();
+						}
+						if (parameters.has("deleted")) {
+							col.parameter.deleted = parameters.getAsJsonPrimitive("deleted").getAsBoolean();
+						}
+						if (parameters.has("doCompact")) {
+							col.parameter.doCompact = parameters.getAsJsonPrimitive("doCompact").getAsBoolean();
+						}
+						if (parameters.has("maximalSize")) {
+							col.parameter.maximalSize = parameters.getAsJsonPrimitive("maximalSize").getAsLong();
+						}
+						if (parameters.has("name")) {
+							col.parameter.name = parameters.getAsJsonPrimitive("name").getAsString();
+						}
+						if (parameters.has("isVolatile")) {
+							col.parameter.isVolatile = parameters.getAsJsonPrimitive("isVolatile").getAsBoolean();
+						}
+						if (parameters.has("waitForSync")) {
+							col.parameter.waitForSync = parameters.getAsJsonPrimitive("waitForSync").getAsBoolean();
+						}
+					}
+					
+					if (elem.has("indexes")) {
+						col.indexes = context.deserialize(elem.getAsJsonArray("indexes"), indexesType);
+					}
+					
+					entity.collections.add(col);
+				}
+			}
+			
+			if (obj.has("state")) {
+				entity.state = context.deserialize(obj.getAsJsonObject("state"), ReplicationState.class);
+			}
+			
+			if (obj.has("tick")) {
+				entity.tick = obj.getAsJsonPrimitive("tick").getAsLong();
+			}
+			
+			return entity;
+		}
+	}
+
+	public static class ReplicationDumpRecordDeserializer implements JsonDeserializer<ReplicationDumpRecord<?>> {
+		Type documentsType = new TypeToken<List<DocumentEntity<?>>>(){}.getType();
+		public ReplicationDumpRecord<?> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			
+			if (json.isJsonNull()) {
+				return null;
+			}
+			
+			JsonObject obj = json.getAsJsonObject();
+			ReplicationDumpRecord<DocumentEntity<Object>> entity = new ReplicationDumpRecord<DocumentEntity<Object>>();
+			
+			if (obj.has("tick")) {
+				entity.tick = obj.getAsJsonPrimitive("tick").getAsLong();
+			}
+			if (obj.has("type")) {
+				int type = obj.getAsJsonPrimitive("type").getAsInt();
+				entity.type = ReplicationEventType.valueOf(type);
+			}
+			if (obj.has("key")) {
+				entity.key = obj.getAsJsonPrimitive("key").getAsString();
+			}
+			if (obj.has("rev")) {
+				entity.rev = obj.getAsJsonPrimitive("rev").getAsLong();
+			}
+			if (obj.has("data")) {
+				entity.data = context.deserialize(obj.getAsJsonObject("data"), DocumentEntity.class);
+			}
+			
+			return entity;
+		}
+	}
+
+	public static class ReplicationSyncEntityDeserializer implements JsonDeserializer<ReplicationSyncEntity> {
+		Type collectionsType = new TypeToken<List<CollectionEntity>>(){}.getType();
+		public ReplicationSyncEntity deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			
+			if (json.isJsonNull()) {
+				return null;
+			}
+			
+			JsonObject obj = json.getAsJsonObject();
+			ReplicationSyncEntity entity = deserializeBaseParameter(obj, new ReplicationSyncEntity());
+			
+			if (obj.has("collections")) {
+				entity.collections = context.deserialize(obj.getAsJsonArray("collections"), collectionsType);
+			}
+			if (obj.has("lastLogTick")) {
+				entity.lastLogTick = obj.getAsJsonPrimitive("lastLogTick").getAsLong();
+			}
+			
+			return entity;
+		}
+	}
+	
+	public static class MapAsEntityDeserializer implements JsonDeserializer<MapAsEntity> {
+		Type mapType = new TypeToken<Map<String, Object>>(){}.getType();
+		public MapAsEntity deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			
+			if (json.isJsonNull()) {
+				return null;
+			}
+			
+			JsonObject obj = json.getAsJsonObject();
+			MapAsEntity entity = deserializeBaseParameter(obj, new MapAsEntity());
+			
+			entity.map = context.deserialize(obj, mapType);
+			
+			return entity;
+		}
+	}
+
+	public static class ReplicationLoggerConfigEntityDeserializer implements JsonDeserializer<ReplicationLoggerConfigEntity> {
+		public ReplicationLoggerConfigEntity deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			
+			if (json.isJsonNull()) {
+				return null;
+			}
+			
+			JsonObject obj = json.getAsJsonObject();
+			ReplicationLoggerConfigEntity entity = deserializeBaseParameter(obj, new ReplicationLoggerConfigEntity());
+			
+			if (obj.has("autoStart")) {
+				entity.autoStart = obj.getAsJsonPrimitive("autoStart").getAsBoolean();
+			}
+			if (obj.has("logRemoteChanges")) {
+				entity.logRemoteChanges = obj.getAsJsonPrimitive("logRemoteChanges").getAsBoolean();
+			}
+			if (obj.has("maxEvents")) {
+				entity.maxEvents = obj.getAsJsonPrimitive("maxEvents").getAsLong();
+			}
+			if (obj.has("maxEventsSize")) {
+				entity.maxEventsSize = obj.getAsJsonPrimitive("maxEventsSize").getAsLong();
+			}
+			
+			return entity;
+		}
+	}
+
+	public static class ReplicationApplierConfigEntityDeserializer implements JsonDeserializer<ReplicationApplierConfigEntity> {
+		public ReplicationApplierConfigEntity deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			
+			if (json.isJsonNull()) {
+				return null;
+			}
+			
+			JsonObject obj = json.getAsJsonObject();
+			ReplicationApplierConfigEntity entity = deserializeBaseParameter(obj, new ReplicationApplierConfigEntity());
+			
+			if (obj.has("endpoint")) {
+				entity.endpoint = obj.getAsJsonPrimitive("endpoint").getAsString();
+			}
+
+			if (obj.has("database")) {
+				entity.database = obj.getAsJsonPrimitive("database").getAsString();
+			}
+
+			if (obj.has("username")) {
+				entity.username = obj.getAsJsonPrimitive("username").getAsString();
+			}
+
+			if (obj.has("password")) {
+				entity.password = obj.getAsJsonPrimitive("password").getAsString();
+			}
+			
+			if (obj.has("maxConnectRetries")) {
+				entity.maxConnectRetries = obj.getAsJsonPrimitive("maxConnectRetries").getAsInt();
+			}
+			
+			if (obj.has("connectTimeout")) {
+				entity.connectTimeout = obj.getAsJsonPrimitive("connectTimeout").getAsInt();
+			}
+
+			if (obj.has("requestTimeout")) {
+				entity.requestTimeout = obj.getAsJsonPrimitive("requestTimeout").getAsInt();
+			}
+
+			if (obj.has("chunkSize")) {
+				entity.chunkSize = obj.getAsJsonPrimitive("chunkSize").getAsInt();
+			}
+
+			if (obj.has("autoStart")) {
+				entity.autoStart = obj.getAsJsonPrimitive("autoStart").getAsBoolean();
+			}
+
+			if (obj.has("adaptivePolling")) {
+				entity.adaptivePolling = obj.getAsJsonPrimitive("adaptivePolling").getAsBoolean();
+			}
+
+			return entity;
+		}
+	}
+
+	public static class ReplicationApplierStateDeserializer implements JsonDeserializer<ReplicationApplierState> {
+		public ReplicationApplierState deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			
+			if (json.isJsonNull()) {
+				return null;
+			}
+			
+			JsonObject obj = json.getAsJsonObject();
+			ReplicationApplierState state = new ReplicationApplierState();
+			
+			if (obj.has("running")) {
+				state.running = obj.getAsJsonPrimitive("running").getAsBoolean();
+			}
+			if (obj.has("lastAppliedContinuousTick") && !obj.get("lastAppliedContinuousTick").isJsonNull()) {
+				state.lastAppliedContinuousTick = obj.getAsJsonPrimitive("lastAppliedContinuousTick").getAsLong();
+			}
+			if (obj.has("lastProcessedContinuousTick") && !obj.get("lastProcessedContinuousTick").isJsonNull()) {
+				state.lastProcessedContinuousTick = obj.getAsJsonPrimitive("lastProcessedContinuousTick").getAsLong();
+			}
+			if (obj.has("lastAvailableContinuousTick") && !obj.get("lastAvailableContinuousTick").isJsonNull()) {
+				state.lastAvailableContinuousTick = obj.getAsJsonPrimitive("lastAvailableContinuousTick").getAsLong();
+			}
+			if (obj.has("time")) {
+				state.time = DateUtils.parse(obj.getAsJsonPrimitive("time").getAsString());
+			}
+			if (obj.has("totalRequests")) {
+				state.totalRequests = obj.getAsJsonPrimitive("totalRequests").getAsLong();
+			}
+			if (obj.has("totalFailedConnects")) {
+				state.totalFailedConnects = obj.getAsJsonPrimitive("totalFailedConnects").getAsLong();
+			}
+			if (obj.has("totalEvents")) {
+				state.totalEvents = obj.getAsJsonPrimitive("totalEvents").getAsLong();
+			}
+			
+			if (obj.has("lastError") && !obj.get("lastError").isJsonNull()) {
+				JsonObject lastError = obj.getAsJsonObject("lastError");
+				state.lastError = new LastError();
+				if (lastError.has("time")) {
+					state.lastError.time = DateUtils.parse(lastError.getAsJsonPrimitive("time").getAsString());
+				}
+				if (lastError.has("errorNum")) {
+					state.lastError.errorNum = lastError.getAsJsonPrimitive("errorNum").getAsInt();
+				}
+				if (lastError.has("errorMessage")) {
+					state.lastError.errorMessage = lastError.getAsJsonPrimitive("errorMessage").getAsString();
+				}
+			}
+			
+			if (obj.has("progress")) {
+				JsonObject progress = obj.getAsJsonObject("progress");
+				state.progress = new Progress();
+				if (progress.has("failedConnects")) {
+					state.progress.failedConnects = progress.getAsJsonPrimitive("failedConnects").getAsLong();
+				}
+				if (progress.has("message")) {
+					state.progress.message = progress.getAsJsonPrimitive("message").getAsString();
+				}
+				if (progress.has("time")) {
+					state.progress.time = DateUtils.parse(progress.getAsJsonPrimitive("time").getAsString());
+				}
+			}
+
+			return state;
+		}
+	}
+	
+	public static class ReplicationApplierStateEntityDeserializer implements JsonDeserializer<ReplicationApplierStateEntity> {
+		public ReplicationApplierStateEntity deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			
+			if (json.isJsonNull()) {
+				return null;
+			}
+			
+			JsonObject obj = json.getAsJsonObject();
+			ReplicationApplierStateEntity entity = deserializeBaseParameter(obj, new ReplicationApplierStateEntity());
+			
+			if (obj.has("endpoint")) {
+				entity.endpoint = obj.getAsJsonPrimitive("endpoint").getAsString();
+			}
+
+			if (obj.has("database")) {
+				entity.database = obj.getAsJsonPrimitive("database").getAsString();
+			}
+			
+			if (obj.has("server")) {
+				JsonObject server = obj.getAsJsonObject("server");
+				entity.serverVersion = server.getAsJsonPrimitive("version").getAsString();
+				entity.serverId = server.getAsJsonPrimitive("serverId").getAsString();
+			}
+			
+			if (obj.has("state")) {
+				entity.state = context.deserialize(obj.get("state"), ReplicationApplierState.class);
+			}
+
+			return entity;
+		}
+	}
+
+	public static class ReplicationLoggerStateEntityDeserializer implements JsonDeserializer<ReplicationLoggerStateEntity> {
+		private Type clientsType = new TypeToken<List<Client>>(){}.getType();
+		public ReplicationLoggerStateEntity deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			
+			if (json.isJsonNull()) {
+				return null;
+			}
+			
+			JsonObject obj = json.getAsJsonObject();
+			ReplicationLoggerStateEntity entity = deserializeBaseParameter(obj, new ReplicationLoggerStateEntity());
+			
+			if (obj.has("state")) {
+				entity.state = context.deserialize(obj.get("state"), ReplicationState.class);
+			}
+			
+			if (obj.has("server")) {
+				JsonObject server = obj.getAsJsonObject("server");
+				entity.serverVersion = server.getAsJsonPrimitive("version").getAsString();
+				entity.serverId = server.getAsJsonPrimitive("serverId").getAsString();
+			}
+			
+			if (obj.has("clients")) {
+				entity.clients = context.deserialize(obj.getAsJsonArray("clients"), clientsType);
+			}
+
+			return entity;
+		}
+	}
+
+	public static class ReplicationLoggerStateEntityClientDeserializer implements JsonDeserializer<ReplicationLoggerStateEntity.Client> {
+		public ReplicationLoggerStateEntity.Client deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			
+			if (json.isJsonNull()) {
+				return null;
+			}
+			
+			JsonObject obj = json.getAsJsonObject();
+			Client client = new Client();
+			
+			if (obj.has("serverId")) {
+				client.serverId = obj.getAsJsonPrimitive("serverId").getAsString();
+			}
+			
+			if (obj.has("lastServedTick")) {
+				client.lastServedTick = obj.getAsJsonPrimitive("lastServedTick").getAsLong();
+			}
+			
+			if (obj.has("time")) {
+				client.time = DateUtils.parse(obj.getAsJsonPrimitive("time").getAsString());
+			}
+			
+			return client;
+		}
+	}
+
+	
+	public static class GraphEntityDeserializer implements JsonDeserializer<GraphEntity> {
+		public GraphEntity deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			
+			if (json.isJsonNull()) {
+				return null;
+			}
+			
+			JsonObject obj = json.getAsJsonObject();
+			GraphEntity entity = deserializeBaseParameter(obj, new GraphEntity());
+			
+			JsonObject graph = obj.has("graph") ? obj.getAsJsonObject("graph") : obj;
+			deserializeDocumentParameter(graph, entity);
+			
+			if (graph.has("edges")) {
+				entity.edges = graph.getAsJsonPrimitive("edges").getAsString();
+			}
+			
+			if (graph.has("vertices")) {
+				entity.vertices = graph.getAsJsonPrimitive("vertices").getAsString();
+			}
+			
+			return entity;
+			
+		}
+	}
+
+	public static class GraphsEntityDeserializer implements JsonDeserializer<GraphsEntity> {
+		private Type graphsType = new TypeToken<List<GraphEntity>>(){}.getType();
+		public GraphsEntity deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+
+			if (json.isJsonNull()) {
+				return null;
+			}
+			
+			JsonObject obj = json.getAsJsonObject();
+			GraphsEntity entity = deserializeBaseParameter(obj, new GraphsEntity());
+
+			if (obj.has("graphs")) {
+				entity.graphs = context.deserialize(obj.get("graphs"), graphsType);
+			}
+			
+			return entity;
+			
+		}
+	}
+	
+	public static class DeleteEntityDeserializer implements JsonDeserializer<DeletedEntity> {
+		public DeletedEntity deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+
+			if (json.isJsonNull()) {
+				return null;
+			}
+			
+			JsonObject obj = json.getAsJsonObject();
+			DeletedEntity entity = deserializeBaseParameter(obj, new DeletedEntity());
+
+			if (obj.has("deleted")) {
+				entity.deleted = obj.getAsJsonPrimitive("deleted").getAsBoolean();
+			}
+			
+			return entity;
+			
+		}
+	}
+	
+	public static class VertexEntityDeserializer implements JsonDeserializer<DocumentEntity<?>> {
+		public DocumentEntity<?> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			
+			if (json.isJsonNull()) {
+				return null;
+			}
+			
+			JsonObject obj = json.getAsJsonObject();
+			
+			DocumentEntity<?> entity;
+			if (obj.has("vertex")) {
+				entity = context.deserialize(obj.get("vertex"), DocumentEntity.class);
+			} else {
+				entity = new DocumentEntity<Object>();
+			}
+			
+			entity = deserializeBaseParameter(obj, entity);
+			
+			return entity;
+		}
+	}
+	
+	public static class EdgeEntityDeserializer implements JsonDeserializer<EdgeEntity<?>> {
+		public EdgeEntity<?> deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+			
+			if (json.isJsonNull()) {
+				return null;
+			}
+			
+			JsonObject obj = json.getAsJsonObject();
+			EdgeEntity<?> entity = deserializeBaseParameter(obj, new EdgeEntity<Object>());
+
+			JsonObject edge = obj.has("edge") ? obj.getAsJsonObject("edge") : obj;
+			deserializeDocumentParameter(edge, entity);
+
+			if (edge.has("_from")) {
+				entity.fromVertexHandle = edge.getAsJsonPrimitive("_from").getAsString();
+			}
+			if (edge.has("_to")) {
+				entity.toVertexHandle = edge.getAsJsonPrimitive("_to").getAsString();
+			}
+			if (edge.has("$label") && !edge.get("$label").isJsonNull()) {
+				entity.edgeLabel = edge.getAsJsonPrimitive("$label").getAsString();
+			}
+			
+			// 他のフィールドはリフレクションで。 (TODO: Annotationのサポートと上記パラメータを弾く)
+			Class<?> clazz = getParameterized();
+			if (clazz != null) {
+				entity.entity = context.deserialize(edge, clazz);
+			}
+			
+			return entity;
+		}
+		
+	}
+	
 	
 }

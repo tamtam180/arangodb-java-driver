@@ -34,6 +34,11 @@ import at.orz.arangodb.util.MapBuilder;
  */
 public class ArangoDriverCursorResultSetTest extends BaseTest {
 
+	public ArangoDriverCursorResultSetTest(ArangoConfigure configure, ArangoDriver driver) {
+		super(configure, driver);
+	}
+
+	
 	@Before
 	public void setup() throws ArangoException {
 

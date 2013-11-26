@@ -18,19 +18,31 @@ package at.orz.arangodb.entity;
 
 import java.io.Serializable;
 
+import at.orz.arangodb.annotations.Exclude;
+
 /**
  * @author tamtam180 - kirscheless at gmail.com
  *
  */
 public abstract class BaseEntity implements Serializable {
-
+	
+	@Exclude(deserialize=false)
 	boolean error;
+	@Exclude(deserialize=false)
 	int code;
+	@Exclude(deserialize=false)
 	int errorNumber;
+	@Exclude(deserialize=false)
 	String errorMessage;
+	@Exclude(deserialize=false)
 	int statusCode;
+	@Exclude(deserialize=false)
 	long etag;
 	
+	public boolean isNotModified() {
+		return statusCode == 304; //HttpStatus.SC_NOT_MODIFIED;
+	}
+
 	public boolean isError() {
 		return error;
 	}

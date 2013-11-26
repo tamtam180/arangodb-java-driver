@@ -40,6 +40,10 @@ import at.orz.arangodb.entity.IndexesEntity;
  */
 public class ArangoDriverIndexTest extends BaseTest {
 
+	public ArangoDriverIndexTest(ArangoConfigure configure, ArangoDriver driver) {
+		super(configure, driver);
+	}
+
 	private static Logger logger = LoggerFactory.getLogger(ArangoDriverCollectionTest.class);
 	
 	final String collectionName = "unit_test_arango_index"; // 
@@ -61,7 +65,7 @@ public class ArangoDriverIndexTest extends BaseTest {
 		} catch (ArangoException e) {}
 
 		// 1は作る
-		col1 =  driver.createCollection(collectionName, true, null, null, null, null);
+		col1 =  driver.createCollection(collectionName, true, null, null, null, null, null);
 		
 		logger.debug("--");
 		

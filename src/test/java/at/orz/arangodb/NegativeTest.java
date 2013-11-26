@@ -20,6 +20,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.*;
 
+import java.util.HashMap;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -41,6 +43,10 @@ import at.orz.arangodb.http.HttpResponseEntity;
  *
  */
 public class NegativeTest extends BaseTest {
+
+	public NegativeTest(ArangoConfigure configure, ArangoDriver driver) {
+		super(configure, driver);
+	}
 
 	/**
 	 * 開発途中にあった命令だけど、今は存在しない。
@@ -100,10 +106,15 @@ public class NegativeTest extends BaseTest {
 		configure.init();
 		ArangoDriver driver = new ArangoDriver(configure);
 		
-		String value = "AAA";
-		DocumentEntity<?> doc = driver.createDocument("unit_test_issue35", value, true, true);
-		String documentHandle = doc.getDocumentHandle();
-		DocumentEntity<String> doc2 = driver.getDocument(documentHandle, String.class);
+		try {
+			String value = "AAA";
+			DocumentEntity<?> doc = driver.createDocument("unit_test_issue35", value, true, true);
+			String documentHandle = doc.getDocumentHandle();
+			DocumentEntity<String> doc2 = driver.getDocument(documentHandle, String.class);
+			fail();
+		} catch (ArangoException e) {
+			assertThat(e.getErrorNumber(), is(1227));
+		}
 		
 		configure.shutdown();
 		

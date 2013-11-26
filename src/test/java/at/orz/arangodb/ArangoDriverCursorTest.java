@@ -36,6 +36,10 @@ import at.orz.arangodb.util.MapBuilder;
  */
 public class ArangoDriverCursorTest extends BaseTest {
 	
+	public ArangoDriverCursorTest(ArangoConfigure configure, ArangoDriver driver) {
+		super(configure, driver);
+	}
+
 	@Test
 	public void test_validateQuery() throws ArangoException {
 		
@@ -174,7 +178,7 @@ public class ArangoDriverCursorTest extends BaseTest {
 					);
 			fail("not raise error.");
 		} catch (ArangoException e) {
-			assertThat(e.getCode(), is(400));
+			assertThat(e.getCode(), is(404));
 			assertThat(e.getErrorNumber(), is(1203));
 			assertThat(e.getMessage(), containsString("collection not found"));
 		}

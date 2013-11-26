@@ -1,7 +1,12 @@
 
 This library ia a Java driver for ArangoDB.
 
-Support version: ArangoDB-1.2.x
+Support version: ArangoDB-1.4.x
+
+# Memo
+
+Now, /edge and /admin/* API does not support. plz wait.
+
 
 # Required
 
@@ -22,7 +27,7 @@ Support version: ArangoDB-1.2.x
   <dependency>
     <groupId>at.orz</groupId>
     <artifactId>arangodb-java-driver</artifactId>
-    <version>[1.2,1.3)</version>
+    <version>[1.4,1.5)</version>
   </dependency>
 </dependencies>
 ```
@@ -71,6 +76,7 @@ This library has 4 layers.
 <tr><th>connectionTimeout</th><td>socket connect timeout(millisecond)</td><td>-1</td></tr>
 <tr><th>timeout</th><td>socket read timeout(millisecond)</td><td>-1</td></tr>
 <tr><th>retryCount</th><td>http retry count</td><td>3</td></tr>
+<tr><th>defaultDatabase</th><td>default database</td><td></td></tr>
 </table>
 
 ## Basic usage ArangoDriver
@@ -106,86 +112,71 @@ This library has 4 layers.
   configure.shutdown();
 ```
 
-## Create Graph data.
+## Database Change
 
-Since ArangoDB-1.1, If you put a graph document to collection, you need create a collection of graph type.
+Since ArangoDB-1.4, support multi database.
 
+ArangoDriver is thread-safe. But ArangoDriver#setDefaultDatabase() is not safety.
+So, if you wants to switch the database, you need to create an another instance.
 
 ```Java
+public class ExampleMDB {
 
-public class Example2 {
-	
-	public static class TestEdgeAttribute {
-		public String a;
-		public int b;
-		public TestEdgeAttribute(){}
-		public TestEdgeAttribute(String a, int b) {
-			this.a = a;
-			this.b = b;
-		}
-	}
-	public static class TestVertex {
-		public String name;
-	}
-	
 	public static void main(String[] args) {
 
 		// Initialize configure
 		ArangoConfigure configure = new ArangoConfigure();
 		configure.init();
 		
-		// Create Driver
-		ArangoDriver driver = new ArangoDriver(configure);
+		// Create Driver (this instance is thread-safe)
+		// If you use a multi database, you need create each instance.
+		ArangoDriver driverA = new ArangoDriver(configure); // db = _system (configure#defaultDatabase)
+		ArangoDriver driverB = new ArangoDriver(configure, "mydb2");
 		
-		final String collectionName = "example";
 		try {
 			
-			// Create Collection for *Graph*
-			driver.createCollection(collectionName, false, null, null, null, CollectionType.EDGE);
+			// Create Collection at db(_system)
+			driverA.createCollection("example1", false, null, null, null, null, CollectionType.DOCUMENT);
+			driverA.createDocument("example1", 
+					new MapBuilder().put("attr1", "value1").put("attr2", "value2").get(), 
+					false, false);
+
+			// Create Database mydb2
+			driverB.createDatabase("mydb2");
 			
-			// Create 10 Vertex
-			ArrayList<DocumentEntity<TestVertex>> docs = new ArrayList<DocumentEntity<TestVertex>>();
-			for (int i = 0; i < 10; i++) {
-				TestVertex value = new TestVertex();
-				value.name = "vvv" + i;
-				DocumentEntity<TestVertex> doc = driver.createDocument(collectionName, value, true, false);
-				docs.add(doc);
+			// Create Collection at db(mydb2)
+			driverB.createCollection("example2", false, null, null, null, null, CollectionType.DOCUMENT);
+			driverB.createDocument("example2", 
+					new MapBuilder().put("attr1-B", "value1").put("attr2-B", "value2").get(), 
+					false, false);
+			
+			// print all database names.
+			System.out.println(driverA.getDatabases());
+			// -> _system, mydb2
+
+			// get all document-handle, and print get & print document. (_system DB)
+			for (String documentHandle: driverA.getDocuments("example1", true)) {
+				DocumentEntity<Map> doc = driverA.getDocument(documentHandle, Map.class);
+				System.out.println(doc.getEntity());
 			}
-			
-			// Create Edge
-			// 0 -> 1
-			// 0 -> 2
-			// 2 -> 3
-			
-			EdgeEntity<TestEdgeAttribute> edge1 = driver.createEdge(
-					collectionName, docs.get(0).getDocumentHandle(), docs.get(1).getDocumentHandle(), 
-					new TestEdgeAttribute("edge1", 100));
 
-			EdgeEntity<TestEdgeAttribute> edge2 = driver.createEdge(
-					collectionName, docs.get(0).getDocumentHandle(), docs.get(2).getDocumentHandle(), 
-					new TestEdgeAttribute("edge2", 200));
+			for (String documentHandle: driverB.getDocuments("example2", true)) {
+				DocumentEntity<Map> doc = driverB.getDocument(documentHandle, Map.class);
+				System.out.println(doc.getEntity());
+			}
 
-			EdgeEntity<TestEdgeAttribute> edge3 = driver.createEdge(
-					collectionName, docs.get(2).getDocumentHandle(), docs.get(3).getDocumentHandle(), 
-					new TestEdgeAttribute("edge3", 300));
-			
-			EdgesEntity<TestEdgeAttribute> edges = driver.getEdges(collectionName, docs.get(0).getDocumentHandle(), Direction.ANY, TestEdgeAttribute.class);
-			System.out.println(edges.size());
-			System.out.println(edges.get(0).getAttributes().a);
-			System.out.println(edges.get(1).getAttributes().a);
-			
 		} catch (ArangoException e) {
 			e.printStackTrace();
 		} finally {
-			// Finalize library
 			configure.shutdown();
 		}
-		
+
 	}
 
 }
-
 ```
+
+
 
 ## Use AQL
 
@@ -227,123 +218,7 @@ rs.close();
 
 # Support API
 
-<table>
-<tr><td></td><td></td><td></td><td>1.2.0</td><td>1.2.1</td><td>1.2.2</td></tr>
-<tr><td>Document</td><td></td><td></td><td></td><td></td><td></td></tr>
-<tr><td></td><td>GET</td><td>/_api/document/document-handle</td><td>o</td><td>o</td><td>o</td></tr>
-<tr><td></td><td>POST</td><td>/_api/document?collection=collection-name</td><td>o</td><td>o</td><td>o</td></tr>
-<tr><td></td><td>PUT</td><td>/_api/document/document-handle</td><td>o</td><td>o</td><td>o</td></tr>
-<tr><td></td><td>PATCH</td><td>/_api/document/document-handle</td><td>o</td><td>o</td><td>o</td></tr>
-<tr><td></td><td>DELETE</td><td>/_api/document/document-handle</td><td>o</td><td>o</td><td>o</td></tr>
-<tr><td></td><td>HEAD</td><td>/_api/document/document-handle</td><td>o</td><td>o</td><td>o</td></tr>
-<tr><td></td><td>GET</td><td>/_api/document?collection=collection-name</td><td>o</td><td>o</td><td>o</td></tr>
-<tr><td>Edge</td><td></td><td></td><td></td><td></td><td></td></tr>
-<tr><td></td><td>GET</td><td>/_api/edge/document-handle</td><td>o</td><td>o</td><td>o</td></tr>
-<tr><td></td><td>POST</td><td>/_api/edge?collection=collection-name&from=from-handle&to=to-handle</td><td>o</td><td>o</td><td>o</td></tr>
-<tr><td></td><td>PUT</td><td>/_api/edge/document-handle</td><td>o</td><td>o</td><td>o</td></tr>
-<tr><td></td><td>DELETE</td><td>/_api/edge/document-handle</td><td>o</td><td>o</td><td>o</td></tr>
-<tr><td></td><td>HEAD</td><td>/_api/edge/document-handle</td><td>o</td><td>o</td><td>o</td></tr>
-<tr><td></td><td>GET</td><td>/_api/edges/collection-name?vertex=vertex-handle&directory=direction</td><td>o</td><td>o</td><td>o</td></tr>
-<tr><td>Cursor</td><td></td><td></td><td></td><td></td><td></td></tr>
-<tr><td></td><td>POST</td><td>/_api/cursor</td><td>o</td><td>o</td><td>o</td></tr>
-<tr><td></td><td>POST</td><td>/_api/query</td><td>o</td><td>o</td><td>o</td></tr>
-<tr><td></td><td>PUT</td><td>/_api/cursor/cursor-identifier</td><td>o</td><td>o</td><td>o</td></tr>
-<tr><td></td><td>DELETE</td><td>/_api/cursor/cursor-identifier</td><td>o</td><td>o</td><td>o</td></tr>
-<tr><td>AQL</td><td></td><td></td><td></td><td></td><td></td></tr>
-<tr><td></td><td>POST</td><td>/_api/explain</td><td>x</td><td>x</td><td>o</td></tr>
-<tr><td></td><td>POST</td><td>/_api/query</td><td>-</td><td>-</td><td>-</td></tr>
-<tr><td>Simple</td><td></td><td></td><td></td><td></td><td></td></tr>
-<tr><td></td><td>PUT</td><td>/_api/simple/all</td><td>o</td><td>o</td><td>o</td></tr>
-<tr><td></td><td>PUT</td><td>/_api/simple/by-example</td><td>o</td><td>o</td><td>o</td></tr>
-<tr><td></td><td>PUT</td><td>/_api/simple/first-example</td><td>o</td><td>o</td><td>o</td></tr>
-<tr><td></td><td>PUT</td><td>/_api/simple/any</td><td>o</td><td>o</td><td>o</td></tr>
-<tr><td></td><td>PUT</td><td>/_api/simple/range</td><td>o</td><td>o</td><td>o</td></tr>
-<tr><td></td><td>PUT</td><td>/_api/simple/near</td><td>x</td><td>x</td><td>x</td></tr>
-<tr><td></td><td>PUT</td><td>/_api/simple/within</td><td>x</td><td>x</td><td>x</td></tr>
-<tr><td></td><td>PUT</td><td>/_api/simple/fulltext</td><td>x</td><td>x</td><td>o</td></tr>
-<tr><td></td><td>PUT</td><td>/_api/simple/remove-by-example</td><td>o</td><td>o</td><td>o</td></tr>
-<tr><td></td><td>PUT</td><td>/_api/simple/replace-by-example</td><td>o</td><td>o</td><td>o</td></tr>
-<tr><td></td><td>PUT</td><td>/_api/simple/update-by-example</td><td>o</td><td>o</td><td>o</td></tr>
-<tr><td>Collections</td><td></td><td></td><td></td><td></td><td></td></tr>
-<tr><td>Creating and Deleting Collections</td><td></td><td></td><td></td><td></td><td></td></tr>
-<tr><td></td><td>POST</td><td>/_api/collection</td><td>o</td><td>o</td><td>o</td></tr>
-<tr><td></td><td>DELETE</td><td>/_api/collection/collection-name</td><td>o</td><td>o</td><td>o</td></tr>
-<tr><td></td><td>PUT</td><td>/_api/collection/collection-name/truncate</td><td>o</td><td>o</td><td>o</td></tr>
-<tr><td>Getting Information about a Collection</td><td></td><td></td><td></td><td></td><td></td></tr>
-<tr><td></td><td>GET</td><td>/_api/collection/collection-name</td><td>o</td><td>o</td><td>o</td></tr>
-<tr><td></td><td>GET</td><td>/_api/collection/collection-name/properties</td><td>o</td><td>o</td><td>o</td></tr>
-<tr><td></td><td>GET</td><td>/_api/collection/collection-name/count</td><td>o</td><td>o</td><td>o</td></tr>
-<tr><td></td><td>GET</td><td>/_api/collection/collection-name/figures</td><td>o</td><td>o</td><td>o</td></tr>
-<tr><td></td><td>GET</td><td>/_api/collection/collection-name/revision</td><td>x</td><td>x</td><td>o</td></tr>
-<tr><td></td><td>GET</td><td>/_api/collection/collection-name</td><td>-</td><td>-</td><td>-</td></tr>
-<tr><td></td><td>GET</td><td>/_api/collection/</td><td>o</td><td>o</td><td>o</td></tr>
-<tr><td>Modifying a Collection</td><td></td><td></td><td></td><td></td><td></td></tr>
-<tr><td></td><td>PUT</td><td>/_api/collection/collection-name/load</td><td>o</td><td>o</td><td>o</td></tr>
-<tr><td></td><td>PUT</td><td>/_api/collection/collection-name/unload</td><td>o</td><td>o</td><td>o</td></tr>
-<tr><td></td><td>PUT</td><td>/_api/collection/collection-name/properties</td><td>o</td><td>o</td><td>o</td></tr>
-<tr><td></td><td>PUT</td><td>/_api/collection/collection-name/rename</td><td>o</td><td>o</td><td>o</td></tr>
-<tr><td>Index</td><td></td><td></td><td></td><td></td><td></td></tr>
-<tr><td></td><td>GET</td><td>/_api/index/index-handle</td><td>o</td><td>o</td><td>o</td></tr>
-<tr><td></td><td>POST</td><td>/_api/index?collection=collection-name</td><td>o</td><td>o</td><td>o</td></tr>
-<tr><td></td><td>DELETE</td><td>/_api/index/index-handle</td><td>o</td><td>o</td><td>o</td></tr>
-<tr><td></td><td>GET</td><td>/_api/index?collection=index-handle</td><td>o</td><td>o</td><td>o</td></tr>
-<tr><td>Cap</td><td></td><td></td><td></td><td></td><td></td></tr>
-<tr><td></td><td>POST</td><td>/_api/index</td><td>o</td><td>o</td><td>o</td></tr>
-<tr><td>Hash Index</td><td></td><td></td><td></td><td></td><td></td></tr>
-<tr><td></td><td>POST</td><td>/_api/index</td><td>-</td><td>-</td><td>-</td></tr>
-<tr><td></td><td>PUT</td><td>/_api/simple/by-example</td><td>-</td><td>-</td><td>-</td></tr>
-<tr><td></td><td>PUT</td><td>/_api/simple/first-example</td><td>-</td><td>-</td><td>-</td></tr>
-<tr><td>Skip List Index</td><td></td><td></td><td></td><td></td><td></td></tr>
-<tr><td></td><td>POST</td><td>/_api/index</td><td>-</td><td>-</td><td>-</td></tr>
-<tr><td></td><td>PUT</td><td>/_api/simple/range</td><td>-</td><td>-</td><td>-</td></tr>
-<tr><td>Geo Index</td><td></td><td></td><td></td><td></td><td></td></tr>
-<tr><td></td><td>POST</td><td>/_api/index</td><td>-</td><td>-</td><td>-</td></tr>
-<tr><td></td><td>PUT</td><td>/_api/simple/near</td><td>-</td><td>-</td><td>-</td></tr>
-<tr><td></td><td>PUT</td><td>/_api/simple/within</td><td>-</td><td>-</td><td>-</td></tr>
-<tr><td>Full Text Index</td><td></td><td></td><td></td><td></td><td></td></tr>
-<tr><td></td><td>POST</td><td>/_api/index</td><td>x</td><td>x</td><td>o</td></tr>
-<tr><td></td><td>PUT</td><td>/_api/simple/fulltext</td><td>-</td><td>-</td><td>-</td></tr>
-<tr><td>Graph</td><td></td><td></td><td></td><td></td><td></td></tr>
-<tr><td></td><td>POST</td><td>/_api/graph</td><td>x</td><td>x</td><td>x</td></tr>
-<tr><td></td><td>GET</td><td>/_api/graph</td><td>x</td><td>x</td><td>x</td></tr>
-<tr><td></td><td>DELETE</td><td>/_api/graph</td><td>x</td><td>x</td><td>x</td></tr>
-<tr><td></td><td>POST</td><td>/_api/graph/graph-name/vertex</td><td>x</td><td>x</td><td>x</td></tr>
-<tr><td></td><td>GET</td><td>/_api/graph/graph-name/vertex</td><td>x</td><td>x</td><td>x</td></tr>
-<tr><td></td><td>PUT</td><td>/_api/graph/graph-name/vertex</td><td>x</td><td>x</td><td>x</td></tr>
-<tr><td></td><td>PATCH</td><td>/_api/graph/graph-name/vertex</td><td>x</td><td>x</td><td>x</td></tr>
-<tr><td></td><td>DELETE</td><td>/_api/graph/graph-name/vertex</td><td>x</td><td>x</td><td>x</td></tr>
-<tr><td></td><td>POST</td><td>/_api/graph/graph-name/vertices</td><td>x</td><td>x</td><td>x</td></tr>
-<tr><td></td><td>POST</td><td>/_api/graph/graph-name/edge</td><td>x</td><td>x</td><td>x</td></tr>
-<tr><td></td><td>GET</td><td>/_api/graph/graph-name/edge</td><td>x</td><td>x</td><td>x</td></tr>
-<tr><td></td><td>PUT</td><td>/_api/graph/graph-name/edge</td><td>x</td><td>x</td><td>x</td></tr>
-<tr><td></td><td>PATCH</td><td>/_api/graph/graph-name/edge</td><td>x</td><td>x</td><td>x</td></tr>
-<tr><td></td><td>DELETE</td><td>/_api/graph/graph-name/edge</td><td>x</td><td>x</td><td>x</td></tr>
-<tr><td></td><td>POST</td><td>/_api/graph/graph-name/edges</td><td>x</td><td>x</td><td>x</td></tr>
-<tr><td>Bulk Import</td><td></td><td></td><td></td><td></td><td></td></tr>
-<tr><td>Importing self-contained documents</td><td></td><td></td><td>x</td><td>x</td><td>x</td></tr>
-<tr><td>Importing self-contained documents(array)</td><td></td><td></td><td>x</td><td>x</td><td>o</td></tr>
-<tr><td>Importing headers and values</td><td></td><td></td><td>x</td><td>x</td><td>o</td></tr>
-<tr><td>Importing in edge collections</td><td></td><td></td><td>x</td><td>x</td><td>x</td></tr>
-<tr><td>Batch Requests</td><td></td><td></td><td>x</td><td>x</td><td>x</td></tr>
-<tr><td>Admin</td><td></td><td></td><td></td><td></td><td></td></tr>
-<tr><td></td><td>GET</td><td>/_admin/log</td><td>o</td><td>o</td><td>o</td></tr>
-<tr><td></td><td>GET</td><td>/_admin/status</td><td>o</td><td>o</td><td>o</td></tr>
-<tr><td></td><td>POST</td><td>/_admin/routing/reload</td><td>x</td><td>x</td><td>o</td></tr>
-<tr><td></td><td>POST</td><td>/_admin/modules/flush</td><td>x</td><td>x</td><td>o</td></tr>
-<tr><td></td><td>GET</td><td>/_admin/connection-statistics</td><td>o</td><td>o</td><td>o</td></tr>
-<tr><td></td><td>GET</td><td>/_admin/request-statistics</td><td>x</td><td>x</td><td>x</td></tr>
-<tr><td>User</td><td></td><td></td><td></td><td></td><td></td></tr>
-<tr><td></td><td>POST</td><td>/_api/user</td><td>x</td><td>x</td><td>o</td></tr>
-<tr><td></td><td>PUT</td><td>/_api/user/username</td><td>x</td><td>x</td><td>o</td></tr>
-<tr><td></td><td>PATCH</td><td>/_api/user/username</td><td>x</td><td>x</td><td>o</td></tr>
-<tr><td></td><td>DELETE</td><td>/_api/user/username</td><td>x</td><td>x</td><td>o</td></tr>
-<tr><td></td><td>GET</td><td>/_api/user/username</td><td>x</td><td>x</td><td>o</td></tr>
-<tr><td>Misc</td><td></td><td></td><td></td><td></td><td></td></tr>
-<tr><td></td><td>GET</td><td>/_admin/version</td><td>o</td><td>o</td><td>o</td></tr>
-<tr><td></td><td>GET</td><td>/_admin/time</td><td>o</td><td>o</td><td>o</td></tr>
-<tr><td></td><td>GET</td><td>/_admin/echo</td><td>x</td><td>x</td><td>x</td></tr>
-</table>
-
+[PDF File](support_api.pdf)
 
 # TODO
 
@@ -356,6 +231,7 @@ rs.close();
 * PUT /_api/simple/near
 * PUT /_api/simple/within
 * Blueprints
+* Document of Serialization control by annotation (@Exclude)
 
 This library does not support admin/_echo
 
@@ -366,5 +242,3 @@ Apache License 2.0
 # Author
 
 Twitter: @tamtam180
-
-

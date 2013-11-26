@@ -19,21 +19,16 @@ package at.orz.arangodb;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
-import java.util.Map.Entry;
-
 import org.junit.Test;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-import at.orz.arangodb.ArangoException;
 import at.orz.arangodb.entity.AdminLogEntity;
-import at.orz.arangodb.entity.AdminStatusEntity;
 import at.orz.arangodb.entity.ArangoUnixTime;
 import at.orz.arangodb.entity.ArangoVersion;
-import at.orz.arangodb.entity.ConnectionStatisticsEntity;
 import at.orz.arangodb.entity.DefaultEntity;
-import at.orz.arangodb.util.ReflectionUtils;
+import at.orz.arangodb.entity.StatisticsDescriptionEntity;
+import at.orz.arangodb.entity.StatisticsEntity;
+
+import com.google.gson.Gson;
 
 /**
  * @author tamtam180 - kirscheless at gmail.com
@@ -41,12 +36,16 @@ import at.orz.arangodb.util.ReflectionUtils;
  */
 public class ArangoDriverAdminTest extends BaseTest {
 
+	public ArangoDriverAdminTest(ArangoConfigure configure, ArangoDriver driver) {
+		super(configure, driver);
+	}
+
 	@Test
 	public void test_version() throws ArangoException {
 		
 		ArangoVersion version = driver.getVersion();
 		assertThat(version.getServer(), is("arango"));
-		assertThat(version.getVersion(), is("1.2.3"));
+		assertThat(version.getVersion(), is("1.4.0"));
 		
 	}
 	
@@ -55,13 +54,12 @@ public class ArangoDriverAdminTest extends BaseTest {
 		
 		ArangoUnixTime time = driver.getTime();
 		assertThat(time.getSecond(), is(not(0)));
-		assertThat(time.getMillisecond(), is(not(0L)));
-		assertThat(time.getMicrosecond(), is(not(0L)));
+		assertThat(time.getMicrosecond(), is(not(0)));
 		
 		System.out.println("unixtime=" + time.getSecond());
-		System.out.println("unixtime_millis=" + time.getMillisecond());
 		System.out.println("unixtime_micros=" + time.getMicrosecond());
-		
+		System.out.println("unixtime_millis=" + time.getTimeMillis());
+
 	}
 	
 	@Test
@@ -98,32 +96,34 @@ public class ArangoDriverAdminTest extends BaseTest {
 	// TODO テスト増やす
 	
 	@Test
-	public void test_status() throws ArangoException {
+	public void test_statistics() throws ArangoException {
 		
-		AdminStatusEntity status = driver.getServerStatus();
+		StatisticsEntity stat = driver.getStatistics();
 		
 		// debug
-		System.out.println(status.getMinorPageFaults());
-		System.out.println(status.getMajorPageFaults());
-		System.out.println(status.getUserTime());
-		System.out.println(status.getSystemTime());
-		System.out.println(status.getNumberThreads());
-		System.out.println(status.getResidentSize());
-		System.out.println(status.getVirtualSize());
+		Gson gson = new Gson();
+		System.out.println(gson.toJson(stat));
+		System.out.println(gson.toJson(stat.getSystem()));
+		System.out.println(gson.toJson(stat.getClient()));
+		System.out.println(gson.toJson(stat.getServer()));
+
+		// TODO: assert null
 
 	}
 
 	@Test
-	public void test_connection_statistics() throws ArangoException {
+	public void test_statistics_description() throws ArangoException {
+
+		StatisticsDescriptionEntity desc = driver.getStatisticsDescription();
+
+		// debug
+		Gson gson = new Gson();
+		System.out.println(gson.toJson(desc));
+		System.out.println(gson.toJson(desc.getGroups()));
+		System.out.println(gson.toJson(desc.getFigures()));
+	
+		// TODO: assert null
 		
-		// Array
-		ConnectionStatisticsEntity cs = driver.getConnectionStatistics(null, null);
-		System.out.println(new GsonBuilder() .setPrettyPrinting().serializeSpecialFloatingPointValues().create().toJson(cs));
-
-		// One
-		cs = driver.getConnectionStatistics(null, 0);
-		System.out.println(new GsonBuilder() .setPrettyPrinting().serializeSpecialFloatingPointValues().create().toJson(cs));
-
 	}
 	
 	@Test
@@ -143,5 +143,71 @@ public class ArangoDriverAdminTest extends BaseTest {
 		assertThat(entity.isError(), is(false));
 		
 	}
+
+	@Test
+	public void test_execute_do_nothing() throws ArangoException {
+		
+		DefaultEntity entity = driver.executeScript("");
+		assertThat(entity.isError(), is(false));
+		assertThat(entity.getCode(), is(200));
+		assertThat(entity.getStatusCode(), is(200));
+		
+	}
+
+	@Test
+	public void test_execute() throws ArangoException {
+		
+		DefaultEntity entity = driver.executeScript(
+				"cols = db._collections();\n" +
+				"len = cols.length;\n"
+				);
+		assertThat(entity.isError(), is(false));
+		assertThat(entity.getCode(), is(200));
+		assertThat(entity.getStatusCode(), is(200));
+		
+	}
+
+	@Test
+	public void test_execute_delete_collection() throws ArangoException {
+		
+		DefaultEntity entity1 = driver.executeScript("db._drop(\"" + "col-execute-delete-test" + "\")");
+		assertThat(entity1.isError(), is(false));
+		assertThat(entity1.getCode(), is(200));
+		assertThat(entity1.getStatusCode(), is(200));
+		
+		driver.createCollection("col-execute-delete-test");
+		driver.getCollection("col-execute-delete-test");
+
+		DefaultEntity entity2 = driver.executeScript("db._drop(\"" + "col-execute-delete-test" + "\")");
+		assertThat(entity2.isError(), is(false));
+		assertThat(entity2.getCode(), is(200));
+		assertThat(entity2.getStatusCode(), is(200));
+		
+		try {
+			driver.getCollection("col-execute-delete-test");
+			fail();
+		} catch (ArangoException e) {
+			assertThat(e.getCode(), is(404));
+			assertThat(e.getErrorNumber(), is(1203));
+		}
+	}
+
+	@Test
+	public void test_execute_error() throws ArangoException {
+		try {
+			driver.executeScript("xxx");
+			fail();
+		} catch (ArangoException e) {
+			String t = 
+				"JavaScript exception in file 'undefined' at 1,14: ReferenceError: xxx is not defined\n" +
+				"!(function() {xxx}());\n" +
+				"!             ^\n" +
+				"stacktrace: ReferenceError: xxx is not defined\n";
+			assertThat(e.getMessage(), startsWith(t));
+			assertThat(e.getEntity().getStatusCode(), is(500));
+		}
+		
+	}
+
 
 }

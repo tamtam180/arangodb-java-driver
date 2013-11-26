@@ -18,18 +18,19 @@ package at.orz.arangodb.entity;
 
 import java.io.StringWriter;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
 
+import at.orz.arangodb.annotations.Exclude;
 import at.orz.arangodb.entity.CollectionEntity.Figures;
+import at.orz.arangodb.entity.EntityDeserializers.CollectionKeyOptionDeserializer;
+import at.orz.arangodb.entity.marker.VertexEntity;
 import at.orz.arangodb.http.JsonSequenceEntity;
 
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 
 /**
@@ -42,6 +43,8 @@ public class EntityFactory {
 	private static Gson gsonNull;
 	private static GsonBuilder getBuilder() {
 		return new GsonBuilder()
+			.addSerializationExclusionStrategy(new ExcludeExclusionStrategy(true))
+			.addDeserializationExclusionStrategy(new ExcludeExclusionStrategy(false))
 			.registerTypeAdapter(CollectionStatus.class, new CollectionStatusTypeAdapter())
 			.registerTypeAdapter(CollectionEntity.class, new EntityDeserializers.CollectionEntityDeserializer())
 			.registerTypeAdapter(DocumentEntity.class, new EntityDeserializers.DocumentEntityDeserializer())
@@ -53,59 +56,40 @@ public class EntityFactory {
 			.registerTypeAdapter(CursorEntity.class, new EntityDeserializers.CursorEntityDeserializer())
 			.registerTypeAdapter(IndexEntity.class, new EntityDeserializers.IndexEntityDeserializer())
 			.registerTypeAdapter(IndexesEntity.class, new EntityDeserializers.IndexesEntityDeserializer())
-			.registerTypeAdapter(EdgeEntity.class, new EntityDeserializers.EdgeEntityDeserializer())
-			.registerTypeAdapter(EdgesEntity.class, new EntityDeserializers.EdgesEntityDeserializer())
 			.registerTypeAdapter(ScalarExampleEntity.class, new EntityDeserializers.ScalarExampleEntityDeserializer())
 			.registerTypeAdapter(SimpleByResultEntity.class, new EntityDeserializers.SimpleByResultEntityDeserializer())
 			.registerTypeAdapter(AdminLogEntity.class, new EntityDeserializers.AdminLogEntryEntityDeserializer())
-			.registerTypeAdapter(AdminStatusEntity.class, new EntityDeserializers.AdminStatusEntityDeserializer())
-			.registerTypeAdapter(ConnectionStatisticsEntity.class, new EntityDeserializers.ConnectionStatisticsEntityDeserializer())
+			.registerTypeAdapter(StatisticsEntity.class, new EntityDeserializers.StatisticsEntityDeserializer())
+			.registerTypeAdapter(StatisticsDescriptionEntity.class, new EntityDeserializers.StatisticsDescriptionEntityDeserializer())
 			.registerTypeAdapter(ExplainEntity.class, new EntityDeserializers.ExplainEntityDeserializer())
 			.registerTypeAdapter(UserEntity.class, new EntityDeserializers.UserEntityDeserializer())
 			.registerTypeAdapter(ImportResultEntity.class, new EntityDeserializers.ImportResultEntityDeserializer())
+			.registerTypeAdapter(DatabaseEntity.class, new EntityDeserializers.DatabaseEntityDeserializer())
+			.registerTypeAdapter(StringsResultEntity.class, new EntityDeserializers.StringsResultEntityDeserializer())
+			.registerTypeAdapter(BooleanResultEntity.class, new EntityDeserializers.BooleanResultEntityDeserializer())
+			.registerTypeAdapter(Endpoint.class, new EntityDeserializers.EndpointDeserializer())
+			.registerTypeAdapter(DocumentResultEntity.class, new EntityDeserializers.DocumentResultEntityDeserializer())
+			.registerTypeAdapter(CollectionKeyOptionDeserializer.class, new EntityDeserializers.CollectionKeyOptionDeserializer())
+			.registerTypeAdapter(ReplicationInventoryEntity.class, new EntityDeserializers.ReplicationInventoryEntityDeserializer())
+			.registerTypeAdapter(ReplicationDumpRecord.class, new EntityDeserializers.ReplicationDumpRecordDeserializer())
+			.registerTypeAdapter(ReplicationSyncEntity.class, new EntityDeserializers.ReplicationSyncEntityDeserializer())
+			.registerTypeAdapter(MapAsEntity.class, new EntityDeserializers.MapAsEntityDeserializer())
+			.registerTypeAdapter(ReplicationLoggerConfigEntity.class, new EntityDeserializers.ReplicationLoggerConfigEntityDeserializer())
+			.registerTypeAdapter(ReplicationApplierConfigEntity.class, new EntityDeserializers.ReplicationApplierConfigEntityDeserializer())
+			.registerTypeAdapter(ReplicationApplierState.class, new EntityDeserializers.ReplicationApplierStateDeserializer())
+			.registerTypeAdapter(ReplicationApplierStateEntity.class, new EntityDeserializers.ReplicationApplierStateEntityDeserializer())
+			.registerTypeAdapter(ReplicationLoggerStateEntity.class, new EntityDeserializers.ReplicationLoggerStateEntityDeserializer())
+			.registerTypeAdapter(ReplicationLoggerStateEntity.Client.class, new EntityDeserializers.ReplicationLoggerStateEntityClientDeserializer())
+			.registerTypeAdapter(GraphEntity.class, new EntityDeserializers.GraphEntityDeserializer())
+			.registerTypeAdapter(GraphsEntity.class, new EntityDeserializers.GraphsEntityDeserializer())
+			.registerTypeAdapter(DeletedEntity.class, new EntityDeserializers.DeleteEntityDeserializer())
+			.registerTypeAdapter(VertexEntity.class, new EntityDeserializers.VertexEntityDeserializer())
+			.registerTypeAdapter(EdgeEntity.class, new EntityDeserializers.EdgeEntityDeserializer())
 			;
 	}
 	static {
 		gson = getBuilder().create();
 		gsonNull = getBuilder().serializeNulls().create();
-	}
-	
-	public static <T> CursorEntity<T> createResult(CursorEntity<T> entity, Class<T> clazz) {
-		if (entity._array == null) {
-			entity.results = Collections.emptyList();
-		} else if (entity._array.isJsonNull() || entity._array.size() == 0) {
-			entity.results = Collections.emptyList();
-			entity._array = null;
-		} else {
-			ArrayList<T> list = new ArrayList<T>(entity._array.size());
-			for (JsonElement elem : entity._array) {
-				list.add(gson.fromJson(elem, clazz));
-			}
-			entity.results = list;
-			entity._array = null;
-		}
-		return entity;
-	}
-
-	public static <T> CursorEntity<DocumentEntity<T>> createDocumentResult(CursorEntity<DocumentEntity<T>> entity, Class<T> clazz) {
-		if (entity._array == null) {
-			entity.results = Collections.emptyList();
-		} else if (entity._array.isJsonNull() || entity._array.size() == 0) {
-			entity.results = Collections.emptyList();
-			entity._array = null;
-		} else {
-			ArrayList<DocumentEntity<T>> list = new ArrayList<DocumentEntity<T>>(entity._array.size());
-			for (JsonElement elem : entity._array) {
-				DocumentEntity<T> doc = gson.fromJson(elem, DocumentEntity.class);
-				if (doc != null) {
-					doc.setEntity(gson.fromJson(elem, clazz));
-				}
-				list.add(doc);
-			}
-			entity.results = list;
-			entity._array = null;
-		}
-		return entity;
 	}
 
 	public static <T> T createEntity(String jsonText, Type type) {
@@ -134,42 +118,37 @@ public class EntityFactory {
 		return includeNullValue ? gsonNull.toJson(obj) : gson.toJson(obj);
 	}
 
-	public static <T> EdgesEntity<T> createEdges(String jsonText, Class<T> clazz) {
-		EdgesEntity<T> edges = createEntity(jsonText, EdgesEntity.class);
-		edges.edges = createEdges(edges._edges, clazz);
-		edges._edges = null;
-		return edges;
-	}
-	private static <T> List<EdgeEntity<T>> createEdges(JsonArray array, Class<T> clazz) {
-		
-		if (array == null) {
-			return null;
-		}
-		
-		ArrayList<EdgeEntity<T>> edges = new ArrayList<EdgeEntity<T>>(array.size());
-		for (JsonElement elem: array) {
-			EdgeEntity<T> edge = gson.fromJson(elem, EdgeEntity.class);
-			if (clazz != null) {
-				edge.attributes = gson.fromJson(elem, clazz);
-			}
-			edges.add(edge);
-		}
-		
-		return edges;
+	/**
+	 * 
+	 * @param obj
+	 * @param includeNullValue
+	 * @return
+	 * @since 1.4.0
+	 */
+	public static <T> JsonElement toJsonElement(T obj, boolean includeNullValue) {
+		return includeNullValue ? gsonNull.toJsonTree(obj) : gson.toJsonTree(obj);
 	}
 	
-	public static <T> ScalarExampleEntity<T> createScalarExampleEntity(ScalarExampleEntity<T> entity, Class<T> clazz) {
-		
-		if (entity._documentJson != null) {
-			DocumentEntity<T> document = gson.fromJson(entity._documentJson, DocumentEntity.class);
-			if (document != null) {
-				document.setEntity(gson.fromJson(entity._documentJson, clazz));
-				entity.setDocument(document);
-				entity._documentJson = null;
-			}
+	/**
+	 * 
+	 * @author tamtam180 - kirscheless at gmail.com
+	 * @since 1.4.0
+	 */
+	private static class ExcludeExclusionStrategy implements ExclusionStrategy {
+		private boolean serialize;
+		public ExcludeExclusionStrategy(boolean serialize) {
+			this.serialize = serialize;
 		}
-		
-		return entity;
+		public boolean shouldSkipField(FieldAttributes f) {
+			Exclude annotation = f.getAnnotation(Exclude.class);
+			if (annotation != null && (serialize ? annotation.serialize() : annotation.deserialize())) {
+				return true;
+			}
+			return false;
+		}
+		public boolean shouldSkipClass(Class<?> clazz) {
+			return false;
+		}
 	}
 	
 }

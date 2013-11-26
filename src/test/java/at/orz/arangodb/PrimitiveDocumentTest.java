@@ -33,6 +33,10 @@ import at.orz.arangodb.entity.DocumentEntity;
  */
 public class PrimitiveDocumentTest extends BaseTest {
 	
+	public PrimitiveDocumentTest(ArangoConfigure configure, ArangoDriver driver) {
+		super(configure, driver);
+	}
+
 	@Test
 	public void test_string() throws ArangoException {
 		

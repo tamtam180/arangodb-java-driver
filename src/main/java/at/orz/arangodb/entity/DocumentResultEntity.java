@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 tamtam180
+ * Copyright (C) 2012,2013 tamtam180
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,39 +16,36 @@
 
 package at.orz.arangodb.entity;
 
-import java.util.Iterator;
 import java.util.List;
-
-import at.orz.arangodb.util.CollectionUtils;
-
-import com.google.gson.JsonArray;
 
 /**
  * @author tamtam180 - kirscheless at gmail.com
  *
  */
-public class EdgesEntity<T> extends BaseEntity implements Iterable<EdgeEntity<T>> {
-	
-	List<EdgeEntity<T>> edges;
-	transient JsonArray _edges;
+public class DocumentResultEntity<T> extends BaseEntity {
 
-	public Iterator<EdgeEntity<T>> iterator() {
-		return CollectionUtils.safetyIterator(edges);
+	List<DocumentEntity<T>> result;
+	
+	public DocumentEntity<T> getOne() {
+		if (result == null || result.isEmpty()) {
+			return null;
+		}
+		return result.get(0);
 	}
 	
 	public int size() {
-		return (edges == null) ? 0 : edges.size();
-	}
-	
-	public EdgeEntity<T> get(int index) {
-		return edges.get(index);
+		if (result == null) {
+			return 0;
+		}
+		return result.size();
 	}
 
-	public List<EdgeEntity<T>> getEdges() {
-		return edges;
+	public List<DocumentEntity<T>> getResult() {
+		return result;
 	}
-	public void setEdges(List<EdgeEntity<T>> edges) {
-		this.edges = edges;
+
+	public void setResult(List<DocumentEntity<T>> result) {
+		this.result = result;
 	}
 	
 }

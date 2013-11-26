@@ -17,6 +17,7 @@
 package at.orz.arangodb.impl;
 
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Locale;
 
 import at.orz.arangodb.ArangoConfigure;
@@ -40,11 +41,11 @@ public class InternalDocumentDriverImpl extends BaseArangoDriverImpl {
 		super(configure);
 	}
 
-	private <T> DocumentEntity<T> _createDocument(String collectionName, Object value, Boolean createCollection, Boolean waitForSync, boolean raw) throws ArangoException {
+	private <T> DocumentEntity<T> _createDocument(String database, String collectionName, Object value, Boolean createCollection, Boolean waitForSync, boolean raw) throws ArangoException {
 		
 		validateCollectionName(collectionName);
 		HttpResponseEntity res = httpManager.doPost(
-				baseUrl + "/_api/document", 
+				createEndpointUrl(baseUrl, database, "/_api/document"), 
 				new MapBuilder()
 					.put("collection", collectionName)
 					.put("createCollection", createCollection)
@@ -56,21 +57,21 @@ public class InternalDocumentDriverImpl extends BaseArangoDriverImpl {
 		
 	}
 
-	public <T> DocumentEntity<T> createDocument(String collectionName, Object value, Boolean createCollection, Boolean waitForSync) throws ArangoException {
-		return _createDocument(collectionName, value, createCollection, waitForSync, false);
+	public <T> DocumentEntity<T> createDocument(String database, String collectionName, Object value, Boolean createCollection, Boolean waitForSync) throws ArangoException {
+		return _createDocument(database, collectionName, value, createCollection, waitForSync, false);
 	}
 
-	public <T> DocumentEntity<T> createDocumentRaw(String collectionName, String rawJsonString, Boolean createCollection, Boolean waitForSync) throws ArangoException {
-		return _createDocument(collectionName, rawJsonString, createCollection, waitForSync, true);
+	public <T> DocumentEntity<T> createDocumentRaw(String database, String collectionName, String rawJsonString, Boolean createCollection, Boolean waitForSync) throws ArangoException {
+		return _createDocument(database, collectionName, rawJsonString, createCollection, waitForSync, true);
 	}
 
-	public <T> DocumentEntity<T> updateDocument(String documentHandle, Object value, long rev, Policy policy, Boolean waitForSync) throws ArangoException {
+	public <T> DocumentEntity<T> replaceDocument(String database, String documentHandle, Object value, Long rev, Policy policy, Boolean waitForSync) throws ArangoException {
 		
 		validateDocumentHandle(documentHandle);
 		HttpResponseEntity res = httpManager.doPut(
-				baseUrl + "/_api/document/" + documentHandle, 
+				createEndpointUrl(baseUrl, database, "/_api/document", documentHandle), 
 				new MapBuilder()
-					.put("rev", rev == -1 ? null : rev)
+					.put("rev", rev)
 					.put("policy", policy == null ? null : policy.name())
 					.put("waitForSync", waitForSync)
 					.get(),
@@ -80,13 +81,13 @@ public class InternalDocumentDriverImpl extends BaseArangoDriverImpl {
 		
 	}
 
-	public <T> DocumentEntity<T> partialUpdateDocument(String documentHandle, Object value, long rev, Policy policy, Boolean waitForSync, Boolean keepNull) throws ArangoException {
+	public <T> DocumentEntity<T> updateDocument(String database, String documentHandle, Object value, Long rev, Policy policy, Boolean waitForSync, Boolean keepNull) throws ArangoException {
 		
 		validateDocumentHandle(documentHandle);
 		HttpResponseEntity res = httpManager.doPatch(
-				baseUrl + "/_api/document/" + documentHandle, 
+				createEndpointUrl(baseUrl, database, "/_api/document", documentHandle), 
 				new MapBuilder()
-					.put("rev", rev == -1 ? null : rev)
+					.put("rev", rev)
 					.put("policy", policy == null ? null : policy.name())
 					.put("waitForSync", waitForSync)
 					.put("keepNull", keepNull)
@@ -98,34 +99,36 @@ public class InternalDocumentDriverImpl extends BaseArangoDriverImpl {
 		
 	}
 
-	
-//	public List<String> getDocuments(long collectionId) throws ArangoException {
-//		return getDocuments(String.valueOf(collectionId));
-//	}
-	public List<String> getDocuments(String collectionName) throws ArangoException {
+	private static final String API_DOCUMENT_PREFIX = "/_api/document/";
+	public List<String> getDocuments(String database, String collectionName, boolean handleConvert) throws ArangoException {
 		
 		HttpResponseEntity res = httpManager.doGet(
-				baseUrl + "/_api/document", 
+				createEndpointUrl(baseUrl, database, "/_api/document"), 
 				new MapBuilder("collection", collectionName).get()
 				);
 		
 		DocumentsEntity entity = createEntity(res, DocumentsEntity.class);
-		return CollectionUtils.safety(entity.getDocuments());
+		List<String> documents = CollectionUtils.safety(entity.getDocuments());
 		
+		if (handleConvert && !documents.isEmpty()) {
+			ListIterator<String> lit = documents.listIterator();
+			while (lit.hasNext()) {
+				String d = lit.next();
+				if (d.startsWith(API_DOCUMENT_PREFIX)) {
+					lit.set(d.substring(API_DOCUMENT_PREFIX.length()));
+				}
+			}
+		}
+		return documents;
 	}
 	
-	
-//	public long checkDocument(long collectionId, long documentId) throws ArangoException {
-//		return checkDocument(createDocumentHandle(collectionId, documentId));
-//	}
-//	public long checkDocument(String collectionName, long documentId) throws ArangoException {
-//		return checkDocument(createDocumentHandle(collectionName, documentId));
-//	}
-	public long checkDocument(String documentHandle) throws ArangoException {
+	public long checkDocument(String database, String documentHandle) throws ArangoException {
+		
+		// TODO: rev, policy
 		
 		validateDocumentHandle(documentHandle);
 		HttpResponseEntity res = httpManager.doHead(
-				baseUrl + "/_api/document/" + documentHandle,
+				createEndpointUrl(baseUrl, database, "/_api/document", documentHandle),
 				null
 				);
 		
@@ -134,47 +137,33 @@ public class InternalDocumentDriverImpl extends BaseArangoDriverImpl {
 		
 	}
 
-//	public <T> DocumentEntity<T> getDocument(long collectionId, long documentId, Class<T> clazz) throws ArangoException {
-//		return getDocument(createDocumentHandle(collectionId, documentId), clazz);
-//	}
-//	public <T> DocumentEntity<T> getDocument(String collectionName, long documentId, Class<T> clazz) throws ArangoException {
-//		return getDocument(createDocumentHandle(collectionName, documentId), clazz);
-//	}
-	public <T> DocumentEntity<T> getDocument(String documentHandle, Class<T> clazz) throws ArangoException {
+	public <T> DocumentEntity<T> getDocument(String database, String documentHandle, Class<?> clazz, Long ifNoneMatchRevision, Long ifMatchRevision) throws ArangoException {
 		
-		// TODO If-None-Match http-header
-		// TODO CAS
+		// TODO IfMatch, If-None-Match http-header
 		
 		validateDocumentHandle(documentHandle);
 		HttpResponseEntity res = httpManager.doGet(
-				baseUrl + "/_api/document/" + documentHandle,
+				createEndpointUrl(baseUrl, database, "/_api/document", documentHandle),
+				new MapBuilder().put("If-None-Match", ifNoneMatchRevision, true).put("If-Match", ifMatchRevision).get(),
 				null);
 		
 		// TODO Case of StatusCode=304
 		
-		T obj = createEntityImpl(res, clazz);
-		DocumentEntity<T> entity = createEntity(res, DocumentEntity.class);
+		DocumentEntity<T> entity = createEntity(res, DocumentEntity.class, clazz);
 		if (entity == null) {
 			entity = new DocumentEntity<T>();
 		}
-		entity.setEntity(obj);
 		return entity;
 
 	}
 
-//	public DocumentEntity<?> deleteDocument(long collectionId, long documentId, long rev, Policy policy) throws ArangoException {
-//		return deleteDocument(createDocumentHandle(collectionId, documentId), rev, policy);
-//	}
-//	public DocumentEntity<?> deleteDocument(String collectionName, long documentId, long rev, Policy policy) throws ArangoException {
-//		return deleteDocument(createDocumentHandle(collectionName, documentId), rev, policy);
-//	}
-	public DocumentEntity<?> deleteDocument(String documentHandle, long rev, Policy policy) throws ArangoException {
+	public DocumentEntity<?> deleteDocument(String database, String documentHandle, Long rev, Policy policy) throws ArangoException {
 		
 		validateDocumentHandle(documentHandle);
 		HttpResponseEntity res = httpManager.doDelete(
-				baseUrl + "/_api/document/" + documentHandle, 
+				createEndpointUrl(baseUrl, database, "/_api/document", documentHandle), 
 				new MapBuilder()
-				.put("rev", rev == -1 ? null : rev)
+				.put("rev", rev)
 				.put("policy", policy == null ? null : policy.name().toLowerCase(Locale.US))
 				.get());
 		
@@ -182,14 +171,6 @@ public class InternalDocumentDriverImpl extends BaseArangoDriverImpl {
 			DocumentEntity<?> entity = createEntity(res, DocumentEntity.class);
 			return entity;
 		} catch (ArangoException e) {
-//			if (HttpManager.is404Error(e)) {
-//				if (mode == null || mode == Mode.RETURN_NULL) {
-//					return null;
-//				}
-//			} else if (HttpManager.is412Error(e)) {
-//				// TODO mode
-//				return (DocumentEntity<?>) e.getEntity();
-//			}
 			throw e;
 		}
 		

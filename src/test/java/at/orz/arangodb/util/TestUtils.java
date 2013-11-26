@@ -20,7 +20,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import at.orz.arangodb.Station;
 
@@ -29,7 +32,7 @@ import at.orz.arangodb.Station;
  *
  */
 public class TestUtils {
-
+	
 	public static List<Station> readStations() throws IOException {
 
 		ArrayList<Station> stations = new ArrayList<Station>(1000);

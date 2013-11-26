@@ -39,10 +39,15 @@ import at.orz.arangodb.util.MapBuilder;
  */
 public class ArangoDriverUsersTest extends BaseTest {
 
+	public ArangoDriverUsersTest(ArangoConfigure configure, ArangoDriver driver) {
+		super(configure, driver);
+	}
+
 	@Before
 	public void setup() throws ArangoException {
 		// delete user
-		for (String user: new String[]{ "user1", "user2", "user3", "testuser", "テスト☆ユーザー" }) {
+		for (String user: new String[]{ "user1", "user2", "user3", "testuser", "テスト☆ユーザー", "user-A", "userA", "userB", "ゆーざーA" }) {
+			// user-A, userA, userB, ゆーざーA is created another(auth) testcase.
 			try {
 				driver.deleteUser(user);
 			} catch (ArangoException e) {}
@@ -320,9 +325,9 @@ public class ArangoDriverUsersTest extends BaseTest {
 		});
 		
 		// validate
-		assertThat(users.size(), is(4)); // user1,2,3 and root.
+		assertThat(users.size(), is(4)); // user1,2,3 and root
 		assertThat(users.get(0).getUser(), is("root"));
-
+		
 		assertThat(users.get(1).getUser(), is("user1"));
 		assertThat(users.get(1).isActive(), is(true));
 		// MEMO: Extraがnullの時、getUserで取得するとサーバ側で空Objに変換して返すが、documentとして取得する場合はnullのままになる。

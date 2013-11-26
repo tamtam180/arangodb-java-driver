@@ -35,6 +35,10 @@ import at.orz.arangodb.util.TestUtils;
  */
 public class ArangoDriverImportTest extends BaseTest {
 
+	public ArangoDriverImportTest(ArangoConfigure configure, ArangoDriver driver) {
+		super(configure, driver);
+	}
+
 	@Test
 	public void test_import_documents() throws ArangoException, IOException {
 

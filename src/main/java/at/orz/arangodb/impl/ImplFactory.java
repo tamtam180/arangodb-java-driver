@@ -35,14 +35,11 @@ public class ImplFactory {
 	public static InternalKVSDriverImpl createKVSDriver(ArangoConfigure configure) {
 		return new InternalKVSDriverImpl(configure);
 	}
-	public static InternalEdgeDriverImpl createEdgeDriver(ArangoConfigure configure) {
-		return new InternalEdgeDriverImpl(configure);
-	}
 	public static InternalSimpleDriverImpl createSimpleDriver(ArangoConfigure configure, InternalCursorDriverImpl cursorDriver) {
 		return new InternalSimpleDriverImpl(configure, cursorDriver);
 	}
-	public static InternalIndexDriverImpl createIndexDriver(ArangoConfigure configure, InternalCursorDriverImpl cursorDriver) {
-		return new InternalIndexDriverImpl(configure, cursorDriver);
+	public static InternalIndexDriverImpl createIndexDriver(ArangoConfigure configure) {
+		return new InternalIndexDriverImpl(configure);
 	}
 	public static InternalAdminDriverImpl createAdminDriver(ArangoConfigure configure) {
 		return new InternalAdminDriverImpl(configure);
@@ -52,5 +49,17 @@ public class ImplFactory {
 	}
 	public static InternalImportDriverImpl createImportDriver(ArangoConfigure configure) {
 		return new InternalImportDriverImpl(configure);
+	}
+	public static InternalDatabaseDriverImpl createDatabaseDriver(ArangoConfigure configure) {
+		return new InternalDatabaseDriverImpl(configure);
+	}
+	public static InternalEndpointDriverImpl createEndpointDriver(ArangoConfigure configure) {
+		return new InternalEndpointDriverImpl(configure);
+	}
+	public static InternalReplicationDriverImpl createReplicationDriver(ArangoConfigure configure) {
+		return new InternalReplicationDriverImpl(configure);
+	}
+	public static InternalGraphDriverImpl createGraphDriver(ArangoConfigure configure, InternalCursorDriverImpl cursorDriver) {
+		return new InternalGraphDriverImpl(configure, cursorDriver);
 	}
 }

@@ -39,7 +39,8 @@ public class ArangoConfigureTest {
 		
 		ArangoConfigure configure = new ArangoConfigure();
 		assertThat(configure.getPort(), is(9999));
-		assertThat(configure.getHost(), is("arango-test-server"));
+		assertThat(configure.getHost(), is(notNullValue()));
+		assertThat(configure.getDefaultDatabase(), is(nullValue()));
 
 	}
 	
@@ -50,6 +51,7 @@ public class ArangoConfigureTest {
 		configure.loadProperties("/arangodb-test.properties");
 		
 		assertThat(configure.getRetryCount(), is(10));
+		assertThat(configure.getDefaultDatabase(), is("mydb2"));
 		
 	}
 	

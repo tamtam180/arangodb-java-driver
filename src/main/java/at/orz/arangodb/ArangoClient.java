@@ -28,6 +28,8 @@ import at.orz.arangodb.entity.ImportResultEntity;
  */
 public class ArangoClient {
 	
+	public static final int DEFAULT_IMPORT_BUFFER_SIZE = 1000;
+	
 	protected ArangoDriver driver;
 	
 	public ArangoClient(ArangoConfigure configure) {
@@ -45,7 +47,7 @@ public class ArangoClient {
 	public ImportResultEntity importRawJsonDocuments(String collectionName, boolean createCollection, Iterator<String> itr, int bufferCount) throws ArangoException {
 		
 		if (bufferCount <= 0) {
-			bufferCount = 1000; // FIXME MagicNumber
+			bufferCount = DEFAULT_IMPORT_BUFFER_SIZE;
 		}
 		
 		ImportResultEntity total = new ImportResultEntity();
@@ -54,7 +56,6 @@ public class ArangoClient {
 		while (itr.hasNext()) {
 			buffers.add(itr.next());
 			if (buffers.size() % bufferCount == 0) {
-				System.out.println(buffers);
 				importDocumentsImpl(collectionName, createCollection, buffers, total);				
 				buffers.clear();
 			}

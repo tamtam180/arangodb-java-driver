@@ -188,6 +188,9 @@ public class HttpManager {
 	public HttpResponseEntity doDelete(String url, Map<String, Object> params) throws ArangoException {
 		return doHeadGetDelete(RequestType.DELETE, url, null, params);
 	}
+	public HttpResponseEntity doDelete(String url, Map<String, Object> headers, Map<String, Object> params) throws ArangoException {
+		return doHeadGetDelete(RequestType.DELETE, url, headers, params);
+	}
 	public HttpResponseEntity doHeadGetDelete(RequestType type, String url, Map<String, Object> headers, Map<String, Object> params) throws ArangoException {
 		HttpRequestEntity requestEntity = new HttpRequestEntity();
 		requestEntity.type = type;
@@ -249,9 +252,9 @@ public class HttpManager {
 		
 		if (logger.isDebugEnabled()) {
 			if (requestEntity.type == RequestType.POST || requestEntity.type == RequestType.PUT || requestEntity.type == RequestType.PATCH) {
-				logger.debug("[REQ]http-{}: url={}, body={}", new Object[]{ requestEntity.type, url, requestEntity.bodyText });
+				logger.debug("[REQ]http-{}: url={}, headers={}, body={}", new Object[]{ requestEntity.type, url, requestEntity.headers, requestEntity.bodyText });
 			} else {
-				logger.debug("[REQ]http-{}: url={}", requestEntity.type, url);
+				logger.debug("[REQ]http-{}: url={}, headers={}", new Object[]{ requestEntity.type, url, requestEntity.headers });
 			}
 		}
 		
@@ -328,18 +331,26 @@ public class HttpManager {
 			// レスポンスの取得
 			HttpEntity entity = response.getEntity();
 			if (entity != null) {
+				Header contentType = entity.getContentType();
+				if (contentType != null) {
+					responseEntity.contentType = contentType.getValue();
+					if (responseEntity.isDumpResponse()) {
+						responseEntity.stream = entity.getContent();
+						logger.debug("[RES]http-{}: stream, {}", requestEntity.type, contentType.getValue());
+					}
+				}
 				// Close stream in this method.
-				responseEntity.text = IOUtils.toString(entity.getContent());
-				logger.debug("[RES]http-{}: text={}", requestEntity.type, responseEntity.text);
+				if (responseEntity.stream == null) {
+					responseEntity.text = IOUtils.toString(entity.getContent());
+					logger.debug("[RES]http-{}: text={}", requestEntity.type, responseEntity.text);
+				}
 			}
 			
 			return responseEntity;
 			
 		} catch (ClientProtocolException e) {
-			// TODO
 			throw new ArangoException(e);
 		} catch (IOException e) {
-			// TODO
 			throw new ArangoException(e);
 		}
 		

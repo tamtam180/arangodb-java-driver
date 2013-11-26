@@ -19,21 +19,22 @@ package at.orz.arangodb.impl;
 import at.orz.arangodb.ArangoConfigure;
 import at.orz.arangodb.ArangoException;
 import at.orz.arangodb.entity.AdminLogEntity;
-import at.orz.arangodb.entity.AdminStatusEntity;
 import at.orz.arangodb.entity.ArangoUnixTime;
 import at.orz.arangodb.entity.ArangoVersion;
-import at.orz.arangodb.entity.ConnectionStatisticsEntity;
 import at.orz.arangodb.entity.DefaultEntity;
-import at.orz.arangodb.entity.Granularity;
+import at.orz.arangodb.entity.StatisticsDescriptionEntity;
+import at.orz.arangodb.entity.StatisticsEntity;
 import at.orz.arangodb.http.HttpResponseEntity;
-import at.orz.arangodb.util.CollectionUtils;
 import at.orz.arangodb.util.MapBuilder;
+
 
 /**
  * @author tamtam180 - kirscheless at gmail.com
  *
  */
 public class InternalAdminDriverImpl extends BaseArangoDriverImpl {
+
+	// MEMO: ADMINはdatabase関係ない
 
 	InternalAdminDriverImpl(ArangoConfigure configure) {
 		super(configure);
@@ -65,7 +66,7 @@ public class InternalAdminDriverImpl extends BaseArangoDriverImpl {
 		param.put("search", text);
 		
 		// 実行
-		HttpResponseEntity res = httpManager.doGet(baseUrl + "/_admin/log", param.get());
+		HttpResponseEntity res = httpManager.doGet(createEndpointUrl(baseUrl, null, "/_admin/log"), param.get());
 		
 		// 結果変換
 		try {
@@ -78,54 +79,30 @@ public class InternalAdminDriverImpl extends BaseArangoDriverImpl {
 		
 	}
 	
-	public AdminStatusEntity getServerStatus() throws ArangoException {
+	public StatisticsEntity getStatistics() throws ArangoException {
 		
-		HttpResponseEntity res = httpManager.doGet(baseUrl + "/_admin/status");
+		HttpResponseEntity res = httpManager.doGet(createEndpointUrl(baseUrl, null, "/_admin/statistics"));
 		
 		try {
-			return createEntity(res, AdminStatusEntity.class);
+			return createEntity(res, StatisticsEntity.class);
 		} catch (ArangoException e) {
 			throw e;
 		}
 		
 	}
-	
-	/**
-	 * @param granularity
-	 * @param length (special values => -1=all, 0=current)
-	 * @param figures
-	 * @return
-	 * @throws ArangoException
-	 */
-	public ConnectionStatisticsEntity getConnectionStatistics(Granularity granularity, Integer length, String... figures) throws ArangoException {
+
+	public StatisticsDescriptionEntity getStatisticsDescription() throws ArangoException {
 		
-		String paramLength = null;
-		if (length != null) {
-			if (length == 0) {
-				paramLength = "current";
-			} else if (length < 0) {
-				paramLength = "all";
-			} else {
-				paramLength = String.valueOf(length);
-			}
+		HttpResponseEntity res = httpManager.doGet(createEndpointUrl(baseUrl, null, "/_admin/statistics-description"));
+		
+		try {
+			return createEntity(res, StatisticsDescriptionEntity.class);
+		} catch (ArangoException e) {
+			throw e;
 		}
-		
-		String paramFigures = null;
-		if (figures != null && figures.length != 0) {
-			CollectionUtils.join(figures, ",");
-		}
-		
-		HttpResponseEntity res = httpManager.doGet(
-				baseUrl + "/_admin/connection-statistics",
-				new MapBuilder()
-				.put("granularity", granularity == null ? null : granularity.name())
-				.put("length", paramLength)
-				.put("figures", paramFigures)
-				.get());
-		
-		return createEntity(res, ConnectionStatisticsEntity.class);
 		
 	}
+
 
 	/**
 	 * 
@@ -134,23 +111,34 @@ public class InternalAdminDriverImpl extends BaseArangoDriverImpl {
 	 * @see http://www.arangodb.org/manuals/current/HttpMisc.html#HttpMiscVersion
 	 */
 	public ArangoVersion getVersion() throws ArangoException {
-		HttpResponseEntity res = httpManager.doGet(baseUrl + "/_admin/version");
+		HttpResponseEntity res = httpManager.doGet(createEndpointUrl(baseUrl, null, "/_api/version"));
 		return createEntity(res, ArangoVersion.class);
 	}
 
 	public ArangoUnixTime getTime() throws ArangoException {
-		HttpResponseEntity res = httpManager.doGet(baseUrl + "/_admin/time");
+		HttpResponseEntity res = httpManager.doGet(createEndpointUrl(baseUrl, null, "/_admin/time"));
 		return createEntity(res, ArangoUnixTime.class);
 	}
 	
 	public DefaultEntity flushModules() throws ArangoException {
-		HttpResponseEntity res = httpManager.doPost(baseUrl + "/_admin/modules/flush", null, (String)null);
-		return createEntity(res, DefaultEntity.class, false);
+		HttpResponseEntity res = httpManager.doPost(createEndpointUrl(baseUrl, null, "/_admin/modules/flush"), null, (String)null);
+		return createEntity(res, DefaultEntity.class, null, false);
 	}
 
 	public DefaultEntity reloadRouting() throws ArangoException {
-		HttpResponseEntity res = httpManager.doPost(baseUrl + "/_admin/routing/reload", null, (String)null);
-		return createEntity(res, DefaultEntity.class, false);
+		HttpResponseEntity res = httpManager.doPost(createEndpointUrl(baseUrl, null, "/_admin/routing/reload"), null, (String)null);
+		return createEntity(res, DefaultEntity.class, null, false);
+	}
+	
+	public DefaultEntity executeScript(String database, String jsCode) throws ArangoException {
+		
+		HttpResponseEntity res = httpManager.doPost(
+				createEndpointUrl(baseUrl, database, "/_admin/execute"), 
+				null, 
+				jsCode);
+		
+		return createEntity(res, DefaultEntity.class);
+		
 	}
 	
 }

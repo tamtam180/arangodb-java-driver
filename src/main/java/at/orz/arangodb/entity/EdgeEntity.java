@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 tamtam180
+ * Copyright (C) 2012,2013 tamtam180
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,56 +20,29 @@ package at.orz.arangodb.entity;
  * @author tamtam180 - kirscheless at gmail.com
  *
  */
-public class EdgeEntity<T> extends BaseEntity {
+public class EdgeEntity<T> extends DocumentEntity<T> {
 
-	String edgeHandle;
-	String fromHandle;
-	String toHandle;
-	long revision;
+	String fromVertexHandle;
+	String toVertexHandle;
+	String edgeLabel;
 	
-	T attributes;
-	//long edgeId;
-	//long fromId;
-	//long toId;
-
-	public String getEdgeHandle() {
-		return edgeHandle;
+	public String getFromVertexHandle() {
+		return fromVertexHandle;
 	}
-
-	public String getFromHandle() {
-		return fromHandle;
+	public String getToVertexHandle() {
+		return toVertexHandle;
 	}
-
-	public String getToHandle() {
-		return toHandle;
+	public String getEdgeLabel() {
+		return edgeLabel;
 	}
-
-	public long getRevision() {
-		return revision;
+	public void setFromVertexHandle(String fromVertexHandle) {
+		this.fromVertexHandle = fromVertexHandle;
 	}
-
-	public T getAttributes() {
-		return attributes;
+	public void setToVertexHandle(String toVertexHandle) {
+		this.toVertexHandle = toVertexHandle;
 	}
-
-	public void setEdgeHandle(String edgeHandle) {
-		this.edgeHandle = edgeHandle;
-	}
-
-	public void setFromHandle(String fromHandle) {
-		this.fromHandle = fromHandle;
-	}
-
-	public void setToHandle(String toHandle) {
-		this.toHandle = toHandle;
-	}
-
-	public void setRevision(long revision) {
-		this.revision = revision;
-	}
-
-	public void setAttributes(T attributes) {
-		this.attributes = attributes;
+	public void setEdgeLabel(String edgeLabel) {
+		this.edgeLabel = edgeLabel;
 	}
 	
 }

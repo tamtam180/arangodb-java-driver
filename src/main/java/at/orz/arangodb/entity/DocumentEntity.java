@@ -22,7 +22,7 @@ package at.orz.arangodb.entity;
  * @author tamtam180 - kirscheless at gmail.com
  *
  */
-public class DocumentEntity<T> extends BaseEntity {
+public class DocumentEntity<T> extends BaseEntity implements DocumentHolder {
 	
 	long documentRevision;
 	String documentHandle;

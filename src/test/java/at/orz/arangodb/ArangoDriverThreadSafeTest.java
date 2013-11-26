@@ -38,9 +38,9 @@ import at.orz.arangodb.entity.Policy;
  * @author tamtam180 - kirscheless at gmail.com
  *
  */
-public class ArangoDriverStoryTest {
+public class ArangoDriverThreadSafeTest {
 
-	private static Logger logger = LoggerFactory.getLogger(ArangoDriverStoryTest.class);
+	private static Logger logger = LoggerFactory.getLogger(ArangoDriverThreadSafeTest.class);
 	
 	@Test
 	public void story01() throws ArangoException, InterruptedException {
@@ -55,7 +55,7 @@ public class ArangoDriverStoryTest {
 		try {
 			driver.deleteCollection(collectionName);
 		} catch (ArangoException e) {}
-		CollectionEntity collection = driver.createCollection(collectionName, true, null, null, null, null);
+		CollectionEntity collection = driver.createCollection(collectionName, true, null, null, null, null, null);
 		logger.info("collectionId={}", collection.getId());
 		
 		// コレクションの中身を削除する
@@ -91,7 +91,7 @@ public class ArangoDriverStoryTest {
 								assertThat(ret2.getEntity().getAge(), is(value.getAge()));
 								
 								// ドキュメントを削除する
-								DocumentEntity<?> ret3 = driver.deleteDocument(_id, -1, Policy.LAST);
+								DocumentEntity<?> ret3 = driver.deleteDocument(_id, null, Policy.LAST);
 								assertThat(ret3.getDocumentHandle(), is(_id));
 								assertThat(ret3.getDocumentRevision(), is(_rev));
 								

@@ -70,15 +70,25 @@ public class ArangoConfigure {
 	/** http retry count */
 	int retryCount = 3;
 	
+	/** Default Database */
+	String defaultDatabase;
+	
 	HttpManager httpManager;
 	
 	public ArangoConfigure() {
+		init(DEFAULT_PROPERTY_FILE);
+	}
+	
+	public ArangoConfigure(String propertyPath) {
+		init(propertyPath);
+	}
+	
+	private void init(String propertyPath) {
 		this.host = DEFAULT_HOST;
 		this.port = DEFAULT_PORT;
 		this.maxPerConnection = DEFAULT_MAX_PER_CONNECTION;
 		this.maxTotalConnection = DEFAULT_MAX_CONNECTION;
-		// Load from Property file
-		loadProperties();
+		loadProperties(propertyPath);
 	}
 	
 	/**
@@ -159,6 +169,11 @@ public class ArangoConfigure {
 					setPassword(password);
 				}
 				
+				String defaultDatabase = prop.getProperty("defaultDatabase");
+				if (defaultDatabase != null) {
+					setDefaultDatabase(defaultDatabase);
+				}
+				
 			}
 		} catch (IOException e) {
 			logger.warn("load property error", e);
@@ -195,6 +210,11 @@ public class ArangoConfigure {
 	// 複数ホスト対応の際は、セレクタのクラスを保持するようにする。
 	public String getBaseUrl() {
 		return "http://" + this.host + ":" + this.port;
+	}
+	
+	// TODO: 同上
+	public String getEndpoint() {
+		return "tcp://" + this.host + ":" + this.port;
 	}
 	
 	public static String getDefaultHost() {
@@ -325,6 +345,14 @@ public class ArangoConfigure {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public String getDefaultDatabase() {
+		return defaultDatabase;
+	}
+
+	public void setDefaultDatabase(String defaultDatabase) {
+		this.defaultDatabase = defaultDatabase;
 	}
 	
 }

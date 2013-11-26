@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import com.google.gson.JsonParseException;
+
 /**
  * @author tamtam180 - kirscheless at gmail.com
  *
@@ -120,12 +122,29 @@ public class DateUtils {
 		}
 	};	
 	
+	private static TimeZone utcTimeZone = TimeZone.getTimeZone("UTC");
+	
 	public static Date parse(String text, String format) throws ParseException { 
 		
-		SimpleDateFormat dateFormat = dateFormats.get().getDateFormat(format, Locale.US, TimeZone.getDefault());
+		SimpleDateFormat dateFormat = dateFormats.get().getDateFormat(format, Locale.US, utcTimeZone);
 		Date date = dateFormat.parse(text);
 		return date;
 		
+	}
+	
+	/**
+	 * Parse date-string in "yyyy-MM-dd'T'HH:mm:ss'Z'" format.
+	 * @param dateString
+	 * @return
+	 */
+	public static Date parse(String dateString) {
+
+		try {
+			return DateUtils.parse(dateString, "yyyy-MM-dd'T'HH:mm:ss'Z'");
+		} catch (ParseException e) {
+			throw new JsonParseException("time format invalid:" + dateString);
+		}
+
 	}
 	
 	public static String format(Date date, String format) {

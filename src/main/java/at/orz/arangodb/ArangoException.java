@@ -31,7 +31,7 @@ public class ArangoException extends Exception {
 	}
 	
 	public ArangoException(BaseEntity entity) {
-		super("[" + entity.getErrorNumber() + "]" + entity.getErrorMessage());
+		super((entity.getErrorNumber() == 0 ? "" : "[" + entity.getErrorNumber() + "]") + entity.getErrorMessage());
 		this.entity = entity;
 	}
 	
@@ -53,6 +53,10 @@ public class ArangoException extends Exception {
 	
 	public int getCode() {
 		return (entity == null) ? 0: entity.getCode();
+	}
+	
+	public String getErrorMessage() {
+		return (entity == null) ? getMessage() : entity.getErrorMessage();
 	}
 	
 	public <T extends BaseEntity> T getEntity() {

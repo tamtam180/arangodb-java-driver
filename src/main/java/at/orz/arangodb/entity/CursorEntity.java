@@ -21,24 +21,20 @@ import java.util.List;
 
 import at.orz.arangodb.util.CollectionUtils;
 
-import com.google.gson.JsonArray;
-
 /**
  * @author tamtam180 - kirscheless at gmail.com
  *
  */
 public class CursorEntity<T> extends BaseEntity implements Iterable<T> {
 
-	transient JsonArray _array;
-	
 	boolean hasMore;
 	int count = -1;
 	long cursorId = -1;
 	List<String> bindVars;
-	List<T> results;
+	List<? extends T> results;
 	
 	public Iterator<T> iterator() {
-		return CollectionUtils.safetyIterator(results);
+		return (Iterator<T>) CollectionUtils.safetyIterator(results);
 	}
 	public int size() {
 		if (results == null) {
@@ -58,7 +54,7 @@ public class CursorEntity<T> extends BaseEntity implements Iterable<T> {
 		}
 	}	
 	
-	public List<T> getResults() {
+	public List<? extends T> getResults() {
 		return results;
 	}
 

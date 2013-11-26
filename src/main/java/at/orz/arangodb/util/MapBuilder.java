@@ -46,8 +46,11 @@ public class MapBuilder {
 	}
 
 	public MapBuilder put(String key, Object value) {
+		return put(key, value, false);
+	}
+	public MapBuilder put(String key, Object value, boolean toString) {
 		if (!this.ignoreValue || (key != null && value != null)) {
-			map.put(key, value);
+			map.put(key, toString ? value.toString() : value);
 		}
 		return this;
 	}

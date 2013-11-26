@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 tamtam180
+ * Copyright (C) 2012,2013 tamtam180
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,22 @@
 
 package at.orz.arangodb.entity;
 
+import java.util.List;
+
 /**
  * @author tamtam180 - kirscheless at gmail.com
- *
+ * @since 1.4.0
  */
-public enum Granularity {
-	MINUTES,
-	HOURS,
-	DAYS;
+public class GraphsEntity extends BaseEntity {
+
+	List<GraphEntity> graphs;
+
+	public List<GraphEntity> getGraphs() {
+		return graphs;
+	}
+
+	public void setGraphs(List<GraphEntity> graphs) {
+		this.graphs = graphs;
+	}
+	
 }

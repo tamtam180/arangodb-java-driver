@@ -20,6 +20,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
+import at.orz.arangodb.util.StringJoinTest;
+
 /**
  * 全ての単体テストを実行する。
  * @author tamtam180 - kirscheless at gmail.com
@@ -27,23 +29,46 @@ import org.junit.runners.Suite.SuiteClasses;
  */
 @RunWith(Suite.class)
 @SuiteClasses({
+	
+	// Utils Test
+	StringJoinTest.class,
+
+	// Drivers Test
 	ArangoConfigureTest.class,
 	ArangoDriverAuthTest.class,
 	NegativeTest.class,
-	PrimitiveDocumentTest.class,
+
+	//PrimitiveDocumentTest.class,
+	
+	ArangoDriverDatabaseTest.class,
+	
 	ArangoDriverDocumentTest.class,
 	ArangoDriverCollectionTest.class,
 	ArangoDriverCursorTest.class,
 	ArangoDriverCursorResultSetTest.class,
+	
 	ArangoDriverIndexTest.class,
-	ArangoDriverEdgeTest.class,
 	ArangoDriverAdminTest.class,
 	ArangoDriverSimpleTest.class,
 	ArangoDriverImportTest.class,
 	//ArangoDriverSimpleGeoTest.class,
 	//ArangoDriverKeyValueTest.class,
-	ArangoDriverStoryTest.class
+	ArangoDriverGraphTest.class,
+	ArangoDriverGraphVertexTest.class,
+	ArangoDriverGraphVertexReplaceTest.class,
+	ArangoDriverGraphVertexUpdateTest.class,
+	ArangoDriverGraphEdgeCreateTest.class,
+	ArangoDriverGraphEdgeGetTest.class,
+	ArangoDriverGraphEdgeDeleteTest.class,
+	ArangoDriverGraphEdgeReplaceTest.class,
+	ArangoDriverGraphVertices1Test.class,
+	ArangoDriverGraphVertices2Test.class,
+	ArangoDriverThreadSafeTest.class,
+	ArangoDriverReplicationTest.class,
+	ArangoDriverReplicationTestScenario1.class
+	
 })
 public class ArangoTestSuite {
-
+	
+	
 }

@@ -17,24 +17,31 @@
 package at.orz.arangodb;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Map;
+import java.util.regex.Pattern;
 
-import org.apache.http.client.HttpClient;
-
+import at.orz.arangodb.entity.DefaultEntity;
+import at.orz.arangodb.entity.ReplicationDumpHeader;
 import at.orz.arangodb.entity.BaseEntity;
+import at.orz.arangodb.entity.EntityDeserializers;
 import at.orz.arangodb.entity.EntityFactory;
 import at.orz.arangodb.entity.KeyValueEntity;
-import at.orz.arangodb.http.HttpManager;
+import at.orz.arangodb.entity.StreamEntity;
+import at.orz.arangodb.entity.marker.MissingInstanceCreater;
 import at.orz.arangodb.http.HttpResponseEntity;
 import at.orz.arangodb.util.DateUtils;
 import at.orz.arangodb.util.ReflectionUtils;
+import at.orz.arangodb.util.StringUtils;
 
 /**
  * @author tamtam180 - kirscheless at gmail.com
  *
  */
 public abstract class BaseArangoDriver {
-	
+
+	private static final Pattern databaseNamePattern = Pattern.compile("^[a-zA-Z][a-zA-Z0-9\\-_]{0,63}$");
+
 	protected String createDocumentHandle(long collectionId, long documentId) {
 		// validateCollectionNameは不要
 		return collectionId + "/" + documentId;
@@ -65,6 +72,26 @@ public abstract class BaseArangoDriver {
 		throw new ArangoException("invalid format documentHandle:" + documentHandle);
 	}
 	
+	/**
+	 * @param database
+	 * @param allowNull
+	 * @throws ArangoException
+	 * @see http://www.arangodb.org/manuals/current/NamingConventions.html#DatabaseNames
+	 */
+	protected void validateDatabaseName(String database, boolean allowNull) throws ArangoException {
+		boolean valid = false;
+		if (database == null) {
+			if (allowNull) {
+				valid = true;
+			}
+		} else {
+			valid = databaseNamePattern.matcher(database).matches();
+		}
+		if (!valid) {
+			throw new ArangoException("invalid format database:" + database);
+		}
+	}
+	
 	protected void setKeyValueHeader(HttpResponseEntity res, KeyValueEntity entity) throws ArangoException {
 		
 		Map<String, String> headers = res.getHeaders();
@@ -92,6 +119,35 @@ public abstract class BaseArangoDriver {
 		
 	}
 	
+	protected ReplicationDumpHeader toReplicationDumpHeader(HttpResponseEntity res) {
+		ReplicationDumpHeader header = new ReplicationDumpHeader();
+		
+		Map<String, String> headerMap = res.getHeaders();
+		String value;
+		
+		value = headerMap.get("x-arango-replication-active");
+		if (value != null) {
+			header.setActive(Boolean.parseBoolean(value));
+		}
+		
+		value = headerMap.get("x-arango-replication-lastincluded");
+		if (value != null) {
+			header.setLastincluded(Long.parseLong(value));
+		}
+		
+		value = headerMap.get("x-arango-replication-lasttick");
+		if (value != null) {
+			header.setLasttick(Long.parseLong(value));
+		}
+		
+		value = headerMap.get("x-arango-replication-checkmore");
+		if (value != null) {
+			header.setCheckmore(Boolean.parseBoolean(value));
+		}
+		
+		return header;
+	}
+	
 	/**
 	 * HTTPレスポンスから指定した型へ変換する。
 	 * レスポンスがエラーであるかを確認して、エラーの場合は例外を投げる。
@@ -101,21 +157,40 @@ public abstract class BaseArangoDriver {
 	 * @return
 	 * @throws ArangoException
 	 */
-	protected <T extends BaseEntity> T createEntity(HttpResponseEntity res, Class<T> clazz, boolean validate) throws ArangoException {
-		T entity = createEntityImpl(res, clazz);
-		if (entity == null) {
-			entity = ReflectionUtils.newInstance(clazz);
-		}
-		setStatusCode(res, entity);
-		if (validate) {
-			validate(res, entity);
+	protected <T extends BaseEntity> T createEntity(HttpResponseEntity res, Class<? extends BaseEntity> clazz, Class<?>[] pclazz, boolean validate) throws ArangoException {
+		try {
+			EntityDeserializers.setParameterized(pclazz);
 			
+			T entity = createEntityImpl(res, clazz);
+			if (entity == null) {
+				Class<?> c = MissingInstanceCreater.getMissingClass(clazz);
+				entity = ReflectionUtils.newInstance(c);
+			}
+			setStatusCode(res, entity);
+			if (validate) {
+				validate(res, entity);
+			}
+			return entity;
+		} finally {
+			EntityDeserializers.removeParameterized();
 		}
-		return entity;
+	}
+
+	protected <T> T createEntity(String str, Class<T> clazz, Class<?>... pclazz) throws ArangoException {
+		try {
+			EntityDeserializers.setParameterized(pclazz);
+			return EntityFactory.createEntity(str, clazz);
+		} finally {
+			EntityDeserializers.removeParameterized();
+		}
 	}
 
 	protected <T extends BaseEntity> T createEntity(HttpResponseEntity res, Class<T> clazz) throws ArangoException {
-		return createEntity(res, clazz, true);
+		return createEntity(res, clazz, null, true);
+	}
+
+	protected <T extends BaseEntity> T createEntity(HttpResponseEntity res, Class<? extends BaseEntity> clazz, Class<?>... pclazz) throws ArangoException {
+		return createEntity(res, clazz, pclazz, true);
 	}
 
 	protected void setStatusCode(HttpResponseEntity res, BaseEntity entity) throws ArangoException {
@@ -128,6 +203,7 @@ public abstract class BaseArangoDriver {
 	}
 	
 	protected void validate(HttpResponseEntity res, BaseEntity entity) throws ArangoException {
+		
 		if (entity != null) {
 			if (entity.isError()) {
 				throw new ArangoException(entity);
@@ -136,22 +212,56 @@ public abstract class BaseArangoDriver {
 		
 		// Custom Error
 		if (res.getStatusCode() >= 400) {
-			entity.setErrorNumber(res.getStatusCode());
-			switch (res.getStatusCode()) {
-			case 401:
-				entity.setErrorMessage("Unauthorized");
-				break;
-			case 403:
-				entity.setErrorMessage("Forbidden");
-				break;
+			if (res.isTextResponse()) {
+				entity.setErrorNumber(0);
+				entity.setErrorMessage(res.getText());
+				//throw new ArangoException(res.getText());
+			} else {
+				entity.setErrorNumber(res.getStatusCode());
+				entity.setErrorMessage(res.getStatusPhrase());
+				switch (res.getStatusCode()) {
+				case 401:
+					entity.setErrorMessage("Unauthorized");
+					break;
+				case 403:
+					entity.setErrorMessage("Forbidden");
+					break;
+				default:
+				}
 			}
 			throw new ArangoException(entity);
 		}
 	}
 	
-	protected <T> T createEntityImpl(HttpResponseEntity res, Class<T> clazz) throws ArangoException {
-		T entity = EntityFactory.createEntity(res.getText(), clazz);
-		return entity;
+	protected <T> T createEntityImpl(HttpResponseEntity res, Class<?> type) throws ArangoException {
+		if (res.isJsonResponse()) {
+			T entity = EntityFactory.createEntity(res.getText(), type);
+			return entity;
+		}
+		if (res.isDumpResponse() && StreamEntity.class.isAssignableFrom(type)) {
+			return (T) new StreamEntity(res.getStream());
+		}
+		return null;
+		//throw new IllegalStateException("unknown response content-type:" + res.getContentType());
+	}
+	
+	protected String createEndpointUrl(String baseUrl, String database, Object...paths) throws ArangoException {
+
+		// FIXME: Very very foolish implement.
+		
+		ArrayList<String> list = new ArrayList<String>();
+		
+		if (database != null) {
+			validateDatabaseName(database, false);
+			list.add("_db");
+			list.add(database);
+		}
+		for (Object path: paths) {
+			if (path != null) {
+				list.add(path.toString());
+			}
+		}
+		return baseUrl + StringUtils.join(false, list);
 	}
 	
 }

@@ -18,6 +18,8 @@ package at.orz.arangodb.util;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * @author tamtam180 - kirscheless at gmail.com
@@ -47,6 +49,38 @@ public class StringUtils {
 		}
 		return i < text.length() && text.charAt(i) == '{';
 		
+	}
+
+	public static String join(String... params) {
+		if (params == null) {
+			return null;
+		}
+		return join(false, Arrays.asList(params));
+	}
+
+	public static String join(boolean endSlash, Collection<String> paths) {
+		if (paths == null || paths.isEmpty()) {
+			return null;
+		}
+		
+		boolean prevLastSlash = false;
+		StringBuilder buffer = new StringBuilder();
+		for (String param: paths) {
+			if (param == null) continue;
+			if (!prevLastSlash && !param.startsWith("/")) {
+				buffer.append('/');
+			}
+			if (prevLastSlash && param.startsWith("/")) {
+				buffer.append(param.substring(1));
+			} else {
+				buffer.append(param);
+			}
+			prevLastSlash = param.endsWith("/");
+		}
+		if (endSlash && !prevLastSlash) {
+			buffer.append('/');
+		}
+		return buffer.toString();
 	}
 	
 }

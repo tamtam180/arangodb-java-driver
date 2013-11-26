@@ -17,7 +17,6 @@
 package at.orz.arangodb.entity;
 
 import java.io.Serializable;
-import java.util.Map;
 
 
 /**
@@ -48,7 +47,20 @@ public class CollectionEntity extends BaseEntity {
 	
 	Figures figures;
 
-	Map<String, Object> createOptions;
+	/**
+	 * @since 1.4.0
+	 */
+	CollectionKeyOption keyOptions;
+	
+	/**
+	 * @since 1.4.0
+	 */
+	long checksum;
+	
+	/**
+	 * @since 1.4.0
+	 */
+	Boolean doCompact;
 
 	public String getName() {
 		return name;
@@ -64,6 +76,22 @@ public class CollectionEntity extends BaseEntity {
 
 	public CollectionStatus getStatus() {
 		return status;
+	}
+
+	public long getChecksum() {
+		return checksum;
+	}
+
+	public void setIsSystem(Boolean isSystem) {
+		this.isSystem = isSystem;
+	}
+
+	public void setIsVolatile(Boolean isVolatile) {
+		this.isVolatile = isVolatile;
+	}
+
+	public void setChecksum(long checksum) {
+		this.checksum = checksum;
 	}
 
 	public Boolean getWaitForSync() {
@@ -90,8 +118,8 @@ public class CollectionEntity extends BaseEntity {
 		return figures;
 	}
 
-	public Map<String, Object> getCreateOptions() {
-		return createOptions;
+	public CollectionKeyOption getKeyOptions() {
+		return keyOptions;
 	}
 	
 	public void setName(String name) {
@@ -134,10 +162,26 @@ public class CollectionEntity extends BaseEntity {
 		this.figures = figures;
 	}
 	
-	public void setCreateOptions(Map<String, Object> createOptions) {
-		this.createOptions = createOptions;
+	public void setKeyOptions(CollectionKeyOption keyOptions) {
+		this.keyOptions = keyOptions;
 	}
-	
+
+	public long getRevision() {
+		return revision;
+	}
+
+	public void setRevision(long revision) {
+		this.revision = revision;
+	}
+
+	public Boolean getDoCompact() {
+		return doCompact;
+	}
+
+	public void setDoCompact(Boolean doCompact) {
+		this.doCompact = doCompact;
+	}
+
 	public static class Figures implements Serializable {
 		
 		long aliveCount;
@@ -149,6 +193,18 @@ public class CollectionEntity extends BaseEntity {
 		long datafileFileSize;
 		long journalsCount;
 		long journalsFileSize;
+		/** @since 1.4.0 */
+		long compactorsCount;
+		/** @since 1.4.0 */
+		long compactorsFileSize;
+		/** @since 1.4.0 */
+		long shapefilesCount;
+		/** @since 1.4.0 */
+		long shapefilesFileSize;
+		/** @since 1.4.0 */
+		long shapesCount;
+		/** @since 1.4.0 */
+		long attributesCount;
 		
 		public long getAliveCount() {
 			return aliveCount;
@@ -177,6 +233,24 @@ public class CollectionEntity extends BaseEntity {
 		public long getJournalsFileSize() {
 			return journalsFileSize;
 		}
+		public long getCompactorsCount() {
+			return compactorsCount;
+		}
+		public long getCompactorsFileSize() {
+			return compactorsFileSize;
+		}
+		public long getShapefilesCount() {
+			return shapefilesCount;
+		}
+		public long getShapefilesFileSize() {
+			return shapefilesFileSize;
+		}
+		public long getShapesCount() {
+			return shapesCount;
+		}
+		public long getAttributesCount() {
+			return attributesCount;
+		}
 		public void setAliveCount(long aliveCount) {
 			this.aliveCount = aliveCount;
 		}
@@ -204,15 +278,25 @@ public class CollectionEntity extends BaseEntity {
 		public void setJournalsFileSize(long journalsFileSize) {
 			this.journalsFileSize = journalsFileSize;
 		}
+		public void setCompactorsCount(long compactorsCount) {
+			this.compactorsCount = compactorsCount;
+		}
+		public void setCompactorsFileSize(long compactorsFileSize) {
+			this.compactorsFileSize = compactorsFileSize;
+		}
+		public void setShapefilesCount(long shapefilesCount) {
+			this.shapefilesCount = shapefilesCount;
+		}
+		public void setShapefilesFileSize(long shapefilesFileSize) {
+			this.shapefilesFileSize = shapefilesFileSize;
+		}
+		public void setShapesCount(long shapesCount) {
+			this.shapesCount = shapesCount;
+		}
+		public void setAttributesCount(long attributesCount) {
+			this.attributesCount = attributesCount;
+		}
 		
-	}
-
-	public long getRevision() {
-		return revision;
-	}
-
-	public void setRevision(long revision) {
-		this.revision = revision;
 	}
 
 }

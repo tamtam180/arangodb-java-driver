@@ -91,7 +91,7 @@ public class ArangoDriverThreadSafeTest {
 								assertThat(ret2.getEntity().getAge(), is(value.getAge()));
 								
 								// ドキュメントを削除する
-								DocumentEntity<?> ret3 = driver.deleteDocument(_id, -1, Policy.LAST);
+								DocumentEntity<?> ret3 = driver.deleteDocument(_id, null, Policy.LAST);
 								assertThat(ret3.getDocumentHandle(), is(_id));
 								assertThat(ret3.getDocumentRevision(), is(_rev));
 								

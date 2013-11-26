@@ -65,13 +65,13 @@ public class InternalDocumentDriverImpl extends BaseArangoDriverImpl {
 		return _createDocument(database, collectionName, rawJsonString, createCollection, waitForSync, true);
 	}
 
-	public <T> DocumentEntity<T> replaceDocument(String database, String documentHandle, Object value, long rev, Policy policy, Boolean waitForSync) throws ArangoException {
+	public <T> DocumentEntity<T> replaceDocument(String database, String documentHandle, Object value, Long rev, Policy policy, Boolean waitForSync) throws ArangoException {
 		
 		validateDocumentHandle(documentHandle);
 		HttpResponseEntity res = httpManager.doPut(
 				createEndpointUrl(baseUrl, database, "/_api/document", documentHandle), 
 				new MapBuilder()
-					.put("rev", rev == -1 ? null : rev)
+					.put("rev", rev)
 					.put("policy", policy == null ? null : policy.name())
 					.put("waitForSync", waitForSync)
 					.get(),
@@ -81,13 +81,13 @@ public class InternalDocumentDriverImpl extends BaseArangoDriverImpl {
 		
 	}
 
-	public <T> DocumentEntity<T> updateDocument(String database, String documentHandle, Object value, long rev, Policy policy, Boolean waitForSync, Boolean keepNull) throws ArangoException {
+	public <T> DocumentEntity<T> updateDocument(String database, String documentHandle, Object value, Long rev, Policy policy, Boolean waitForSync, Boolean keepNull) throws ArangoException {
 		
 		validateDocumentHandle(documentHandle);
 		HttpResponseEntity res = httpManager.doPatch(
 				createEndpointUrl(baseUrl, database, "/_api/document", documentHandle), 
 				new MapBuilder()
-					.put("rev", rev == -1 ? null : rev)
+					.put("rev", rev)
 					.put("policy", policy == null ? null : policy.name())
 					.put("waitForSync", waitForSync)
 					.put("keepNull", keepNull)
@@ -124,6 +124,8 @@ public class InternalDocumentDriverImpl extends BaseArangoDriverImpl {
 	
 	public long checkDocument(String database, String documentHandle) throws ArangoException {
 		
+		// TODO: rev, policy
+		
 		validateDocumentHandle(documentHandle);
 		HttpResponseEntity res = httpManager.doHead(
 				createEndpointUrl(baseUrl, database, "/_api/document", documentHandle),
@@ -155,13 +157,13 @@ public class InternalDocumentDriverImpl extends BaseArangoDriverImpl {
 
 	}
 
-	public DocumentEntity<?> deleteDocument(String database, String documentHandle, long rev, Policy policy) throws ArangoException {
+	public DocumentEntity<?> deleteDocument(String database, String documentHandle, Long rev, Policy policy) throws ArangoException {
 		
 		validateDocumentHandle(documentHandle);
 		HttpResponseEntity res = httpManager.doDelete(
 				createEndpointUrl(baseUrl, database, "/_api/document", documentHandle), 
 				new MapBuilder()
-				.put("rev", rev == -1 ? null : rev)
+				.put("rev", rev)
 				.put("policy", policy == null ? null : policy.name().toLowerCase(Locale.US))
 				.get());
 		

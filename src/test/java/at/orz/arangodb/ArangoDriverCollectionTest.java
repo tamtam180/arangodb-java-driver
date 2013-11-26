@@ -434,7 +434,7 @@ public class ArangoDriverCollectionTest extends BaseTest {
 			DocumentEntity<TestComplexEntity01> entity = driver.createDocument(collectionName, value, false, true);
 			// 1個消す
 			if (i == 50) {
-				driver.deleteDocument(entity.getDocumentHandle(), -1, null);
+				driver.deleteDocument(entity.getDocumentHandle(), null, null);
 			}
 		}
 		

@@ -334,9 +334,21 @@ public class ArangoDriver extends BaseArangoDriver {
 		return getDocument(createDocumentHandle(collectionName, documentId), clazz);
 	}
 	public <T> DocumentEntity<T> getDocument(String documentHandle, Class<?> clazz) throws ArangoException {
-		return documentDriver.getDocument(getDefaultDatabase(), documentHandle, clazz);
+		return documentDriver.getDocument(getDefaultDatabase(), documentHandle, clazz, null, null);
 	}
 
+//	public <T> DocumentEntity<T> getDocument(long collectionId, long documentId, Class<?> clazz, Long ifNoneMatchRevision, Long ifMatchRevision) throws ArangoException {
+//		return getDocument(createDocumentHandle(collectionId, documentId), clazz, ifNoneMatchRevision, ifMatchRevision);
+//	}
+//	public <T> DocumentEntity<T> getDocument(String collectionName, long documentId, Class<?> clazz, Long ifNoneMatchRevision, Long ifMatchRevision) throws ArangoException {
+//		return getDocument(createDocumentHandle(collectionName, documentId), clazz, ifNoneMatchRevision, ifMatchRevision);
+//	}
+//	public <T> DocumentEntity<T> getDocument(String documentHandle, Class<?> clazz, Long ifNoneMatchRevision, Long ifMatchRevision) throws ArangoException {
+//		return documentDriver.getDocument(getDefaultDatabase(), documentHandle, clazz, ifNoneMatchRevision, ifMatchRevision);
+//	}
+
+	
+	
 	public DocumentEntity<?> deleteDocument(long collectionId, long documentId, long rev, Policy policy) throws ArangoException {
 		return deleteDocument(createDocumentHandle(collectionId, documentId), rev, policy);
 	}

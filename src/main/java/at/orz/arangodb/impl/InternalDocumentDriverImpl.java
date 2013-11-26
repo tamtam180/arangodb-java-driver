@@ -135,24 +135,22 @@ public class InternalDocumentDriverImpl extends BaseArangoDriverImpl {
 		
 	}
 
-	public <T> DocumentEntity<T> getDocument(String database, String documentHandle, Class<?> clazz) throws ArangoException {
+	public <T> DocumentEntity<T> getDocument(String database, String documentHandle, Class<?> clazz, Long ifNoneMatchRevision, Long ifMatchRevision) throws ArangoException {
 		
-		// TODO If-None-Match http-header
-		// TODO CAS
+		// TODO IfMatch, If-None-Match http-header
 		
 		validateDocumentHandle(documentHandle);
 		HttpResponseEntity res = httpManager.doGet(
 				createEndpointUrl(baseUrl, database, "/_api/document", documentHandle),
+				new MapBuilder().put("If-None-Match", ifNoneMatchRevision, true).put("If-Match", ifMatchRevision).get(),
 				null);
 		
 		// TODO Case of StatusCode=304
 		
-		//T obj = createEntityImpl(res, clazz);
 		DocumentEntity<T> entity = createEntity(res, DocumentEntity.class, clazz);
 		if (entity == null) {
 			entity = new DocumentEntity<T>();
 		}
-		//entity.setEntity(obj);
 		return entity;
 
 	}

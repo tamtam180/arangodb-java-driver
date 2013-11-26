@@ -304,7 +304,7 @@ public class ArangoDriverDocumentTest extends BaseTest {
 	@Test
 	public void test_get_document() throws ArangoException {
 		
-		// 適当にドキュメントを作る
+		// create document
 		TestComplexEntity01 value = new TestComplexEntity01("user-" + 9999, "説明:" + 9999, 9999);
 		DocumentEntity<TestComplexEntity01> doc = driver.createDocument(collectionName, value, null, false);
 		
@@ -318,8 +318,94 @@ public class ArangoDriverDocumentTest extends BaseTest {
 		assertThat(retVal.getDocumentRevision(), is(doc.getDocumentRevision()));
 		assertThat(retVal.getDocumentKey(), is(doc.getDocumentKey()));
 		
+		assertThat(retVal.getEntity(), instanceOf(TestComplexEntity01.class));
+		assertThat(retVal.getEntity().getUser(), is("user-9999"));
+		assertThat(retVal.getEntity().getDesc(), is("説明:9999"));
+		assertThat(retVal.getEntity().getAge(), is(9999));
+		
 	}
 
+	@Test
+	public void test_get_document_collection_not_found() throws ArangoException {
+		
+		// Get
+		try {
+			driver.getDocument(collectionName404, 1L, TestComplexEntity01.class);
+			fail("");
+		} catch (ArangoException e) {
+			assertThat(e.getCode(), is(404));
+			assertThat(e.getErrorNumber(), is(1203));
+			// collection not found
+		}
+		
+	}
+
+	@Test
+	public void test_get_document_doc_not_found() throws ArangoException {
+		
+		// Get
+		try {
+			driver.getDocument(collectionName, 1L, TestComplexEntity01.class);
+			fail("");
+		} catch (ArangoException e) {
+			assertThat(e.getCode(), is(404));
+			assertThat(e.getErrorNumber(), is(1202));
+			// document not found
+		}
+		
+	}
+
+	// TODO: If-None-Match, If-Matchヘッダを付けても挙動が変わらない。arango-1.4.0
+	
+//	@Test
+//	public void test_get_document_none_match_eq() throws ArangoException {
+//		
+//		// create document
+//		TestComplexEntity01 value = new TestComplexEntity01("user-" + 9999, "説明:" + 9999, 9999);
+//		DocumentEntity<TestComplexEntity01> doc = driver.createDocument(collectionName, value, null, false);
+//		
+//		assertThat(doc.getDocumentKey(), is(notNullValue()));
+//		assertThat(doc.getDocumentHandle(), is(collectionName + "/" + doc.getDocumentKey()));
+//		assertThat(doc.getDocumentRevision(), is(not(0L)));
+//		
+//		// Get
+//		DocumentEntity<TestComplexEntity01> retVal = driver.getDocument(doc.getDocumentHandle(), TestComplexEntity01.class, doc.getDocumentRevision(), null);
+//		assertThat(retVal.getDocumentHandle(), is(doc.getDocumentHandle()));
+//		assertThat(retVal.getDocumentRevision(), is(doc.getDocumentRevision()));
+//		assertThat(retVal.getDocumentKey(), is(doc.getDocumentKey()));
+//		
+//		assertThat(retVal.getEntity(), instanceOf(TestComplexEntity01.class));
+//		assertThat(retVal.getEntity().getUser(), is("user-9999"));
+//		assertThat(retVal.getEntity().getDesc(), is("説明:9999"));
+//		assertThat(retVal.getEntity().getAge(), is(9999));
+//		
+//	}
+//
+//	@Test
+//	public void test_get_document_none_match_ne() throws ArangoException {
+//		
+//		// create document
+//		TestComplexEntity01 value = new TestComplexEntity01("user-" + 9999, "説明:" + 9999, 9999);
+//		DocumentEntity<TestComplexEntity01> doc = driver.createDocument(collectionName, value, null, false);
+//		
+//		assertThat(doc.getDocumentKey(), is(notNullValue()));
+//		assertThat(doc.getDocumentHandle(), is(collectionName + "/" + doc.getDocumentKey()));
+//		assertThat(doc.getDocumentRevision(), is(not(0L)));
+//		
+//		// Get
+//		DocumentEntity<TestComplexEntity01> retVal = driver.getDocument(doc.getDocumentHandle(), TestComplexEntity01.class, doc.getDocumentRevision() + 1, null);
+//		assertThat(retVal.getDocumentHandle(), is(doc.getDocumentHandle()));
+//		assertThat(retVal.getDocumentRevision(), is(doc.getDocumentRevision()));
+//		assertThat(retVal.getDocumentKey(), is(doc.getDocumentKey()));
+//
+//		assertThat(retVal.getEntity(), instanceOf(TestComplexEntity01.class));
+//		assertThat(retVal.getEntity().getUser(), is("user-9999"));
+//		assertThat(retVal.getEntity().getDesc(), is("説明:9999"));
+//		assertThat(retVal.getEntity().getAge(), is(9999));
+//
+//	}
+
+	
 	/**
 	 * Mapで取得した時に特別なキー(_id, _rev, _key)はEntityに入ってこないこと
 	 * TODO: アノテーションで設定できるようにしようかな。。

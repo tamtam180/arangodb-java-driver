@@ -252,9 +252,9 @@ public class HttpManager {
 		
 		if (logger.isDebugEnabled()) {
 			if (requestEntity.type == RequestType.POST || requestEntity.type == RequestType.PUT || requestEntity.type == RequestType.PATCH) {
-				logger.debug("[REQ]http-{}: url={}, body={}", new Object[]{ requestEntity.type, url, requestEntity.bodyText });
+				logger.debug("[REQ]http-{}: url={}, headers={}, body={}", new Object[]{ requestEntity.type, url, requestEntity.headers, requestEntity.bodyText });
 			} else {
-				logger.debug("[REQ]http-{}: url={}", requestEntity.type, url);
+				logger.debug("[REQ]http-{}: url={}, headers={}", new Object[]{ requestEntity.type, url, requestEntity.headers });
 			}
 		}
 		

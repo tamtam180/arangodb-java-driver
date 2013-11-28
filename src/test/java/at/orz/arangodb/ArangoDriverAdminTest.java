@@ -203,7 +203,7 @@ public class ArangoDriverAdminTest extends BaseTest {
 				"!(function() {xxx}());\n" +
 				"!             ^\n" +
 				"stacktrace: ReferenceError: xxx is not defined\n";
-			assertThat(e.getMessage(), startsWith(t));
+			assertThat(e.getErrorMessage(), startsWith(t));
 			assertThat(e.getEntity().getStatusCode(), is(500));
 		}
 		

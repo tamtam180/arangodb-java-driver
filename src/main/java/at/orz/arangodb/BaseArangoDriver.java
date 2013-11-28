@@ -212,23 +212,26 @@ public abstract class BaseArangoDriver {
 		
 		// Custom Error
 		if (res.getStatusCode() >= 400) {
+			
 			if (res.isTextResponse()) {
-				entity.setErrorNumber(0);
+				//entity.setErrorNumber(0);
+				entity.setErrorNumber(res.getStatusCode());
 				entity.setErrorMessage(res.getText());
-				//throw new ArangoException(res.getText());
 			} else {
 				entity.setErrorNumber(res.getStatusCode());
 				entity.setErrorMessage(res.getStatusPhrase());
-				switch (res.getStatusCode()) {
-				case 401:
-					entity.setErrorMessage("Unauthorized");
-					break;
-				case 403:
-					entity.setErrorMessage("Forbidden");
-					break;
-				default:
-				}
 			}
+
+			switch (res.getStatusCode()) {
+			case 401:
+				entity.setErrorMessage("Unauthorized");
+				break;
+			case 403:
+				entity.setErrorMessage("Forbidden");
+				break;
+			default:
+			}
+
 			throw new ArangoException(entity);
 		}
 	}

@@ -181,7 +181,8 @@ public class ArangoDriverDatabaseTest extends BaseTest {
 				"db_2",
 				"db-_-3",
 				"mydb",		// other testcase
-				"mydb2"		// other testcase
+				"mydb2",		// other testcase
+				"repl_scenario_test1", // other test case
 		};
 
 		for (String database: databases) {
@@ -200,7 +201,7 @@ public class ArangoDriverDatabaseTest extends BaseTest {
 		Collections.sort(entity.getResult());
 		assertThat(
 				entity.getResult(), 
-				is(Arrays.asList("_system", "db-1", "db-_-3", "db_2", "mydb", "mydb2"))
+				is(Arrays.asList("_system", "db-1", "db-_-3", "db_2", "mydb", "mydb2", "repl_scenario_test1"))
 				);
 		
 	}

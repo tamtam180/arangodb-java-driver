@@ -1,5 +1,9 @@
 
-v1.4.0-SNAPSHOT(2013-11-xx)
+v1.4.1(2013-xx-xx)
+---------------------------
+
+
+v1.4.0(2013-11-26)
 ---------------------------
 * support database (for 1.4 feature)
 * stop the API of edge, edges in version 1.4.0

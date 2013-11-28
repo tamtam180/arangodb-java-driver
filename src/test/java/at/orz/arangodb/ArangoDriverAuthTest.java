@@ -45,7 +45,8 @@ public class ArangoDriverAuthTest {
 			driver.getTime();
 			fail();
 		} catch (ArangoException e) {
-			assertThat(e.getErrorNumber(), is(401));
+			assertThat(e.isUnauthorized(), is(true));
+			assertThat(e.getEntity().getStatusCode(), is(401));
 			assertThat(e.getMessage(), containsString("Unauthorized"));
 		}
 		

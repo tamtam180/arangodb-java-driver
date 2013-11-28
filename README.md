@@ -235,6 +235,13 @@ rs.close();
 
 This library does not support admin/_echo
 
+# Develop Note
+
+## UnitTest environment
+
+    master: arango-test-server:9999 (auth=true)
+    slave: arango-test-server-slave:8529
+
 # License
 
 Apache License 2.0

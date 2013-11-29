@@ -3,11 +3,6 @@ This library ia a Java driver for ArangoDB.
 
 Support version: ArangoDB-1.4.x
 
-# Memo
-
-Now, /edge and /admin/* API does not support. plz wait.
-
-
 # Required
 
 * Java 5 later

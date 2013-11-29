@@ -28,6 +28,8 @@ import org.junit.Test;
 import at.orz.arangodb.entity.BooleanResultEntity;
 import at.orz.arangodb.entity.DatabaseEntity;
 import at.orz.arangodb.entity.StringsResultEntity;
+import at.orz.arangodb.entity.UserEntity;
+import at.orz.arangodb.util.MapBuilder;
 
 /**
  * @author tamtam180 - kirscheless at gmail.com
@@ -110,7 +112,7 @@ public class ArangoDriverDatabaseTest extends BaseTest {
 		assertThat(entity.getResult(), is(true));
 
 	}
-
+	
 	@Test
 	public void test_createDatabase_duplicate() throws ArangoException {
 

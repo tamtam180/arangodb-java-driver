@@ -866,19 +866,46 @@ public class ArangoDriver extends BaseArangoDriver {
 	 * @see http://www.arangodb.org/manuals/current/HttpDatabase.html#HttpDatabaseList
 	 */
 	public StringsResultEntity getDatabases() throws ArangoException {
-		return databaseDriver.getDatabases();
+		return getDatabases(false);
 	}
+
+	/**
+	 * 
+	 * @param currentUserAccessableOnly
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.1
+	 * @see http://www.arangodb.org/manuals/current/HttpDatabase.html#HttpDatabaseList
+	 */
+	public StringsResultEntity getDatabases(boolean currentUserAccessableOnly) throws ArangoException {
+		return databaseDriver.getDatabases(currentUserAccessableOnly, null, null);
+	}
+
+	/**
+	 * 
+	 * @param username
+	 * @param password
+	 * @return
+	 * @throws ArangoException
+	 * @since 1.4.1
+	 */
+	public StringsResultEntity getDatabases(String username, String password) throws ArangoException {
+		return databaseDriver.getDatabases(true, username, password);
+	}
+
 	/**
 	 * 
 	 * @param database
+	 * @param users
 	 * @return
 	 * @throws ArangoException
 	 * @since 1.4.0
 	 * @see http://www.arangodb.org/manuals/current/HttpDatabase.html#HttpDatabaseCreate
 	 */
-	public BooleanResultEntity createDatabase(String database) throws ArangoException {
-		return databaseDriver.createDatabase(database);
+	public BooleanResultEntity createDatabase(String database, UserEntity...users) throws ArangoException {
+		return databaseDriver.createDatabase(database, users);
 	}
+
 	/**
 	 * 
 	 * @param database

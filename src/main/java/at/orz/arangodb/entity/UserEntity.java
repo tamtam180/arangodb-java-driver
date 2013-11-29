@@ -18,36 +18,50 @@ package at.orz.arangodb.entity;
 
 import java.util.Map;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * @author tamtam180 - kirscheless at gmail.com
  *
  */
 public class UserEntity extends BaseEntity {
 
-	String user;
+	@SerializedName("username")
+	String username;
+	@SerializedName("passwd")
 	String password;
-	boolean active;
+	Boolean active;
 	Map<String, Object> extra;
 	
-	public String getUser() {
-		return user;
+	public UserEntity() {
+	}
+	public UserEntity(String username, String password, Boolean active, Map<String, Object> extra) {
+		this.username = username;
+		this.password = password;
+		this.active = active;
+		this.extra = extra;
+	}
+
+
+	public String getUsername() {
+		return username;
 	}
 	public String getPassword() {
 		return password;
 	}
-	public boolean isActive() {
+	public Boolean isActive() {
 		return active;
 	}
 	public Map<String, Object> getExtra() {
 		return extra;
 	}
-	public void setUser(String user) {
-		this.user = user;
+	public void setUsername(String username) {
+		this.username = username;
 	}
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	public void setActive(boolean active) {
+	public void setActive(Boolean active) {
 		this.active = active;
 	}
 	public void setExtra(Map<String, Object> extra) {

@@ -39,6 +39,8 @@ public class HttpRequestEntity {
 	RequestType type;
 	String url;
 	Map<String, Object> parameters;
+	String username;
+	String password;
 	String bodyText;
 	HttpEntity entity;
 	

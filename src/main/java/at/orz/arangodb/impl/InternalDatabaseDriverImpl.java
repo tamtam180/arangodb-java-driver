@@ -24,6 +24,7 @@ import at.orz.arangodb.entity.BooleanResultEntity;
 import at.orz.arangodb.entity.DatabaseEntity;
 import at.orz.arangodb.entity.EntityFactory;
 import at.orz.arangodb.entity.StringsResultEntity;
+import at.orz.arangodb.entity.UserEntity;
 import at.orz.arangodb.http.HttpResponseEntity;
 
 /**
@@ -38,27 +39,33 @@ public class InternalDatabaseDriverImpl extends BaseArangoDriverImpl {
 
 	public DatabaseEntity getCurrentDatabase() throws ArangoException {
 		
-		HttpResponseEntity res = httpManager.doGet(baseUrl + "/_api/database/current");
+		HttpResponseEntity res = httpManager.doGet(createEndpointUrl(baseUrl, null, "/_api/database/current"));
 		return createEntity(res, DatabaseEntity.class);
 		
 	}
 	
-	public StringsResultEntity getDatabases() throws ArangoException {
+	public StringsResultEntity getDatabases(boolean currentUserAccessableOnly, String username, String password) throws ArangoException {
 
-		HttpResponseEntity res = httpManager.doGet(baseUrl + "/_api/database");
+		HttpResponseEntity res = httpManager.doGet(
+				createEndpointUrl(baseUrl, null, "/_api/database", currentUserAccessableOnly ? "user" : null),
+				null, null, username, password
+				);
 		return createEntity(res, StringsResultEntity.class);
 
 	}
 	
-	public BooleanResultEntity createDatabase(String database) throws ArangoException {
+	public BooleanResultEntity createDatabase(String database, UserEntity...users) throws ArangoException {
 
 		validateDatabaseName(database, false);
 		
 		TreeMap<String, Object> body = new TreeMap<String, Object>();
 		body.put("name", database);
+		if (users != null && users.length > 0) {
+			body.put("users", users);
+		}
 		
 		HttpResponseEntity res = httpManager.doPost(
-				baseUrl + "/_api/database", 
+				createEndpointUrl(baseUrl, null, "/_api/database"),
 				null, 
 				EntityFactory.toJsonString(body)
 				);
@@ -75,7 +82,7 @@ public class InternalDatabaseDriverImpl extends BaseArangoDriverImpl {
 		body.put("name", database);
 		
 		HttpResponseEntity res = httpManager.doDelete(
-				baseUrl + "/_api/database/" + database, // not need uri encode
+				createEndpointUrl(baseUrl, null, "/_api/database", database),
 				null
 				);
 		

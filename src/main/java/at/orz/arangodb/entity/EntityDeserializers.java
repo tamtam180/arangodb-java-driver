@@ -893,8 +893,8 @@ public class EntityDeserializers {
 			JsonObject obj = json.getAsJsonObject();
 			UserEntity entity = deserializeBaseParameter(obj, new UserEntity());
 			
-			if (obj.has("user")) {
-				entity.user = obj.getAsJsonPrimitive("user").getAsString();
+			if (obj.has("user")) { // MEMO: RequestはusernameなのにResponseは何故userなのか。。
+				entity.username = obj.getAsJsonPrimitive("user").getAsString();
 			}
 			
 			if (obj.has("password")) {

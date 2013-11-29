@@ -183,18 +183,18 @@ public class ArangoConfigure {
 	}
 
 	public void init() {
-		this.httpManager = new HttpManager();
+		this.httpManager = new HttpManager(this);
 
 		// FIXME: change to "new HttpManager(configure)"
-		this.httpManager.setDefaultMaxPerRoute(this.maxPerConnection);
-		this.httpManager.setMaxTotal(this.maxTotalConnection);
-		this.httpManager.setProxyHost(this.proxyHost);
-		this.httpManager.setProxyPort(this.proxyPort);
-		this.httpManager.setConTimeout(this.connectionTimeout);
-		this.httpManager.setSoTimeout(this.timeout);
-		this.httpManager.setRetryCount(this.retryCount);
-		this.httpManager.setUser(this.user);
-		this.httpManager.setPassword(this.password);
+//		this.httpManager.setDefaultMaxPerRoute(this.maxPerConnection);
+//		this.httpManager.setMaxTotal(this.maxTotalConnection);
+//		this.httpManager.setProxyHost(this.proxyHost);
+//		this.httpManager.setProxyPort(this.proxyPort);
+//		this.httpManager.setConTimeout(this.connectionTimeout);
+//		this.httpManager.setSoTimeout(this.timeout);
+//		this.httpManager.setRetryCount(this.retryCount);
+//		this.httpManager.setUser(this.user);
+//		this.httpManager.setPassword(this.password);
 		
 		this.httpManager.init();
 	}

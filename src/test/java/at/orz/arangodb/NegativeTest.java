@@ -59,7 +59,7 @@ public class NegativeTest extends BaseTest {
 		
 		ArangoConfigure configure = new ArangoConfigure();
 		
-		HttpManager httpManager = new HttpManager();
+		HttpManager httpManager = new HttpManager(configure);
 		httpManager.init();
 		
 		// TODO Create configure of common test.

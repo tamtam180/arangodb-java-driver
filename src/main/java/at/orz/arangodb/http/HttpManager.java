@@ -303,7 +303,7 @@ public class HttpManager {
 		}
 		
 		// common-header
-		request.setHeader("User-Agent", "Mozilla/5.0 (compatible; AdovadoDB-JavaDriver/1.0; +http://mt.orz.at/)"); // TODO: 定数化
+		request.setHeader("User-Agent", "Mozilla/5.0 (compatible; ArangoDB-JavaDriver/1.0; +http://mt.orz.at/)"); // TODO: 定数化
 		//request.setHeader("Content-Type", "binary/octet-stream");
 		
 		// optinal-headers

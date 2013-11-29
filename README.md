@@ -72,6 +72,7 @@ This library has 4 layers.
 <tr><th>timeout</th><td>socket read timeout(millisecond)</td><td>-1</td></tr>
 <tr><th>retryCount</th><td>http retry count</td><td>3</td></tr>
 <tr><th>defaultDatabase</th><td>default database</td><td></td></tr>
+<tr><th>enableCURLLogger</th><td>logging flag by curl format for debug</td><td>false</td></tr>
 </table>
 
 ## Basic usage ArangoDriver

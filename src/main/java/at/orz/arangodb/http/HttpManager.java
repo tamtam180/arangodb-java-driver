@@ -303,7 +303,8 @@ public class HttpManager {
 		}
 		
 		// common-header
-		request.setHeader("User-Agent", "Mozilla/5.0 (compatible; ArangoDB-JavaDriver/1.0; +http://mt.orz.at/)"); // TODO: 定数化
+		String userAgent = "Mozilla/5.0 (compatible; ArangoDB-JavaDriver/1.0; +http://mt.orz.at/)"; // TODO: 定数化
+		request.setHeader("User-Agent", userAgent);
 		//request.setHeader("Content-Type", "binary/octet-stream");
 		
 		// optinal-headers
@@ -322,6 +323,11 @@ public class HttpManager {
 		}
 		if (credentials != null) {
 			request.addHeader(BasicScheme.authenticate(credentials, "US-ASCII", false));
+		}
+		
+		// CURL/httpie Logger
+		if (configure.isEnableCURLLogger()) {
+			CURLLogger.log(url, requestEntity, userAgent, credentials);
 		}
 
 		HttpResponse response = null;

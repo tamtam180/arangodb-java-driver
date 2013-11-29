@@ -4,6 +4,7 @@ v1.4.1(2013-xx-xx)
 * rename attribute: UserEntity#user -> UserEntity#username
 * add support API: GET /_api/database/user (getDatabases)
 * modify API: createDatabase(db) -> createDatabase(db, users...)
+* add debug property: enableCURLLogger
 
 v1.4.0(2013-11-26)
 ---------------------------

@@ -44,6 +44,7 @@ import at.orz.arangodb.util.StringJoinTest;
 	ArangoDriverDatabaseAndUserTest.class,
 	
 	ArangoDriverDocumentTest.class,
+	ArangoDriverDocumentKeyTest.class,
 	ArangoDriverCollectionTest.class,
 	ArangoDriverCursorTest.class,
 	ArangoDriverCursorResultSetTest.class,

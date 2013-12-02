@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
 
+import com.google.gson.JsonElement;
+
 import at.orz.arangodb.ArangoConfigure;
 import at.orz.arangodb.ArangoException;
 import at.orz.arangodb.entity.DefaultEntity;
@@ -41,9 +43,23 @@ public class InternalDocumentDriverImpl extends BaseArangoDriverImpl {
 		super(configure);
 	}
 
-	private <T> DocumentEntity<T> _createDocument(String database, String collectionName, Object value, Boolean createCollection, Boolean waitForSync, boolean raw) throws ArangoException {
+	private <T> DocumentEntity<T> _createDocument(String database, String collectionName, String documentKey, Object value, Boolean createCollection, Boolean waitForSync, boolean raw) throws ArangoException {
 		
 		validateCollectionName(collectionName);
+		
+		String body;
+		if (raw) {
+			body = value.toString();
+		} else if (documentKey != null) {
+			JsonElement elem = EntityFactory.toJsonElement(value, false);
+			if (elem.isJsonObject()) {
+				elem.getAsJsonObject().addProperty("_key", documentKey);
+			}
+			body = EntityFactory.toJsonString(elem);
+		} else {
+			body = EntityFactory.toJsonString(value);
+		}
+		
 		HttpResponseEntity res = httpManager.doPost(
 				createEndpointUrl(baseUrl, database, "/_api/document"), 
 				new MapBuilder()
@@ -51,18 +67,18 @@ public class InternalDocumentDriverImpl extends BaseArangoDriverImpl {
 					.put("createCollection", createCollection)
 					.put("waitForSync", waitForSync)
 					.get(),
-					raw ? value.toString() : EntityFactory.toJsonString(value));
+					body);
 		
 		return createEntity(res, DocumentEntity.class);
 		
 	}
 
-	public <T> DocumentEntity<T> createDocument(String database, String collectionName, Object value, Boolean createCollection, Boolean waitForSync) throws ArangoException {
-		return _createDocument(database, collectionName, value, createCollection, waitForSync, false);
+	public <T> DocumentEntity<T> createDocument(String database, String collectionName, String documentKey, Object value, Boolean createCollection, Boolean waitForSync) throws ArangoException {
+		return _createDocument(database, collectionName, documentKey, value, createCollection, waitForSync, false);
 	}
 
-	public <T> DocumentEntity<T> createDocumentRaw(String database, String collectionName, String rawJsonString, Boolean createCollection, Boolean waitForSync) throws ArangoException {
-		return _createDocument(database, collectionName, rawJsonString, createCollection, waitForSync, true);
+	public <T> DocumentEntity<T> createDocumentRaw(String database, String collectionName, String documentKey, String rawJsonString, Boolean createCollection, Boolean waitForSync) throws ArangoException {
+		return _createDocument(database, collectionName, documentKey, rawJsonString, createCollection, waitForSync, true);
 	}
 
 	public <T> DocumentEntity<T> replaceDocument(String database, String documentHandle, Object value, Long rev, Policy policy, Boolean waitForSync) throws ArangoException {

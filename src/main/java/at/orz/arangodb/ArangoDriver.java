@@ -82,10 +82,13 @@ import at.orz.arangodb.util.ResultSetUtils;
  */
 public class ArangoDriver extends BaseArangoDriver {
 	
-	// TODO UTF-8 URLEncode
 	// TODO Cas Operation as eTAG
 	// TODO Should fixed a Double check args.
 	// TODO Null check httpResponse.
+	
+	// TODO コマンド式の実装に変更する。引数が増える度にメソッド数が爆発するのと、そうしないとバッチ処理も上手く書けないため。
+	// driver.execute(createDocumentCommand)
+	// class createDocumentCommand extends Command {  }
 	
 	private ArangoConfigure configure;
 	private HttpManager httpManager;
@@ -280,55 +283,114 @@ public class ArangoDriver extends BaseArangoDriver {
 		return createDocument(String.valueOf(collectionId), value, null, null);
 	}
 	public <T> DocumentEntity<T> createDocument(String collectionName, Object value) throws ArangoException {
-		return documentDriver.createDocument(getDefaultDatabase(), collectionName, value, null, null);
+		return documentDriver.createDocument(getDefaultDatabase(), collectionName, null, value, null, null);
+	}
+
+	public DocumentEntity<?> createDocument(long collectionId, String documentKey, Object value) throws ArangoException {
+		return createDocument(String.valueOf(collectionId), documentKey, value, null, null);
+	}
+	public <T> DocumentEntity<T> createDocument(String collectionName, String documentKey, Object value) throws ArangoException {
+		return documentDriver.createDocument(getDefaultDatabase(), collectionName, documentKey, value, null, null);
 	}
 
 	public DocumentEntity<?> createDocument(long collectionId, Object value, Boolean createCollection, Boolean waitForSync) throws ArangoException {
 		return createDocument(String.valueOf(collectionId), value, createCollection, waitForSync);
 	}
 	public <T> DocumentEntity<T> createDocument(String collectionName, Object value, Boolean createCollection, Boolean waitForSync) throws ArangoException {
-		return documentDriver.createDocument(getDefaultDatabase(), collectionName, value, createCollection, waitForSync);
+		return documentDriver.createDocument(getDefaultDatabase(), collectionName, null, value, createCollection, waitForSync);
+	}
+	public DocumentEntity<?> createDocument(long collectionId, String documentKey, Object value, Boolean createCollection, Boolean waitForSync) throws ArangoException {
+		return createDocument(String.valueOf(collectionId), documentKey, value, createCollection, waitForSync);
+	}
+	public <T> DocumentEntity<T> createDocument(String collectionName, String documentKey, Object value, Boolean createCollection, Boolean waitForSync) throws ArangoException {
+		return documentDriver.createDocument(getDefaultDatabase(), collectionName, documentKey, value, createCollection, waitForSync);
 	}
 
+	
 	public DocumentEntity<?> replaceDocument(long collectionId, long documentId, Object value) throws ArangoException {
-		return replaceDocument(createDocumentHandle(collectionId, documentId), value, null, null, null);
+		return replaceDocument(createDocumentHandle(collectionId, String.valueOf(documentId)), value, null, null, null);
 	}
 	public DocumentEntity<?> replaceDocument(String collectionName, long documentId, Object value) throws ArangoException {
-		return replaceDocument(createDocumentHandle(collectionName, documentId), value, null, null, null);
+		return replaceDocument(createDocumentHandle(collectionName, String.valueOf(documentId)), value, null, null, null);
+	}
+	public DocumentEntity<?> replaceDocument(long collectionId, String documentKey, Object value) throws ArangoException {
+		return replaceDocument(createDocumentHandle(collectionId, documentKey), value, null, null, null);
+	}
+	public DocumentEntity<?> replaceDocument(String collectionName, String documentKey, Object value) throws ArangoException {
+		return replaceDocument(createDocumentHandle(collectionName, documentKey), value, null, null, null);
 	}
 	public <T> DocumentEntity<T> replaceDocument(String documentHandle, Object value) throws ArangoException {
 		return documentDriver.replaceDocument(getDefaultDatabase(), documentHandle, value, null, null, null);
 	}
 
+	
 	public DocumentEntity<?> replaceDocument(long collectionId, long documentId, Object value, Long rev, Policy policy, Boolean waitForSync) throws ArangoException {
-		return replaceDocument(createDocumentHandle(collectionId, documentId), value, rev, policy, waitForSync);
+		return replaceDocument(createDocumentHandle(collectionId, String.valueOf(documentId)), value, rev, policy, waitForSync);
 	}
 	public DocumentEntity<?> replaceDocument(String collectionName, long documentId, Object value, Long rev, Policy policy, Boolean waitForSync) throws ArangoException {
-		return replaceDocument(createDocumentHandle(collectionName, documentId), value, rev, policy, waitForSync);
+		return replaceDocument(createDocumentHandle(collectionName, String.valueOf(documentId)), value, rev, policy, waitForSync);
+	}
+	public DocumentEntity<?> replaceDocument(long collectionId, String documentKey, Object value, Long rev, Policy policy, Boolean waitForSync) throws ArangoException {
+		return replaceDocument(createDocumentHandle(collectionId, documentKey), value, rev, policy, waitForSync);
+	}
+	public DocumentEntity<?> replaceDocument(String collectionName, String documentKey, Object value, Long rev, Policy policy, Boolean waitForSync) throws ArangoException {
+		return replaceDocument(createDocumentHandle(collectionName, documentKey), value, rev, policy, waitForSync);
 	}
 	public <T> DocumentEntity<T> replaceDocument(String documentHandle, Object value, Long rev, Policy policy, Boolean waitForSync) throws ArangoException {
 		return documentDriver.replaceDocument(getDefaultDatabase(), documentHandle, value, rev, policy, waitForSync);
 	}
 
+
 	public DocumentEntity<?> updateDocument(long collectionId, long documentId, Object value) throws ArangoException {
-		return updateDocument(createDocumentHandle(collectionId, documentId), value, null, null, null, null);
+		return updateDocument(createDocumentHandle(collectionId, String.valueOf(documentId)), value, null, null, null, null);
 	}
 	public DocumentEntity<?> updateDocument(String collectionName, long documentId, Object value) throws ArangoException {
-		return updateDocument(createDocumentHandle(collectionName, documentId), value, null, null, null, null);
+		return updateDocument(createDocumentHandle(collectionName, String.valueOf(documentId)), value, null, null, null, null);
+	}
+	public DocumentEntity<?> updateDocument(long collectionId, String documentKey, Object value) throws ArangoException {
+		return updateDocument(createDocumentHandle(collectionId, documentKey), value, null, null, null, null);
+	}
+	public DocumentEntity<?> updateDocument(String collectionName, String documentKey, Object value) throws ArangoException {
+		return updateDocument(createDocumentHandle(collectionName, documentKey), value, null, null, null, null);
 	}
 	public <T> DocumentEntity<T> updateDocument(String documentHandle, Object value) throws ArangoException {
 		return documentDriver.updateDocument(getDefaultDatabase(), documentHandle, value, null, null, null, null);
 	}
 
+	
+	public DocumentEntity<?> updateDocument(long collectionId, long documentId, Object value, Boolean keepNull) throws ArangoException {
+		return updateDocument(createDocumentHandle(collectionId, String.valueOf(documentId)), value, null, null, null, keepNull);
+	}
+	public DocumentEntity<?> updateDocument(String collectionName, long documentId, Object value, Boolean keepNull) throws ArangoException {
+		return updateDocument(createDocumentHandle(collectionName, String.valueOf(documentId)), value, null, null, null, keepNull);
+	}
+	public DocumentEntity<?> updateDocument(long collectionId, String documentKey, Object value, Boolean keepNull) throws ArangoException {
+		return updateDocument(createDocumentHandle(collectionId, documentKey), value, null, null, null, keepNull);
+	}
+	public DocumentEntity<?> updateDocument(String collectionName, String documentKey, Object value, Boolean keepNull) throws ArangoException {
+		return updateDocument(createDocumentHandle(collectionName, documentKey), value, null, null, null, keepNull);
+	}
+	public <T> DocumentEntity<T> updateDocument(String documentHandle, Object value, Boolean keepNull) throws ArangoException {
+		return documentDriver.updateDocument(getDefaultDatabase(), documentHandle, value, null, null, null, keepNull);
+	}
+
+	
 	public DocumentEntity<?> updateDocument(long collectionId, long documentId, Object value, Long rev, Policy policy, Boolean waitForSync, Boolean keepNull) throws ArangoException {
-		return updateDocument(createDocumentHandle(collectionId, documentId), value, rev, policy, waitForSync, keepNull);
+		return updateDocument(createDocumentHandle(collectionId, String.valueOf(documentId)), value, rev, policy, waitForSync, keepNull);
 	}
 	public DocumentEntity<?> updateDocument(String collectionName, long documentId, Object value, Long rev, Policy policy, Boolean waitForSync, Boolean keepNull) throws ArangoException {
-		return updateDocument(createDocumentHandle(collectionName, documentId), value, rev, policy, waitForSync, keepNull);
+		return updateDocument(createDocumentHandle(collectionName, String.valueOf(documentId)), value, rev, policy, waitForSync, keepNull);
+	}
+	public DocumentEntity<?> updateDocument(long collectionId, String documentKey, Object value, Long rev, Policy policy, Boolean waitForSync, Boolean keepNull) throws ArangoException {
+		return updateDocument(createDocumentHandle(collectionId, documentKey), value, rev, policy, waitForSync, keepNull);
+	}
+	public DocumentEntity<?> updateDocument(String collectionName, String documentKey, Object value, Long rev, Policy policy, Boolean waitForSync, Boolean keepNull) throws ArangoException {
+		return updateDocument(createDocumentHandle(collectionName, documentKey), value, rev, policy, waitForSync, keepNull);
 	}
 	public <T> DocumentEntity<T> updateDocument(String documentHandle, Object value, Long rev, Policy policy, Boolean waitForSync, Boolean keepNull) throws ArangoException {
 		return documentDriver.updateDocument(getDefaultDatabase(), documentHandle, value, rev, policy, waitForSync, keepNull);
 	}
+
 	
 	public List<String> getDocuments(long collectionId) throws ArangoException {
 		return getDocuments(String.valueOf(collectionId), false);
@@ -344,21 +406,34 @@ public class ArangoDriver extends BaseArangoDriver {
 		return documentDriver.getDocuments(getDefaultDatabase(), collectionName, handleConvert);
 	}
 
+
 	public long checkDocument(long collectionId, long documentId) throws ArangoException {
-		return checkDocument(createDocumentHandle(collectionId, documentId));
+		return checkDocument(createDocumentHandle(collectionId, String.valueOf(documentId)));
 	}
 	public long checkDocument(String collectionName, long documentId) throws ArangoException {
-		return checkDocument(createDocumentHandle(collectionName, documentId));
+		return checkDocument(createDocumentHandle(collectionName, String.valueOf(documentId)));
+	}
+	public long checkDocument(long collectionId, String documentKey) throws ArangoException {
+		return checkDocument(createDocumentHandle(collectionId, documentKey));
+	}
+	public long checkDocument(String collectionName, String documentKey) throws ArangoException {
+		return checkDocument(createDocumentHandle(collectionName, documentKey));
 	}
 	public long checkDocument(String documentHandle) throws ArangoException {
 		return documentDriver.checkDocument(getDefaultDatabase(), documentHandle);
 	}
 
 	public <T> DocumentEntity<T> getDocument(long collectionId, long documentId, Class<?> clazz) throws ArangoException {
-		return getDocument(createDocumentHandle(collectionId, documentId), clazz);
+		return getDocument(createDocumentHandle(collectionId, String.valueOf(documentId)), clazz);
 	}
 	public <T> DocumentEntity<T> getDocument(String collectionName, long documentId, Class<?> clazz) throws ArangoException {
-		return getDocument(createDocumentHandle(collectionName, documentId), clazz);
+		return getDocument(createDocumentHandle(collectionName, String.valueOf(documentId)), clazz);
+	}
+	public <T> DocumentEntity<T> getDocument(long collectionId, String documentKey, Class<?> clazz) throws ArangoException {
+		return getDocument(createDocumentHandle(collectionId, documentKey), clazz);
+	}
+	public <T> DocumentEntity<T> getDocument(String collectionName, String documentKey, Class<?> clazz) throws ArangoException {
+		return getDocument(createDocumentHandle(collectionName, documentKey), clazz);
 	}
 	public <T> DocumentEntity<T> getDocument(String documentHandle, Class<?> clazz) throws ArangoException {
 		return documentDriver.getDocument(getDefaultDatabase(), documentHandle, clazz, null, null);
@@ -376,20 +451,32 @@ public class ArangoDriver extends BaseArangoDriver {
 
 	
 	public DocumentEntity<?> deleteDocument(long collectionId, long documentId) throws ArangoException {
-		return deleteDocument(createDocumentHandle(collectionId, documentId), null, null);
+		return deleteDocument(createDocumentHandle(collectionId, String.valueOf(documentId)), null, null);
 	}
 	public DocumentEntity<?> deleteDocument(String collectionName, long documentId) throws ArangoException {
-		return deleteDocument(createDocumentHandle(collectionName, documentId), null, null);
+		return deleteDocument(createDocumentHandle(collectionName, String.valueOf(documentId)), null, null);
+	}
+	public DocumentEntity<?> deleteDocument(long collectionId, String documentKey) throws ArangoException {
+		return deleteDocument(createDocumentHandle(collectionId, documentKey), null, null);
+	}
+	public DocumentEntity<?> deleteDocument(String collectionName, String documentKey) throws ArangoException {
+		return deleteDocument(createDocumentHandle(collectionName, documentKey), null, null);
 	}
 	public DocumentEntity<?> deleteDocument(String documentHandle) throws ArangoException {
 		return documentDriver.deleteDocument(getDefaultDatabase(), documentHandle, null, null);
 	}
 	
 	public DocumentEntity<?> deleteDocument(long collectionId, long documentId, Long rev, Policy policy) throws ArangoException {
-		return deleteDocument(createDocumentHandle(collectionId, documentId), rev, policy);
+		return deleteDocument(createDocumentHandle(collectionId, String.valueOf(documentId)), rev, policy);
 	}
 	public DocumentEntity<?> deleteDocument(String collectionName, long documentId, Long rev, Policy policy) throws ArangoException {
-		return deleteDocument(createDocumentHandle(collectionName, documentId), rev, policy);
+		return deleteDocument(createDocumentHandle(collectionName, String.valueOf(documentId)), rev, policy);
+	}
+	public DocumentEntity<?> deleteDocument(long collectionId, String documentKey, Long rev, Policy policy) throws ArangoException {
+		return deleteDocument(createDocumentHandle(collectionId, documentKey), rev, policy);
+	}
+	public DocumentEntity<?> deleteDocument(String collectionName, String documentKey, Long rev, Policy policy) throws ArangoException {
+		return deleteDocument(createDocumentHandle(collectionName, documentKey), rev, policy);
 	}
 	public DocumentEntity<?> deleteDocument(String documentHandle, Long rev, Policy policy) throws ArangoException {
 		return documentDriver.deleteDocument(getDefaultDatabase(), documentHandle, rev, policy);

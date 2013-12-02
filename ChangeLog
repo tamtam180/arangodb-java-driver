@@ -5,6 +5,9 @@ v1.4.1(2013-xx-xx)
 * add support API: GET /_api/database/user (getDatabases)
 * modify API: createDatabase(db) -> createDatabase(db, users...)
 * add debug property: enableCURLLogger
+* add Annotation @DocumentKey and support user define document key.
+* Bug fixed: raise error if _key is not number.
+* document API support _key.
 
 v1.4.0(2013-11-26)
 ---------------------------

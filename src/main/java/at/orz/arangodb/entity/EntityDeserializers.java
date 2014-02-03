@@ -489,7 +489,7 @@ public class EntityDeserializers {
 			}
 			
 			JsonObject obj = json.getAsJsonObject();
-			DocumentEntity<?> entity = deserializeBaseParameter(obj, new DocumentEntity<Object>());
+			DocumentEntity<Object> entity = deserializeBaseParameter(obj, new DocumentEntity<Object>());
 			deserializeDocumentParameter(obj, entity);
 			
 			// 他のフィールドはリフレクションで。 (TODO: Annotationのサポートと上記パラメータを弾く)
@@ -1546,7 +1546,7 @@ public class EntityDeserializers {
 			}
 			
 			JsonObject obj = json.getAsJsonObject();
-			EdgeEntity<?> entity = deserializeBaseParameter(obj, new EdgeEntity<Object>());
+			EdgeEntity<Object> entity = deserializeBaseParameter(obj, new EdgeEntity<Object>());
 
 			JsonObject edge = obj.has("edge") ? obj.getAsJsonObject("edge") : obj;
 			deserializeDocumentParameter(edge, entity);

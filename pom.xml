@@ -4,7 +4,7 @@
 
 	<groupId>at.orz</groupId>
 	<artifactId>arangodb-java-driver</artifactId>
-	<version>1.4.1-SNAPSHOT</version>
+	<version>1.4.1</version>
 	<inceptionYear>2012</inceptionYear>
 	<packaging>jar</packaging>
 

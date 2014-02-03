@@ -30,7 +30,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.StatusLine;
-import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpDelete;
@@ -45,6 +45,7 @@ import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.impl.conn.PoolingClientConnectionManager;
@@ -55,6 +56,7 @@ import org.apache.http.params.HttpParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import at.orz.arangodb.ArangoConfigure;
 import at.orz.arangodb.ArangoException;
 import at.orz.arangodb.http.HttpRequestEntity.RequestType;
 import at.orz.arangodb.util.IOUtils;
@@ -72,97 +74,102 @@ public class HttpManager {
 	private PoolingClientConnectionManager cm;
 	private DefaultHttpClient client;
 	
-	private int defaultMaxPerRoute = 20;
-	private int maxTotal = 20;
-	private String proxyHost;
-	private int proxyPort;
-	/** connection-timeout */
-	private int conTimeout = -1;
-	/** socket-read-timeout */
-	private int soTimeout = -1;
-	/** retry count */
-	private int retryCount = 3;
+	private ArangoConfigure configure;
 	
-	/** Basic auth user */
-	private String user;
-	/** Basic auth password */
-	private String password;
+//	private int defaultMaxPerRoute = 20;
+//	private int maxTotal = 20;
+//	private String proxyHost;
+//	private int proxyPort;
+//	/** connection-timeout */
+//	private int conTimeout = -1;
+//	/** socket-read-timeout */
+//	private int soTimeout = -1;
+//	/** retry count */
+//	private int retryCount = 3;
+//	
+//	/** Basic auth user */
+//	private String user;
+//	/** Basic auth password */
+//	private String password;
 
-	public HttpManager() {
+//	private Credentials credentials;
+	
+	public HttpManager(ArangoConfigure configure) {
+		this.configure = configure;
 	}
 	
-	public HttpManager setDefaultMaxPerRoute(int max) {
-		defaultMaxPerRoute = max;
-		return this;
-	}
-	public HttpManager setMaxTotal(int max) {
-		maxTotal = max;
-		return this;
-	}
-	
-	public HttpManager setProxyHost(String host) {
-		this.proxyHost = host;
-		return this;
-	}
-	public HttpManager setProxyPort(int port) {
-		this.proxyPort = port;
-		return this;
-	}
-	
-	public HttpManager setConTimeout(int timeoutMs) {
-		this.conTimeout = timeoutMs;
-		return this;
-	}
-	public HttpManager setSoTimeout(int timeoutMs) {
-		this.soTimeout = timeoutMs;
-		return this;
-	}
-	public HttpManager setRetryCount(int retryCount) {
-		this.retryCount = retryCount;
-		return this;
-	}
-	
-	public HttpManager setUser(String user) {
-		this.user = user;
-		return this;
-	}
-	public HttpManager setPassword(String password) {
-		this.password = password;
-		return this;
-	}
+//	public HttpManager setDefaultMaxPerRoute(int max) {
+//		defaultMaxPerRoute = max;
+//		return this;
+//	}
+//	public HttpManager setMaxTotal(int max) {
+//		maxTotal = max;
+//		return this;
+//	}
+//	
+//	public HttpManager setProxyHost(String host) {
+//		this.proxyHost = host;
+//		return this;
+//	}
+//	public HttpManager setProxyPort(int port) {
+//		this.proxyPort = port;
+//		return this;
+//	}
+//	
+//	public HttpManager setConTimeout(int timeoutMs) {
+//		this.conTimeout = timeoutMs;
+//		return this;
+//	}
+//	public HttpManager setSoTimeout(int timeoutMs) {
+//		this.soTimeout = timeoutMs;
+//		return this;
+//	}
+//	public HttpManager setRetryCount(int retryCount) {
+//		this.retryCount = retryCount;
+//		return this;
+//	}
+//	
+//	public HttpManager setUser(String user) {
+//		this.user = user;
+//		return this;
+//	}
+//	public HttpManager setPassword(String password) {
+//		this.password = password;
+//		return this;
+//	}
 	
 	public void init() {
 		// ConnectionManager
 		cm = new PoolingClientConnectionManager();
-		cm.setDefaultMaxPerRoute(defaultMaxPerRoute);
-		cm.setMaxTotal(maxTotal);
+		cm.setDefaultMaxPerRoute(configure.getMaxPerConnection());
+		cm.setMaxTotal(configure.getMaxTotalConnection());
 		// Params
 		HttpParams params = new BasicHttpParams();
-		if (conTimeout >= 0) {
-			HttpConnectionParams.setConnectionTimeout(params, conTimeout);
+		if (configure.getConnectionTimeout() >= 0) {
+			HttpConnectionParams.setConnectionTimeout(params, configure.getConnectionTimeout());
 		}
-		if (soTimeout >= 0) {
-			HttpConnectionParams.setSoTimeout(params, soTimeout);
+		if (configure.getTimeout() >= 0) {
+			HttpConnectionParams.setSoTimeout(params, configure.getTimeout());
 		}
 		// Client
 		client = new DefaultHttpClient(cm, params);
 		// TODO KeepAlive Strategy
 
 		// Proxy
-		if (proxyHost != null && proxyPort != 0) {
-			HttpHost proxy = new HttpHost(proxyHost, proxyPort, "http");
+		if (configure.getProxyHost() != null && configure.getProxyPort() != 0) {
+			HttpHost proxy = new HttpHost(configure.getProxyHost(), configure.getProxyPort(), "http");
 			client.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
 		}
 		
 		// Basic Auth
-		if (user != null && password != null) {
-			AuthScope scope = AuthScope.ANY; // TODO
-			UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(user, password);
-			client.getCredentialsProvider().setCredentials(scope, credentials);
-		}
+		//if (configure.getUser()  != null && configure.getPassword() != null) {
+			//AuthScope scope = AuthScope.ANY; // TODO
+			//this.credentials = new UsernamePasswordCredentials(configure.getUser(), configure.getPassword());
+			//client.getCredentialsProvider().setCredentials(scope, credentials);
+		//}
 		
 		// Retry Handler
-		client.setHttpRequestRetryHandler(new DefaultHttpRequestRetryHandler(retryCount, false));
+		client.setHttpRequestRetryHandler(new DefaultHttpRequestRetryHandler(configure.getRetryCount(), false));
 		
 	}
 	
@@ -170,17 +177,21 @@ public class HttpManager {
 		if (cm != null) {
 			cm.shutdown();
 		}
+		configure = null;
 	}
 
 	
 	public HttpResponseEntity doGet(String url) throws ArangoException {
 		return doGet(url, null);
 	}
+	public HttpResponseEntity doGet(String url, Map<String, Object> params) throws ArangoException {
+		return doHeadGetDelete(RequestType.GET, url, null, params);
+	}
 	public HttpResponseEntity doGet(String url, Map<String, Object> headers, Map<String, Object> params) throws ArangoException {
 		return doHeadGetDelete(RequestType.GET, url, headers, params);
 	}
-	public HttpResponseEntity doGet(String url, Map<String, Object> params) throws ArangoException {
-		return doHeadGetDelete(RequestType.GET, url, null, params);
+	public HttpResponseEntity doGet(String url, Map<String, Object> headers, Map<String, Object> params, String username, String password) throws ArangoException {
+		return doHeadGetDelete(RequestType.GET, url, headers, params, username, password);
 	}
 	public HttpResponseEntity doHead(String url, Map<String, Object> params) throws ArangoException {
 		return doHeadGetDelete(RequestType.HEAD, url, null, params);
@@ -192,11 +203,16 @@ public class HttpManager {
 		return doHeadGetDelete(RequestType.DELETE, url, headers, params);
 	}
 	public HttpResponseEntity doHeadGetDelete(RequestType type, String url, Map<String, Object> headers, Map<String, Object> params) throws ArangoException {
+		return doHeadGetDelete(type, url, headers, params, null, null);
+	}
+	public HttpResponseEntity doHeadGetDelete(RequestType type, String url, Map<String, Object> headers, Map<String, Object> params, String username, String password) throws ArangoException {
 		HttpRequestEntity requestEntity = new HttpRequestEntity();
 		requestEntity.type = type;
 		requestEntity.url = url;
 		requestEntity.headers = headers;
 		requestEntity.parameters = params;
+		requestEntity.username = username;
+		requestEntity.password = password;
 		return execute(requestEntity);
 	}
 
@@ -287,7 +303,8 @@ public class HttpManager {
 		}
 		
 		// common-header
-		request.setHeader("User-Agent", "Mozilla/5.0 (compatible; AdovadoDB-JavaDriver/1.0; +http://mt.orz.at/)"); // TODO: 定数化
+		String userAgent = "Mozilla/5.0 (compatible; ArangoDB-JavaDriver/1.0; +http://mt.orz.at/)"; // TODO: 定数化
+		request.setHeader("User-Agent", userAgent);
 		//request.setHeader("Content-Type", "binary/octet-stream");
 		
 		// optinal-headers
@@ -295,6 +312,22 @@ public class HttpManager {
 			for (Entry<String, Object> keyValue: requestEntity.headers.entrySet()) {
 				request.setHeader(keyValue.getKey(), keyValue.getValue().toString());
 			}
+		}
+
+		// Basic Auth
+		Credentials credentials = null;
+		if (requestEntity.username != null && requestEntity.password != null) {
+			credentials = new UsernamePasswordCredentials(requestEntity.username, requestEntity.password);
+		} else if (configure.getUser() != null && configure.getPassword() != null) {
+			credentials = new UsernamePasswordCredentials(configure.getUser(), configure.getPassword());
+		}
+		if (credentials != null) {
+			request.addHeader(BasicScheme.authenticate(credentials, "US-ASCII", false));
+		}
+		
+		// CURL/httpie Logger
+		if (configure.isEnableCURLLogger()) {
+			CURLLogger.log(url, requestEntity, userAgent, credentials);
 		}
 
 		HttpResponse response = null;

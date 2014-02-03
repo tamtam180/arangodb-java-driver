@@ -21,12 +21,11 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import at.orz.arangodb.entity.DefaultEntity;
-import at.orz.arangodb.entity.ReplicationDumpHeader;
 import at.orz.arangodb.entity.BaseEntity;
 import at.orz.arangodb.entity.EntityDeserializers;
 import at.orz.arangodb.entity.EntityFactory;
 import at.orz.arangodb.entity.KeyValueEntity;
+import at.orz.arangodb.entity.ReplicationDumpHeader;
 import at.orz.arangodb.entity.StreamEntity;
 import at.orz.arangodb.entity.marker.MissingInstanceCreater;
 import at.orz.arangodb.http.HttpResponseEntity;
@@ -42,15 +41,25 @@ public abstract class BaseArangoDriver {
 
 	private static final Pattern databaseNamePattern = Pattern.compile("^[a-zA-Z][a-zA-Z0-9\\-_]{0,63}$");
 
-	protected String createDocumentHandle(long collectionId, long documentId) {
-		// validateCollectionNameは不要
-		return collectionId + "/" + documentId;
+//	protected String createDocumentHandle(long collectionId, long documentId) {
+//		// validateCollectionNameは不要
+//		return collectionId + "/" + documentId;
+//	}
+//
+//	protected String createDocumentHandle(String collectionName, long documentId) throws ArangoException {
+//		validateCollectionName(collectionName);
+//		return collectionName + "/" + documentId;
+//	}
+
+	protected String createDocumentHandle(long collectionId, String documentKey) {
+		return collectionId + "/" + documentKey;
 	}
 
-	protected String createDocumentHandle(String collectionName, long documentId) throws ArangoException {
+	protected String createDocumentHandle(String collectionName, String documentKey) throws ArangoException {
 		validateCollectionName(collectionName);
-		return collectionName + "/" + documentId;
+		return collectionName + "/" + documentKey;
 	}
+
 	
 	protected void validateCollectionName(String name) throws ArangoException {
 		if (name.indexOf('/') != -1) {
@@ -61,12 +70,12 @@ public abstract class BaseArangoDriver {
 	protected void validateDocumentHandle(String documentHandle) throws ArangoException {
 		int pos = documentHandle.indexOf('/');
 		if (pos > 0) {
-			try {
-				String collectionName = documentHandle.substring(0, pos);
-				validateCollectionName(collectionName);
-				long collectionId = Long.parseLong(documentHandle.substring(pos + 1));
+			String collectionName = documentHandle.substring(0, pos);
+			String documentKey = documentHandle.substring(pos + 1);
+			
+			validateCollectionName(collectionName);
+			if (collectionName.length() != 0 && documentKey.length() != 0) {
 				return;
-			} catch (Exception e) {
 			}
 		}
 		throw new ArangoException("invalid format documentHandle:" + documentHandle);
@@ -212,23 +221,26 @@ public abstract class BaseArangoDriver {
 		
 		// Custom Error
 		if (res.getStatusCode() >= 400) {
+			
 			if (res.isTextResponse()) {
-				entity.setErrorNumber(0);
+				//entity.setErrorNumber(0);
+				entity.setErrorNumber(res.getStatusCode());
 				entity.setErrorMessage(res.getText());
-				//throw new ArangoException(res.getText());
 			} else {
 				entity.setErrorNumber(res.getStatusCode());
 				entity.setErrorMessage(res.getStatusPhrase());
-				switch (res.getStatusCode()) {
-				case 401:
-					entity.setErrorMessage("Unauthorized");
-					break;
-				case 403:
-					entity.setErrorMessage("Forbidden");
-					break;
-				default:
-				}
 			}
+
+			switch (res.getStatusCode()) {
+			case 401:
+				entity.setErrorMessage("Unauthorized");
+				break;
+			case 403:
+				entity.setErrorMessage("Forbidden");
+				break;
+			default:
+			}
+
 			throw new ArangoException(entity);
 		}
 	}

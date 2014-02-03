@@ -42,6 +42,12 @@ public abstract class BaseEntity implements Serializable {
 	public boolean isNotModified() {
 		return statusCode == 304; //HttpStatus.SC_NOT_MODIFIED;
 	}
+	public boolean isUnauthorized() {
+		return statusCode == 401;
+	}
+	public boolean isNotFound() {
+		return statusCode == 404;
+	}
 
 	public boolean isError() {
 		return error;

@@ -46,7 +46,7 @@ public class ArangoDriverUsersTest extends BaseTest {
 	@Before
 	public void setup() throws ArangoException {
 		// delete user
-		for (String user: new String[]{ "user1", "user2", "user3", "testuser", "テスト☆ユーザー", "user-A", "userA", "userB", "ゆーざーA" }) {
+		for (String user: new String[]{ "user1", "user2", "user3", "user4", "testuser", "テスト☆ユーザー", "user-A", "userA", "userB", "ゆーざーA" }) {
 			// user-A, userA, userB, ゆーざーA is created another(auth) testcase.
 			try {
 				driver.deleteUser(user);
@@ -57,7 +57,7 @@ public class ArangoDriverUsersTest extends BaseTest {
 	private Map<String, DocumentEntity<UserEntity>> toMap(List<DocumentEntity<UserEntity>> users) {
 		TreeMap<String, DocumentEntity<UserEntity>> map = new TreeMap<String, DocumentEntity<UserEntity>>();
 		for (DocumentEntity<UserEntity> user: users) {
-			map.put(user.getEntity().getUser(), user);
+			map.put(user.getEntity().getUsername(), user);
 		}
 		return map;
 	}
@@ -83,7 +83,7 @@ public class ArangoDriverUsersTest extends BaseTest {
 		
 		// get
 		UserEntity user = driver.getUser("テスト☆ユーザー");
-		assertThat(user.getUser(), is("テスト☆ユーザー"));
+		assertThat(user.getUsername(), is("テスト☆ユーザー"));
 		assertThat(user.getPassword(), is(nullValue()));
 		assertThat(user.isActive(), is(true));
 		assertThat(user.getExtra().isEmpty(), is(true));
@@ -113,7 +113,7 @@ public class ArangoDriverUsersTest extends BaseTest {
 
 		// get user
 		UserEntity user = driver.getUser("testuser");
-		assertThat(user.getUser(), is("testuser"));
+		assertThat(user.getUsername(), is("testuser"));
 		assertThat(user.getPassword(), is(nullValue()));
 		assertThat(user.isActive(), is(false));
 		assertThat(user.getExtra().size(), is(2));
@@ -219,7 +219,7 @@ public class ArangoDriverUsersTest extends BaseTest {
 		// get replace user
 		DocumentEntity<UserEntity> doc2 = toMap(driver.getUsersDocument()).get("testuser");
 		
-		assertThat(doc2.getEntity().getUser(), is("testuser"));
+		assertThat(doc2.getEntity().getUsername(), is("testuser"));
 		assertThat(doc2.getEntity().getPassword(), is(not(doc1.getEntity().getPassword())));
 		assertThat(doc2.getEntity().isActive(), is(false));
 		assertThat((String)doc2.getEntity().getExtra().get("aaa"), is("bbbb"));
@@ -272,7 +272,7 @@ public class ArangoDriverUsersTest extends BaseTest {
 		// get replace user
 		DocumentEntity<UserEntity> doc2 = toMap(driver.getUsersDocument()).get("testuser");
 		
-		assertThat(doc2.getEntity().getUser(), is("testuser"));
+		assertThat(doc2.getEntity().getUsername(), is("testuser"));
 		assertThat(doc2.getEntity().getPassword(), is(doc1.getEntity().getPassword()));
 		assertThat(doc2.getEntity().isActive(), is(true));
 		assertThat((String)doc2.getEntity().getExtra().get("aaa"), is("bbbb"));
@@ -320,24 +320,24 @@ public class ArangoDriverUsersTest extends BaseTest {
 		List<UserEntity> users = driver.getUsers();
 		Collections.sort(users, new Comparator<UserEntity>() {
 			public int compare(UserEntity o1, UserEntity o2) {
-				return o1.getUser().compareTo(o2.getUser());
+				return o1.getUsername().compareTo(o2.getUsername());
 			}
 		});
 		
 		// validate
 		assertThat(users.size(), is(4)); // user1,2,3 and root
-		assertThat(users.get(0).getUser(), is("root"));
+		assertThat(users.get(0).getUsername(), is("root"));
 		
-		assertThat(users.get(1).getUser(), is("user1"));
+		assertThat(users.get(1).getUsername(), is("user1"));
 		assertThat(users.get(1).isActive(), is(true));
 		// MEMO: Extraがnullの時、getUserで取得するとサーバ側で空Objに変換して返すが、documentとして取得する場合はnullのままになる。
 		assertThat(users.get(1).getExtra(), is(nullValue()));
 		
-		assertThat(users.get(2).getUser(), is("user2"));
+		assertThat(users.get(2).getUsername(), is("user2"));
 		assertThat(users.get(2).isActive(), is(false));
 		assertThat(users.get(2).getExtra(), is(nullValue()));
 
-		assertThat(users.get(3).getUser(), is("user3"));
+		assertThat(users.get(3).getUsername(), is("user3"));
 		assertThat(users.get(3).isActive(), is(true));
 		assertThat(users.get(3).getExtra().size(), is(1));
 		assertThat((String)users.get(3).getExtra().get("好物"), is("天ぷら"));

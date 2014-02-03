@@ -73,6 +73,8 @@ public class ArangoConfigure {
 	/** Default Database */
 	String defaultDatabase;
 	
+	boolean enableCURLLogger = false;
+	
 	HttpManager httpManager;
 	
 	public ArangoConfigure() {
@@ -174,6 +176,11 @@ public class ArangoConfigure {
 					setDefaultDatabase(defaultDatabase);
 				}
 				
+				String enableCURLLogger = prop.getProperty("enableCURLLogger");
+				if (enableCURLLogger != null) {
+					setEnableCURLLogger(Boolean.parseBoolean(enableCURLLogger));
+				}
+						
 			}
 		} catch (IOException e) {
 			logger.warn("load property error", e);
@@ -183,19 +190,7 @@ public class ArangoConfigure {
 	}
 
 	public void init() {
-		this.httpManager = new HttpManager();
-
-		// FIXME: change to "new HttpManager(configure)"
-		this.httpManager.setDefaultMaxPerRoute(this.maxPerConnection);
-		this.httpManager.setMaxTotal(this.maxTotalConnection);
-		this.httpManager.setProxyHost(this.proxyHost);
-		this.httpManager.setProxyPort(this.proxyPort);
-		this.httpManager.setConTimeout(this.connectionTimeout);
-		this.httpManager.setSoTimeout(this.timeout);
-		this.httpManager.setRetryCount(this.retryCount);
-		this.httpManager.setUser(this.user);
-		this.httpManager.setPassword(this.password);
-		
+		this.httpManager = new HttpManager(this);
 		this.httpManager.init();
 	}
 	
@@ -353,6 +348,14 @@ public class ArangoConfigure {
 
 	public void setDefaultDatabase(String defaultDatabase) {
 		this.defaultDatabase = defaultDatabase;
+	}
+
+	public boolean isEnableCURLLogger() {
+		return enableCURLLogger;
+	}
+
+	public void setEnableCURLLogger(boolean enableCURLLogger) {
+		this.enableCURLLogger = enableCURLLogger;
 	}
 	
 }

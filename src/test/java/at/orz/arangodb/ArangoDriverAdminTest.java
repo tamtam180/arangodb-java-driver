@@ -45,7 +45,7 @@ public class ArangoDriverAdminTest extends BaseTest {
 		
 		ArangoVersion version = driver.getVersion();
 		assertThat(version.getServer(), is("arango"));
-		assertThat(version.getVersion(), is("1.4.0"));
+		assertThat(version.getVersion(), is("1.4.3"));
 		
 	}
 	
@@ -203,7 +203,7 @@ public class ArangoDriverAdminTest extends BaseTest {
 				"!(function() {xxx}());\n" +
 				"!             ^\n" +
 				"stacktrace: ReferenceError: xxx is not defined\n";
-			assertThat(e.getMessage(), startsWith(t));
+			assertThat(e.getErrorMessage(), startsWith(t));
 			assertThat(e.getEntity().getStatusCode(), is(500));
 		}
 		

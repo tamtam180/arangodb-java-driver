@@ -428,7 +428,7 @@ public class ArangoDriverReplicationTest extends BaseTest {
 		// master
 		ReplicationApplierConfigEntity config = driver.setReplicationApplierConfig(
 				configure.getEndpoint(), 
-				null, null, null, 
+				null, "root", "", 
 				99, 98, 97, 1024, true, true);
 		
 		assertThat(config.getEndpoint(), is(configure.getEndpoint()));
@@ -439,7 +439,7 @@ public class ArangoDriverReplicationTest extends BaseTest {
 		assertThat(config.getChunkSize(), is(1024));
 		assertThat(config.getAutoStart(), is(true));
 		assertThat(config.getAdaptivePolling(), is(true));
-		assertThat(config.getUsername(), is(nullValue()));
+		assertThat(config.getUsername(), is("root"));
 		assertThat(config.getPassword(), is(nullValue()));
 	
 		config = driver.getReplicationApplierConfig();		
@@ -451,7 +451,7 @@ public class ArangoDriverReplicationTest extends BaseTest {
 		assertThat(config.getChunkSize(), is(1024));
 		assertThat(config.getAutoStart(), is(true));
 		assertThat(config.getAdaptivePolling(), is(true));
-		assertThat(config.getUsername(), is(nullValue()));
+		assertThat(config.getUsername(), is("root"));
 		assertThat(config.getPassword(), is(nullValue()));
 		
 	}

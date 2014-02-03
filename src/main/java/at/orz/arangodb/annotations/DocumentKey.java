@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 tamtam180
+ * Copyright (C) 2012,2013 tamtam180
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,34 +14,22 @@
  * limitations under the License.
  */
 
-package at.orz.arangodb.http;
+package at.orz.arangodb.annotations;
 
-import java.util.Map;
-
-import org.apache.http.HttpEntity;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * @author tamtam180 - kirscheless at gmail.com
- *
+ * @since 1.4.1
  */
-public class HttpRequestEntity {
-	
-	public static enum RequestType {
-		GET,
-		POST,
-		PUT,
-		DELETE,
-		HEAD,
-		PATCH
-	}
-	
-	Map<String, Object> headers;
-	RequestType type;
-	String url;
-	Map<String, Object> parameters;
-	String username;
-	String password;
-	String bodyText;
-	HttpEntity entity;
-	
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
+public @interface DocumentKey {
+
+	public boolean serialize() default true;
+	public boolean deserialize() default true;
+
 }

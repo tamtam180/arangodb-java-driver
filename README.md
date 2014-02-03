@@ -3,11 +3,6 @@ This library ia a Java driver for ArangoDB.
 
 Support version: ArangoDB-1.4.x
 
-# Memo
-
-Now, /edge and /admin/* API does not support. plz wait.
-
-
 # Required
 
 * Java 5 later
@@ -77,6 +72,7 @@ This library has 4 layers.
 <tr><th>timeout</th><td>socket read timeout(millisecond)</td><td>-1</td></tr>
 <tr><th>retryCount</th><td>http retry count</td><td>3</td></tr>
 <tr><th>defaultDatabase</th><td>default database</td><td></td></tr>
+<tr><th>enableCURLLogger</th><td>logging flag by curl format for debug</td><td>false</td></tr>
 </table>
 
 ## Basic usage ArangoDriver
@@ -234,6 +230,13 @@ rs.close();
 * Document of Serialization control by annotation (@Exclude)
 
 This library does not support admin/_echo
+
+# Develop Note
+
+## UnitTest environment
+
+    master: arango-test-server:9999 (auth=true)
+    slave: arango-test-server-slave:8529
 
 # License
 

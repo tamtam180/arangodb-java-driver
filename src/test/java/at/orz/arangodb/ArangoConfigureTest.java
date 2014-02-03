@@ -22,6 +22,7 @@ import static org.junit.Assert.*;
 import java.net.SocketTimeoutException;
 
 import org.apache.http.conn.ConnectTimeoutException;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -55,6 +56,7 @@ public class ArangoConfigureTest {
 		
 	}
 	
+	@Ignore
 	@Test
 	public void connect_timeout() throws ArangoException {
 		

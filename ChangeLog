@@ -1,5 +1,16 @@
 
-v1.4.0-SNAPSHOT(2013-11-xx)
+v1.4.1(2014-02-04)
+---------------------------
+* rename attribute: UserEntity#user -> UserEntity#username
+* add support API: GET /_api/database/user (getDatabases)
+* modify API: createDatabase(db) -> createDatabase(db, users...)
+* add debug property: enableCURLLogger
+* add Annotation @DocumentKey and support user define document key.
+* Bug fixed: raise error if _key is not number.
+* document API support _key.
+* Fixed OraacleJDK build error.(#11)
+
+v1.4.0(2013-11-26)
 ---------------------------
 * support database (for 1.4 feature)
 * stop the API of edge, edges in version 1.4.0

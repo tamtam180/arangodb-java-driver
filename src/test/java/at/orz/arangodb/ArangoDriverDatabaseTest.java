@@ -28,6 +28,8 @@ import org.junit.Test;
 import at.orz.arangodb.entity.BooleanResultEntity;
 import at.orz.arangodb.entity.DatabaseEntity;
 import at.orz.arangodb.entity.StringsResultEntity;
+import at.orz.arangodb.entity.UserEntity;
+import at.orz.arangodb.util.MapBuilder;
 
 /**
  * @author tamtam180 - kirscheless at gmail.com
@@ -110,7 +112,7 @@ public class ArangoDriverDatabaseTest extends BaseTest {
 		assertThat(entity.getResult(), is(true));
 
 	}
-
+	
 	@Test
 	public void test_createDatabase_duplicate() throws ArangoException {
 
@@ -181,7 +183,8 @@ public class ArangoDriverDatabaseTest extends BaseTest {
 				"db_2",
 				"db-_-3",
 				"mydb",		// other testcase
-				"mydb2"		// other testcase
+				"mydb2",		// other testcase
+				"repl_scenario_test1", // other test case
 		};
 
 		for (String database: databases) {
@@ -200,7 +203,7 @@ public class ArangoDriverDatabaseTest extends BaseTest {
 		Collections.sort(entity.getResult());
 		assertThat(
 				entity.getResult(), 
-				is(Arrays.asList("_system", "db-1", "db-_-3", "db_2", "mydb", "mydb2"))
+				is(Arrays.asList("_system", "db-1", "db-_-3", "db_2", "mydb", "mydb2", "repl_scenario_test1"))
 				);
 		
 	}

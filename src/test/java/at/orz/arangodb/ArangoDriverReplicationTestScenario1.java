@@ -124,13 +124,14 @@ public class ArangoDriverReplicationTestScenario1 {
 		assertThat(state1.getClients().size(), is(0));
 
 		// [Slave] sync
-		ReplicationSyncEntity syncResult = slaveDriver.syncReplication(masterConfigure.getEndpoint(), database, null, null, null, null);
+		ReplicationSyncEntity syncResult = slaveDriver.syncReplication(
+				masterConfigure.getEndpoint(), database, "root", null, null);
 		System.out.println(syncResult.getLastLogTick());
 		
 		Thread.sleep(3000L);
 
 		slaveDriver.setReplicationApplierConfig(
-				masterConfigure.getEndpoint(), database, null, null, 
+				masterConfigure.getEndpoint(), database, "root", null, 
 				null, null, null, null, true, true);
 		
 		// [Slave] turn on replication applier
@@ -162,7 +163,7 @@ public class ArangoDriverReplicationTestScenario1 {
 		// ------------------------------------------------------------
 		
 		// [Master] delete document
-		DocumentEntity<?> delEntity = masterDriver.deleteDocument(doc1.getDocumentHandle(), -1L, null);
+		DocumentEntity<?> delEntity = masterDriver.deleteDocument(doc1.getDocumentHandle(), null, null);
 		assertThat(delEntity.isError(), is(false));
 		assertThat(delEntity.getDocumentKey(), is(doc1.getDocumentKey()));
 		

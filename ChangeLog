@@ -1,5 +1,5 @@
 
-v1.4.1(2013-xx-xx)
+v1.4.1(2014-02-04)
 ---------------------------
 * rename attribute: UserEntity#user -> UserEntity#username
 * add support API: GET /_api/database/user (getDatabases)
@@ -8,6 +8,7 @@ v1.4.1(2013-xx-xx)
 * add Annotation @DocumentKey and support user define document key.
 * Bug fixed: raise error if _key is not number.
 * document API support _key.
+* Fixed OraacleJDK build error.(#11)
 
 v1.4.0(2013-11-26)
 ---------------------------
